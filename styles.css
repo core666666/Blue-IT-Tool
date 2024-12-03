@@ -51,6 +51,12 @@ body.dark-mode .navbar {
 .nav-logo {
     font-size: 24px;
     font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+.nav-logo img {
+    margin-right: 8px; /* 调整图标和文字之间的间距 */
 }
 
 .nav-links {

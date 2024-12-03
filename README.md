@@ -10,10 +10,12 @@
 一直用json格式化和html在线预览工具，每次使用的时候没办法最大化，导致我的html页面加载看起来不美观，严重影响效率。所以就自己写了个it工具导航站，
 本导航站全部操作【纯静态实现】，无任何服务端交互的动作，可放心使用。
 
+>偷个懒，增加了网站logo，和导航图标，只更新了主页的图，其他页面的图没更新
+
 ## 效果预览
 
 ### 1. 主页
-[![](https://image.baidu.com/search/down?url=http://tvax4.sinaimg.cn/large/0061Cjilly1hw7szl2grwj318g0nmjuv.jpg)](https://image.baidu.com/search/down?url=http://tvax4.sinaimg.cn/large/0061Cjilly1hw7szl2grwj318g0nmjuv.jpg)
+[![](https://image.baidu.com/search/down?url=http://tvax2.sinaimg.cn/large/0061Cjilly1hw7uzcf3gjj318g0njdjk.jpg)](https://image.baidu.com/search/down?url=http://tvax2.sinaimg.cn/large/0061Cjilly1hw7uzcf3gjj318g0njdjk.jpg)
 
 ### 1.1 dark mode
 [![](https://image.baidu.com/search/down?url=http://tvax3.sinaimg.cn/large/0061Cjilly1hw7t0caycfj318g0nkn06.jpg)](https://image.baidu.com/search/down?url=http://tvax3.sinaimg.cn/large/0061Cjilly1hw7t0caycfj318g0nkn06.jpg)

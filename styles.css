@@ -1,0 +1,641 @@
+/* 通用样式 */
+body {
+    margin: 0;
+    font-family: 'SF Pro Display', sans-serif;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    padding-top: 60px; /* 与导航栏高度相匹配 */
+    flex: 1; /* 主内容区域扩展以填充剩余空间 */
+    padding-bottom: 20px; /* 防止内容贴近页脚 */
+}
+
+/* 主题模式 */
+body.light-mode {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+body.dark-mode {
+    background-color: #1c1c1e;
+    color: #ffffff;
+}
+
+/* 导航栏样式 */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background-color: rgba(255,255,255,0.8);
+    backdrop-filter: blur(10px);
+    position: fixed; /* 修改为 fixed */
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    border-bottom: 1px solid #ddd;
+}
+
+body.dark-mode .navbar {
+    background-color: rgba(28,28,30,0.8);
+    border-bottom: 1px solid #444; /* 深色模式下的下边框颜色 */
+}
+
+.nav-logo {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+.nav-links li {
+    display: inline;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: inherit;
+    font-weight: 500;
+}
+
+/* 搜索框和主题切换按钮容器 */
+.nav-right {
+    display: flex;
+    align-items: center;
+}
+
+/* 搜索框样式 */
+.search-box {
+    position: relative;
+    margin-right: 20px;
+}
+
+.search-box input {
+    padding: 5px 10px;
+    border-radius: 15px;
+    border: 1px solid #ccc;
+    background-color: transparent;
+    color: inherit;
+}
+
+body.dark-mode .search-box input {
+    border: 1px solid #555;
+}
+
+.search-box i {
+    position: absolute;
+    right: 10px;
+    top: 7px;
+    color: #888;
+}
+
+/* 主题切换按钮样式 */
+.theme-switch {
+    display: flex;
+    align-items: center;
+}
+
+.theme-switch input {
+    display: none;
+}
+
+.theme-switch label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.theme-switch label i {
+    font-size: 18px;
+    margin: 0 5px;
+}
+
+/* 通知信息样式 */
+.notice {
+    text-align: center;
+    background-color: #fffae6;
+    padding: 10px;
+    font-size: 16px;
+    color: #555;
+    margin-top: 60px;
+}
+
+body.dark-mode .notice {
+    background-color: #333;
+    color: #ddd;
+}
+
+/* 工具卡片样式 */
+#tool-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 20px;
+    gap: 20px;
+}
+
+.tool-card {
+    background-color: rgba(255,255,255,0.9);
+    border-radius: 15px;
+    width: 200px;
+    text-align: center;
+    padding: 20px;
+    transition: transform 0.3s, box-shadow 0.3s;
+    /* 添加边框和阴影 */
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+body.dark-mode .tool-card {
+    background-color: rgba(28,28,30,0.9);
+    border: 1px solid #444;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+}
+
+.tool-card:hover {
+    transform: translateY(-10px);
+    /* 增加阴影的深度 */
+    box-shadow: 0 8px 12px rgba(0,0,0,0.2);
+}
+
+.tool-card i {
+    font-size: 50px;
+    margin-bottom: 10px;
+}
+
+.tool-card h3 {
+    margin: 0;
+}
+
+/* 页脚样式 */
+footer {
+    text-align: center;
+    padding: 10px;
+    background-color: rgba(255,255,255,0.8);
+    backdrop-filter: blur(10px);
+    width: 97%;
+    border-top: 1px solid #ccc; /* 添加分界线 */
+    /* 移除以下两行 */
+    /* position: fixed; */
+    /* bottom: 0; */
+}
+
+body.dark-mode footer {
+    background-color: rgba(28,28,30,0.8);
+    border-top: 1px solid #444; /* 深色模式下的分界线颜色 */
+}
+
+/* 如果需要让页脚始终在页面底部，即使内容较少时 */
+html, body {
+    height: 100%;
+}
+
+/* 响应式设计 */
+@media (max-width: 600px) {
+    .nav-links {
+        display: none;
+    }
+    .search-box {
+        margin-right: 10px;
+    }
+    footer {
+        position: static;
+    }
+}
+
+/* 工具页通用样式 */
+.toolbar {
+    position: sticky;
+    top: 60px; /* 与导航栏高度匹配 */
+    z-index: 100;
+    background-color: inherit;
+    padding: 10px;
+}
+
+.toolbar h1 {
+    margin: 0;
+}
+
+.toolbar .buttons button {
+    margin: 0 5px;
+}
+
+/* .editor-container {
+    display: flex;
+    width: 90%;
+    height: calc(100vh - 150px); 
+    overflow: hidden;
+    position: relative;
+} */
+
+.editor-container {
+    flex-grow: 1;
+    overflow: hidden;
+    display: flex;
+    height: calc(100vh - 150px); 
+}
+
+.editor-pane {
+    overflow: auto;
+}
+
+#input-pane,
+#output-pane {
+    border: 1px solid #ccc; /* 增加边框 */
+}
+
+body.dark-mode #input-pane,
+body.dark-mode #output-pane {
+    border: 1px solid #555; /* 深色模式下的边框颜色 */
+}
+
+#input-pane {
+    flex: 2;
+}
+
+#output-pane {
+    flex: 3;
+    background-color: #f9f9f9;
+}
+
+body.dark-mode #output-pane {
+    background-color: #2c2c2e;
+}
+
+.dragbar {
+    width: 5px;
+    cursor: col-resize;
+    background-color: #ccc;
+}
+
+body.dark-mode .dragbar {
+    background-color: #444;
+}
+
+#json-input {
+    width: 96%;
+    height: 90%;
+    border: none;
+    outline: none;
+    resize: none;
+    padding: 10px;
+    background-color: transparent;
+    color: inherit;
+    font-family: monospace;
+}
+
+#json-output {
+    width: 97%;
+    height: 90%;
+    overflow: auto;
+    padding: 10px;
+    background-color: transparent;
+    color: inherit;
+    font-family: monospace;
+}
+
+/* 最大化样式 */
+.maximized .editor-container {
+    top: 50px; /* 根据工具栏的高度进行调整 */
+    height: calc(100vh - 50px); /* 减去工具栏的高度 */
+}
+
+/* 最大化样式优化 */
+.maximized .editor-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 9999;
+}
+
+
+/* .maximized .navbar,
+.maximized footer {
+    display: none;
+} */
+
+.maximized .toolbar {
+    top: 0;
+    z-index: 10000;
+}
+
+.maximized .toolbar h1 {
+    display: block; /* 保持标题显示，或根据需要设置 */
+}
+
+.maximized #maximize-btn {
+    display: none;
+}
+
+.maximized #restore-btn {
+    display: inline-block;
+}
+
+/* 功能按钮样式 */
+.toolbar .buttons button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007aff;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.toolbar .buttons button:hover {
+    background-color: #0051a8;
+}
+
+.toolbar .buttons button:focus {
+    outline: none;
+}
+
+/* 与 JSON 格式化工具相同的样式 */
+.html-preview .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+}
+
+.html-preview .toolbar h1 {
+    margin: 0;
+}
+
+.html-preview .toolbar .buttons button {
+    margin: 0 5px;
+}
+
+.html-preview .editor-container {
+    display: flex;
+    width: 100%;
+    height: calc(100vh - 150px); /* 调整高度，铺满屏幕 */
+    overflow: hidden;
+    position: relative;
+}
+
+.html-preview .editor-pane {
+    overflow: auto;
+}
+
+.html-preview #input-pane,
+.html-preview #output-pane {
+    border: 1px solid #ccc; /* 增加边框 */
+}
+
+body.dark-mode .html-preview #input-pane,
+body.dark-mode .html-preview #output-pane {
+    border: 1px solid #555; /* 深色模式下的边框颜色 */
+}
+
+.html-preview #input-pane {
+    flex: 2;
+}
+
+.html-preview #output-pane {
+    flex: 3;
+}
+
+.html-preview .dragbar {
+    width: 5px;
+    cursor: col-resize;
+    background-color: #ccc;
+}
+
+body.dark-mode .html-preview .dragbar {
+    background-color: #444;
+}
+
+.html-preview #html-input {
+    width: 96%;
+    height: 90%;
+    border: none;
+    outline: none;
+    resize: none;
+    padding: 10px;
+    background-color: transparent;
+    color: inherit;
+    font-family: monospace;
+}
+
+.html-preview #html-output {
+    width: 100%;
+    height: 90%;
+    border: none;
+}
+
+/* 最大化样式 */
+.maximized .editor-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 9999;
+}
+
+.maximized .navbar,
+.maximized footer {
+    display: none;
+}
+
+.maximized .toolbar h1 {
+    display: none;
+}
+
+.maximized #maximize-btn {
+    display: none;
+}
+
+.maximized #restore-btn {
+    display: inline-block;
+}
+
+/* 功能按钮样式 */
+.toolbar .buttons button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007aff;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.toolbar .buttons button:hover {
+    background-color: #0051a8;
+}
+
+.toolbar .buttons button:focus {
+    outline: none;
+}
+
+/* 编辑器包装器样式 */
+.editor-wrapper {
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 60px); /* 减去导航栏高度 */
+    display: flex;
+    flex-direction: column;
+}
+
+/* 与 JSON 格式化工具相同的样式 */
+.html-preview .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+}
+
+.html-preview .toolbar h1 {
+    margin: 0;
+}
+
+.html-preview .toolbar .buttons button {
+    margin: 0 5px;
+}
+
+.html-preview .editor-container {
+    display: flex;
+    width: 100%;
+    height: calc(100vh - 150px); /* 调整高度，铺满屏幕 */
+    overflow: hidden;
+    position: relative;
+}
+
+.html-preview .editor-pane {
+    overflow: auto;
+}
+
+.html-preview #input-pane,
+.html-preview #output-pane {
+    border: 1px solid #ccc; /* 增加边框 */
+}
+
+body.dark-mode .html-preview #input-pane,
+body.dark-mode .html-preview #output-pane {
+    border: 1px solid #555; /* 深色模式下的边框颜色 */
+}
+
+.html-preview #input-pane {
+    flex: 2;
+}
+
+.html-preview #output-pane {
+    flex: 3;
+}
+
+.html-preview .dragbar {
+    width: 5px;
+    cursor: col-resize;
+    background-color: #ccc;
+}
+
+body.dark-mode .html-preview .dragbar {
+    background-color: #444;
+}
+
+.html-preview #html-input {
+    width: 96%;
+    height: 90%;
+    border: none;
+    outline: none;
+    resize: none;
+    padding: 10px;
+    background-color: transparent;
+    color: inherit;
+    font-family: monospace;
+}
+
+.html-preview #html-output {
+    width: 100%;
+    height: 90%;
+    border: none;
+}
+
+/**/
+.json-formatter .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+}
+
+.json-formatter .toolbar h1 {
+    margin: 0;
+}
+
+.json-formatter .toolbar .buttons button {
+    margin: 0 5px;
+}
+
+.json-formatter .editor-container {
+    display: flex;
+    width: 100%;
+    height: calc(100vh - 150px); /* 调整高度，铺满屏幕 */
+    overflow: hidden;
+    position: relative;
+}
+
+.json-formatter .editor-pane {
+    overflow: auto;
+}
+
+.json-formatter #input-pane,
+.json-formatter #output-pane {
+    border: 1px solid #ccc; /* 增加边框 */
+}
+
+body.dark-mode .json-formatter #input-pane,
+body.dark-mode .json-formatter #output-pane {
+    border: 1px solid #555; /* 深色模式下的边框颜色 */
+}
+
+.json-formatter #input-pane {
+    flex: 2;
+}
+
+.json-formatter #output-pane {
+    flex: 3;
+}
+
+.json-formatter .dragbar {
+    width: 5px;
+    cursor: col-resize;
+    background-color: #ccc;
+}
+
+body.dark-mode .json-formatter .dragbar {
+    background-color: #444;
+}
+
+.json-formatter #html-input {
+    width: 96%;
+    height: 90%;
+    border: none;
+    outline: none;
+    resize: none;
+    padding: 10px;
+    background-color: transparent;
+    color: inherit;
+    font-family: monospace;
+}
+
+.json-formatter #html-output {
+    width: 100%;
+    height: 90%;
+    border: none;
+}

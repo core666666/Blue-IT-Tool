@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JSON格式化工具</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 引入苹果字体 -->
+    <link href="https://fonts.googleapis.com/css?family=SF+Pro+Display:400,600&display=swap" rel="stylesheet">
+    <!-- 引入图标库 -->
+    <link rel="stylesheet" href="allmin.css" />
+    <!-- 引入自定义CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- 引入JSON Viewer库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.5.6/jsoneditor.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.5.6/jsoneditor.min.js"></script>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-logo"><a href="index.html">蔚蓝工具导航</a></div>
+        <ul class="nav-links">
+            <li><a href="index.html#preview">返回</a></li>
+        </ul>
+        <!-- 主题切换按钮 -->
+        <div class="theme-switch">
+            <input type="checkbox" id="theme-toggle">
+            <label for="theme-toggle">
+                <i class="fas fa-sun"></i>
+                <i class="fas fa-moon"></i>
+            </label>
+        </div>
+    </nav>
+
+    <!-- 主内容 -->
+    <main class="json-formatter">
+        <div class="editor-wrapper">
+        <div class="toolbar">
+            <h1>JSON格式化工具</h1>
+            <div class="buttons">
+                <button id="format-btn"><i class="fas fa-indent"></i> 格式化</button>
+                <button id="minify-btn"><i class="fas fa-compress"></i> 压缩</button>
+                <button id="copy-btn"><i class="fas fa-copy"></i> 复制</button>
+                <button id="collapse-btn"><i class="fas fa-compress-arrows-alt"></i> 折叠</button>
+                <button id="maximize-btn"><i class="fas fa-expand"></i> 最大化</button>
+                <button id="restore-btn" style="display:none;"><i class="fas fa-compress"></i> 还原</button>
+                <button id="clear-btn"><i class="fas fa-trash"></i> 清空</button>
+            </div>
+        </div>
+        <div class="editor-container">
+            <div class="editor-pane" id="input-pane">
+                <textarea id="json-input" placeholder="在此处粘贴您的JSON"></textarea>
+            </div>
+            <div class="dragbar" id="dragbar"></div>
+            <div class="editor-pane" id="output-pane">
+                <div id="json-output"></div>
+            </div>
+        </div>
+    </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer>
+        <p>
+            &copy; 2024 蔚蓝个人工具导航站
+            <!-- <a href="https://beian.miit.gov.cn/" target="_blank">粤ICP备20230401001号</a> -->
+            <a href="https://github.com/Blue-IT-Tool/Blue-IT-Tool" target="_blank">GitHub开源地址</a></p>
+    </footer>
+
+    <!-- 引入自定义JS -->
+    <script src="script.js"></script>
+    <script src="json_formatter.js"></script>
+</body>
+</html>

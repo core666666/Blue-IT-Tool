@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>趣味数学大冒险</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="tools.png">
+    <!-- 引入苹果字体 -->
+    <link href="https://fonts.googleapis.com/css?family=SF+Pro+Display:400,600&display=swap" rel="stylesheet">
+    <!-- 引入图标库 -->
+    <link rel="stylesheet" href="allmin.css" />
+    <!-- 引入自定义CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: "Comic Sans MS", "楷体", cursive;
+            margin: 0;
+            min-height: 100vh;
+            background: #a2d2ff url('https://cdn.jsdelivr.net/gh/kid-image-repo/cute-background.jpg') no-repeat center center/cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #quiz-container {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+            animation: fadeIn 1s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        #level-selection {
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        #level-selection select {
+            font-size: 16px;
+            padding: 4px 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        #level-badge {
+            background: #ff9800;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-size: 16px;
+            animation: bounce 1s infinite alternate;
+        }
+
+        @keyframes bounce {
+            from {
+                transform: translateY(0px);
+            }
+
+            to {
+                transform: translateY(-5px);
+            }
+        }
+
+        #stars {
+            font-size: 28px;
+            margin: 15px 0;
+            color: #ffd700;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+
+        #equation {
+            font-size: 32px;
+            margin: 25px 0;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        #options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 10px;
+        }
+
+        .option-btn {
+            font-size: 24px;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            background: #fff;
+            color: #333;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .option-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            background: #f0f0f0;
+        }
+
+        .option-btn:active {
+            transform: translateY(1px);
+        }
+
+        #message {
+            height: 30px;
+            margin-top: 15px;
+            font-size: 20px;
+            color: #333;
+        }
+
+        .correct {
+            background: #4caf50 !important;
+            color: white !important;
+        }
+
+        .wrong {
+            background: #f44336 !important;
+            color: white !important;
+        }
+
+        .star {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            font-size: 24px;
+            color: #ffd700;
+            animation: fall 1s forwards;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            100% {
+                transform: translate(-50%, 300%) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        #hint-container {
+            margin-top: 20px;
+        }
+
+        #hint-btn {
+            font-size: 16px;
+            padding: 8px 16px;
+            border-radius: 10px;
+            background: #3498db;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        #hint-btn:hover {
+            background: #2980b9;
+        }
+
+        #hint-text {
+            display: none;
+            font-size: 16px;
+            color: #555;
+            text-align: left;
+            background: #f0f8ff;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        #encouragement {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        /* 进度显示 */
+        #progress {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        /* 结果页面样式 */
+        #result-container {
+            display: none;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+            animation: fadeIn 1s ease forwards;
+        }
+
+        #result-container h2 {
+            margin-top: 0;
+            font-size: 24px;
+        }
+
+        #result-details {
+            text-align: left;
+            margin-top: 20px;
+            font-size: 18px;
+            line-height: 1.5;
+        }
+
+        #result-buttons {
+            margin-top: 20px;
+        }
+
+        #result-buttons button {
+            font-size: 16px;
+            padding: 8px 16px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            margin: 0 10px;
+            background: #3498db;
+            color: #fff;
+        }
+
+        #result-buttons button:hover {
+            background: #2980b9;
+        }
+
+        @media (max-width: 480px) {
+            #quiz-container {
+                width: 95%;
+                padding: 20px;
+            }
+
+            #equation {
+                font-size: 28px;
+            }
+
+            .option-btn {
+                font-size: 20px;
+                padding: 12px 20px;
+            }
+
+            #hint-btn {
+                font-size: 14px;
+                padding: 6px 12px;
+            }
+        }
+
+        /* 调整主容器位置以适应导航栏 */
+        #quiz-container {
+            margin-top: 60px;
+            /* 为导航栏留出空间 */
+        }
+
+        /* 调整结果容器位置 */
+        #result-container {
+            margin-top: 60px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-logo"><img src="tools.png" alt="Tools Logo" style="width: 30px;"><a href="index.html">蔚蓝工具导航</a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html#preview">返回</a></li>
+        </ul>
+        <!-- 主题切换按钮 -->
+        <div class="theme-switch">
+            <input type="checkbox" id="theme-toggle">
+            <label for="theme-toggle">
+                <i class="fas fa-sun"></i>
+                <i class="fas fa-moon"></i>
+            </label>
+        </div>
+    </nav>
+    <audio id="bg-music" src="https://cdn.jsdelivr.net/gh/kid-audio-repo/bg-music.mp3" loop></audio>
+    <audio id="correct-sound" src="https://cdn.jsdelivr.net/gh/kid-audio-repo/correct.mp3"></audio>
+    <audio id="wrong-sound" src="https://cdn.jsdelivr.net/gh/kid-audio-repo/wrong.mp3"></audio>
+    <audio id="click-sound" src="https://cdn.jsdelivr.net/gh/kid-audio-repo/click.mp3"></audio>
+
+    <div id="quiz-container">
+        <div id="level-selection">
+            难度选择：
+            <select id="level-select">
+                <!-- 小学一年级 (Levels 1-3) -->
+                <option value="1">小学一年级初级</option>
+                <option value="2">小学一年级中级</option>
+                <option value="3">小学一年级高级</option>
+
+                <!-- 小学二年级 (Levels 4-6) -->
+                <option value="4">小学二年级初级</option>
+                <option value="5">小学二年级中级</option>
+                <option value="6">小学二年级高级</option>
+
+                <!-- 小学三年级 (Levels 7-9) -->
+                <option value="7">小学三年级初级</option>
+                <option value="8">小学三年级中级</option>
+                <option value="9">小学三年级高级</option>
+
+                <!-- 小学四年级 (Levels 10-12) -->
+                <option value="10">小学四年级初级</option>
+                <option value="11">小学四年级中级</option>
+                <option value="12">小学四年级高级</option>
+
+                <!-- 小学五年级 (Levels 13-15) -->
+                <option value="13">小学五年级初级</option>
+                <option value="14">小学五年级中级</option>
+                <option value="15">小学五年级高级</option>
+
+                <!-- 小学六年级 (Levels 16-18) -->
+                <option value="16">小学六年级初级</option>
+                <option value="17">小学六年级中级</option>
+                <option value="18">小学六年级高级</option>
+
+                <!-- 初中一年级 (Levels 19-20) -->
+                <option value="19">初中一年级初级</option>
+                <option value="20">初中一年级高级</option>
+            </select>
+        </div>
+        <div id="level-badge">Level 1</div>
+        <div id="progress"></div>
+        <div id="stars">⭐ <span id="star-count">0</span></div>
+        <div id="encouragement"></div>
+        <div id="equation"></div>
+        <div id="options">
+            <button class="option-btn"></button>
+            <button class="option-btn"></button>
+            <button class="option-btn"></button>
+            <button class="option-btn"></button>
+        </div>
+        <div id="message"></div>
+        <div id="hint-container">
+            <button id="hint-btn">提示</button>
+            <div id="hint-text"></div>
+        </div>
+    </div>
+
+    <div id="result-container">
+        <h2 id="result-title"></h2>
+        <div id="result-details"></div>
+        <div id="result-buttons">
+            <button id="retry-btn">重试本关</button>
+            <button id="next-btn" style="display:none;">下一难度</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+
+            // 主题切换功能保持不变
+            // const themeToggle = document.getElementById("theme-toggle");
+            // const body = document.body;
+
+            // function setTheme(theme) {
+            //     if (theme === "dark") {
+            //         body.classList.remove("light-mode");
+            //         body.classList.add("dark-mode");
+            //         themeToggle.checked = true;
+            //         localStorage.setItem("theme", "dark");
+            //     } else {
+            //         body.classList.remove("dark-mode");
+            //         body.classList.add("light-mode");
+            //         themeToggle.checked = false;
+            //         localStorage.setItem("theme", "light");
+            //     }
+            // }
+
+            // themeToggle.addEventListener("change", () => {
+            //     if (themeToggle.checked) {
+            //         setTheme("dark");
+            //     } else {
+            //         setTheme("light");
+            //     }
+            // });
+
+            // // 检查本地存储中的主题设置
+            // const savedTheme = localStorage.getItem("theme");
+            // if (savedTheme) {
+            //     setTheme(savedTheme);
+            // } else {
+            //     // 根据系统偏好设置
+            //     if (
+            //         window.matchMedia &&
+            //         window.matchMedia("(prefers-color-scheme: dark)").matches
+            //     ) {
+            //         setTheme("dark");
+            //     } else {
+            //         setTheme("light");
+            //     }
+            // }
+
+
+            const bgMusic = document.getElementById("bg-music");
+            const correctSound = document.getElementById("correct-sound");
+            const wrongSound = document.getElementById("wrong-sound");
+            const clickSound = document.getElementById("click-sound");
+            bgMusic.volume = 0.3;
+            correctSound.volume = 0.5;
+            wrongSound.volume = 0.5;
+            clickSound.volume = 0.5;
+
+            document.body.addEventListener('click', () => {
+                if (bgMusic.paused) bgMusic.play();
+            }, { once: true });
+
+            const levelNameMap = [
+                { start: 1, end: 3, name: "小学一年级" },
+                { start: 4, end: 6, name: "小学二年级" },
+                { start: 7, end: 9, name: "小学三年级" },
+                { start: 10, end: 12, name: "小学四年级" },
+                { start: 13, end: 15, name: "小学五年级" },
+                { start: 16, end: 18, name: "小学六年级" },
+                { start: 19, end: 20, name: "初中一年级" }
+            ];
+
+            function getLevelName(lvl) {
+                for (let group of levelNameMap) {
+                    if (lvl >= group.start && lvl <= group.end) return group.name;
+                }
+                return "未知年级";
+            }
+
+            class MathQuiz {
+                constructor() {
+                    this.stars = 0;
+                    this.level = 1;
+                    this.consecutiveCorrect = 0;
+                    this.totalQuestions = 0;
+                    this.correctCount = 0;
+                    this.wrongCount = 0;
+                    this.questionsThisRound = 0; // 当前关卡已答题数
+                    this.optionBtns = document.querySelectorAll(".option-btn");
+                    this.equationEl = document.getElementById("equation");
+                    this.starCountEl = document.getElementById("star-count");
+                    this.messageEl = document.getElementById("message");
+                    this.levelBadgeEl = document.getElementById("level-badge");
+                    this.encouragementEl = document.getElementById("encouragement");
+                    this.hintBtn = document.getElementById("hint-btn");
+                    this.hintTextEl = document.getElementById("hint-text");
+                    this.levelSelect = document.getElementById("level-select");
+                    this.progressEl = document.getElementById("progress");
+
+                    this.resultContainer = document.getElementById("result-container");
+                    this.resultTitle = document.getElementById("result-title");
+                    this.resultDetails = document.getElementById("result-details");
+                    this.retryBtn = document.getElementById("retry-btn");
+                    this.nextBtn = document.getElementById("next-btn");
+
+                    this.currentAnswer = 0;
+                    this.currentAnswerIsMultiple = null;
+                    this.currentHint = "";
+                    this.buttonsEnabled = true;
+
+                    this.startTime = 0; // 计时
+                    this.jsConfetti = new JSConfetti();
+
+                    this.hintBtn.addEventListener("click", () => {
+                        clickSound.play();
+                        this.hintTextEl.style.display = (this.hintTextEl.style.display === "none") ? "block" : "none";
+                    });
+
+                    this.levelSelect.addEventListener("change", () => {
+                        clickSound.play();
+                        const selectedLevel = parseInt(this.levelSelect.value);
+                        // 若用户手动选则从该难度开始闯关
+                        this.startNewRound(selectedLevel);
+                    });
+
+                    this.optionBtns.forEach(btn => {
+                        btn.addEventListener("click", (event) => {
+                            if (this.buttonsEnabled) {
+                                this.checkAnswer(parseInt(btn.textContent), event);
+                            }
+                        });
+                    });
+
+                    this.retryBtn.addEventListener("click", () => {
+                        clickSound.play();
+                        this.startNewRound(this.level);
+                    });
+
+                    this.nextBtn.addEventListener("click", () => {
+                        clickSound.play();
+                        this.startNewRound(this.level + 1);
+                    });
+
+                    this.startNewRound(this.level);
+                }
+
+                startNewRound(level) {
+                    // 初始化关卡数据
+                    this.level = level;
+                    this.consecutiveCorrect = 0;
+                    this.correctCount = 0;
+                    this.wrongCount = 0;
+                    this.questionsThisRound = 0;
+                    this.stars = 0;
+                    this.starCountEl.textContent = this.stars;
+                    this.showQuiz();
+                    this.updateLevelBadge();
+                    this.startTimer();
+                    this.generateQuestion();
+                }
+
+                startTimer() {
+                    this.startTime = Date.now();
+                }
+
+                stopTimer() {
+                    return Math.floor((Date.now() - this.startTime) / 1000);
+                }
+
+                showQuiz() {
+                    document.getElementById("quiz-container").style.display = "block";
+                    this.resultContainer.style.display = "none";
+                }
+
+                showResults() {
+                    document.getElementById("quiz-container").style.display = "none";
+                    this.resultContainer.style.display = "block";
+
+                    const score = this.correctCount * 10;
+                    const timeUsed = this.stopTimer();
+                    this.resultTitle.textContent = this.getLevelNameWithLevel(this.level) + " 关卡结束";
+                    this.resultDetails.innerHTML = `
+                    <p>得分：${score}分</p>
+                    <p>答对：${this.correctCount}题</p>
+                    <p>答错：${this.wrongCount}题</p>
+                    <p>用时：${timeUsed}秒</p>
+                `;
+
+                    // 判断是否可以进入下一难度
+                    if (score >= 60 && this.level < 20) {
+                        this.nextBtn.style.display = "inline-block";
+                    } else {
+                        this.nextBtn.style.display = "none";
+                    }
+
+                    // 特效和鼓励话术
+                    if (score === 100) {
+                        this.resultTitle.textContent += " - 满分！";
+                        this.jsConfetti.addConfetti({
+                            emojis: ['🎉', '🏆', '🎇', '✨', '🎆'],
+                            emojiSize: 50,
+                            confettiNumber: 100,
+                        });
+                        this.resultDetails.innerHTML += `<p>你是最棒的，满分小达人！🎉</p>`;
+                    } else if (score >= 60) {
+                        this.jsConfetti.addConfetti();
+                        this.resultDetails.innerHTML += `<p>恭喜过关！继续加油，向更高难度挑战吧！👏</p>`;
+                    } else {
+                        this.resultDetails.innerHTML += `<p>这次不及格哦，下次一定能更好！加油！💪</p>`;
+                    }
+                }
+
+                getLevelNameWithLevel(lvl) {
+                    return getLevelName(lvl) + " (Level " + lvl + ")";
+                }
+
+                updateLevelBadge() {
+                    this.levelBadgeEl.textContent = this.getLevelNameWithLevel(this.level);
+                }
+
+                updateProgress() {
+                    this.progressEl.textContent = `已答 ${this.questionsThisRound}/10 题 | 正确：${this.correctCount} | 错误：${this.wrongCount}`;
+                }
+
+                generateEncouragement() {
+                    const messages = [
+                        "小猴子跳来跳去为你加油！",
+                        "小恐龙举起大拇指：你能行！",
+                        "小精灵在花间为你鼓掌！",
+                        "小超人对你说：这难不倒你！",
+                        "小魔法师悄悄给你送来智慧星！"
+                    ];
+                    return messages[Math.floor(Math.random() * messages.length)];
+                }
+
+                generateQuestion() {
+                    this.questionsThisRound++;
+                    if (this.questionsThisRound > 10) {
+                        // 已完成10题，显示结果
+                        this.showResults();
+                        return;
+                    }
+
+                    this.updateProgress();
+
+                    this.totalQuestions++;
+
+                    const equationData = this.createEquationWithRetry();
+                    const finalEquation = equationData || this.createFallbackEquation();
+                    this.equationEl.textContent = finalEquation.equation;
+                    this.currentAnswer = finalEquation.answer;
+                    this.currentHint = finalEquation.hint;
+                    this.currentAnswerIsMultiple = finalEquation.answers || null;
+                    this.hintTextEl.style.display = "none";
+                    this.hintTextEl.textContent = this.currentHint;
+
+                    const options = this.generateOptions();
+                    this.updateButtons(options);
+                    this.messageEl.textContent = "";
+                    this.buttonsEnabled = true;
+
+                    this.encouragementEl.textContent = this.generateEncouragement();
+                }
+
+                createFallbackEquation() {
+                    let a = 1;
+                    let answer = 2;
+                    let b = 3;
+                    let c = a * answer + b;
+                    return {
+                        equation: a + "x + " + b + " = " + c,
+                        answer: answer,
+                        hint: "先把b移到右边，再除以a。"
+                    };
+                }
+
+                getEquationTypeForLevel(lvl) {
+                    if (lvl <= 3) return 'simple';
+                    if (lvl <= 6) return 'variablesBothSides';
+                    if (lvl <= 9) return 'parentheses';
+                    if (lvl <= 12) return 'fraction';
+                    if (lvl <= 15) return 'fractionParentheses';
+                    if (lvl <= 18) return 'quadratic';
+                    return 'absolute';
+                }
+
+                createEquationWithRetry() {
+                    let attempts = 0;
+                    while (attempts < 10) {
+                        const eq = this.createEquation();
+                        if (eq) return eq;
+                        attempts++;
+                    }
+                    return null;
+                }
+
+                createEquation() {
+                    let a, b, c, d, answer, equation, hint;
+                    const type = this.getEquationTypeForLevel(this.level);
+
+                    function rand1toN(n) { return Math.floor(Math.random() * n) + 1; }
+
+                    let rangeFactor = Math.min(this.level, 20);
+                    let maxA = 2 + rangeFactor;
+                    let maxB = 5 * rangeFactor;
+
+                    switch (type) {
+                        case 'simple':
+                            a = rand1toN(Math.max(3, maxA));
+                            answer = rand1toN(10);
+                            b = rand1toN(10);
+                            {
+                                let rightSide = a * answer + b;
+                                equation = a + "x + " + b + " = " + rightSide;
+                                hint = "先把常数项移到另一边，再除以a得到x。";
+                            }
+                            break;
+                        case 'variablesBothSides':
+                            {
+                                let found = false;
+                                for (let i = 0; i < 10; i++) {
+                                    a = rand1toN(maxA) + 1;
+                                    b = rand1toN(maxB) + 1;
+                                    c = rand1toN(maxA) + 1;
+                                    d = rand1toN(maxB) + 1;
+                                    if (a !== c && (d - b) % (a - c) === 0) {
+                                        answer = (d - b) / (a - c);
+                                        equation = a + "x + " + b + " = " + c + "x + " + d;
+                                        hint = "将含x的项移到同侧，数字移到另一侧，再除以系数。";
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                                if (!found) return null;
+                            }
+                            break;
+                        case 'parentheses':
+                            a = rand1toN(maxA);
+                            b = rand1toN(10);
+                            answer = rand1toN(10);
+                            {
+                                let rhs = a * (answer + b);
+                                equation = a + "(x + " + b + ") = " + rhs;
+                                hint = "先展开括号 a(x+b)=ax+ab，然后求解x。";
+                            }
+                            break;
+                        case 'fraction':
+                            a = rand1toN(maxA);
+                            b = rand1toN(maxA) + 1;
+                            c = rand1toN(10);
+                            answer = rand1toN(10);
+                            {
+                                let dVal = (a * answer) / b + c;
+                                if (!Number.isInteger(dVal)) return null;
+                                equation = "(" + a + "/" + b + ")x + " + c + " = " + dVal;
+                                hint = "先减c，再乘b除a得到x。注意分数计算！";
+                            }
+                            break;
+                        case 'fractionParentheses':
+                            {
+                                a = rand1toN(maxA);
+                                b = rand1toN(maxA) + 1;
+                                c = rand1toN(5);
+                                answer = rand1toN(10);
+                                let lhsVal = (answer + c) * a / b;
+                                if (!Number.isInteger(lhsVal)) return null;
+                                equation = "(" + a + "/" + b + ")(x + " + c + ") = " + lhsVal;
+                                hint = "先用分数消除(a/b)，再减c。小心分数和括号！";
+                            }
+                            break;
+                        case 'quadratic':
+                            {
+                                let r1 = rand1toN(5);
+                                let r2 = rand1toN(5);
+                                let sum = r1 + r2;
+                                let bb = -sum;
+                                let cc = r1 * r2;
+                                answer = r1;
+                                equation = "x^2 + (" + bb + ")x + " + cc + " = 0";
+                                equation = equation.split("+-").join("-");
+                                hint = "尝试因式分解，找到和为b积为c的数。x等于这些根。";
+                                return { equation, answer, hint, answers: [r1, r2] };
+                            }
+                        case 'absolute':
+                            a = rand1toN(5);
+                            let bigVal = a + rand1toN(5);
+                            let ans1 = bigVal - a;
+                            let ans2 = -bigVal - a;
+                            answer = ans1;
+                            equation = "|x + " + a + "| = " + bigVal;
+                            hint = "绝对值方程有两个解：x+a=bigVal或x+a=-bigVal。";
+                            return { equation, answer, hint, answers: [ans1, ans2] };
+                        default:
+                            return null;
+                    }
+
+                    return { equation, answer, hint };
+                }
+
+                generateOptions() {
+                    let correctAnswers = this.currentAnswerIsMultiple || [this.currentAnswer];
+                    let mainAnswer = correctAnswers[0];
+                    const options = [mainAnswer];
+                    while (options.length < 4) {
+                        const offset = Math.floor(Math.random() * 5) + 1;
+                        const sign = Math.random() < 0.5 ? 1 : -1;
+                        const wrongOption = mainAnswer + (offset * sign);
+                        if (!options.includes(wrongOption) && Number.isInteger(wrongOption)) {
+                            options.push(wrongOption);
+                        }
+                    }
+                    return options.sort(() => Math.random() - 0.5);
+                }
+
+                updateButtons(options) {
+                    this.optionBtns.forEach((btn, index) => {
+                        btn.textContent = options[index];
+                        btn.className = "option-btn";
+                    });
+                }
+
+                createStarAnimation() {
+                    const star = document.createElement('div');
+                    star.className = 'star';
+                    star.textContent = '⭐';
+                    document.body.appendChild(star);
+                    setTimeout(() => {
+                        document.body.removeChild(star);
+                    }, 1000);
+                }
+
+                checkAnswer(selectedAnswer, event) {
+                    this.buttonsEnabled = false;
+                    let correctAnswers = this.currentAnswerIsMultiple || [this.currentAnswer];
+                    const isCorrect = correctAnswers.includes(selectedAnswer);
+
+                    if (isCorrect) {
+                        correctSound.play();
+                        event.target.classList.add("correct");
+                        this.messageEl.textContent = "太棒了! 答对了! 👏";
+                        this.stars++;
+                        this.correctCount++;
+                        this.createStarAnimation();
+                    } else {
+                        wrongSound.play();
+                        event.target.classList.add("wrong");
+                        this.messageEl.textContent = "没关系! 再试试! 💪";
+                        this.stars = Math.max(0, this.stars - 1);
+                        this.wrongCount++;
+                    }
+
+                    this.starCountEl.textContent = this.stars;
+                    this.currentAnswerIsMultiple = null;
+
+                    setTimeout(() => this.generateQuestion(), 800);
+                }
+            }
+
+            new MathQuiz();
+        });
+    </script>
+</body>
+
+</html>

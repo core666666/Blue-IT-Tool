@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>封面图制作</title>
+    <link rel="icon" href="tools.png" type="image/png"> <!-- 新增favicon -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 引入Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Pacifico&family=Montserrat&family=Indie+Flower&family=Lobster&family=Oswald&family=Roboto+Mono&display=swap" rel="stylesheet">
+    <!-- 引入dom-to-image库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+    <style>
+        /* 通用样式 */
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #f5f5f5;
+        }
+
+        /* 侧边栏样式 */
+        .sidebar {
+            width: 400px;
+            background-color: #ffffff;
+            border-right: 1px solid #ddd;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            overflow-x: hidden; /* 移除x轴滚动条 */
+            flex-shrink: 0; /* 防止侧边栏被挤压 */
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 自定义滚动条样式 */
+        .sidebar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+
+        /* 主内容区样式 */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+            position: relative;
+            background-color: #f0f0f0;
+            overflow: auto; /* 允许主内容区滚动 */
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 预览区域样式 */
+        .preview-container {
+            flex: 1;
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            position: relative;
+            overflow: hidden; /* 修改为隐藏滚动条 */
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 100%; /* 确保不超出屏幕 */
+            max-height: 100%; /* 确保不超出屏幕 */
+        }
+
+        #preview {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background-size: cover;
+            background-position: center;
+            border-radius: 10px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: width 0.3s, height 0.3s;
+        }
+
+        /* 标签样式 */
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            background-color: #f9f9f9;
+            margin-right: 5px;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+            transition: background-color 0.3s, border-color 0.3s;
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+
+        .tab:hover {
+            background-color: #e0e0e0;
+        }
+
+        .tab.active {
+            background-color: #ffffff;
+            font-weight: bold;
+            border-color: #3498db;
+        }
+
+        /* 内容区域样式 */
+        .tab-content {
+            display: none;
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px; /* 避免内容被滚动条遮挡 */
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* 表单元素样式 */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input[type="text"],
+        .form-group textarea,
+        .form-group select,
+        .form-group input[type="color"],
+        .form-group input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group textarea:focus,
+        .form-group select:focus,
+        .form-group input[type="color"]:focus,
+        .form-group input[type="number"]:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            height: 80px;
+        }
+
+        .form-group input[type="range"] {
+            width: 100%;
+        }
+
+        /* 预设样式卡片 */
+        .preset-styles {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .preset-card {
+            width: 80px;
+            height: 80px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.3s;
+        }
+
+        .preset-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .preset-card.active {
+            border-color: #3498db;
+            box-shadow: 0 4px 8px rgba(52, 152, 219, 0.5);
+        }
+
+        .preset-card::after {
+            content: attr(data-name);
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            padding: 2px 5px;
+            font-size: 12px;
+            border-radius: 3px;
+        }
+
+        /* 下载按钮样式 */
+        .download-btn {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            align-self: flex-end;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+            font-size: 16px;
+        }
+
+        .download-btn:hover {
+            background-color: #2980b9;
+        }
+
+        /* 预览中的文本样式 */
+        .text-element {
+            position: absolute;
+            cursor: move;
+            user-select: none;
+            white-space: pre-wrap;
+            word-break: break-word;
+            /* 默认无文本阴影和描边 */
+            text-shadow: none;
+        }
+
+        /* 尺寸选择按钮 */
+        .size-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .size-option {
+            width: 100px; /* 调整宽度 */
+            height: 56px; /* 默认高度，比例16:9 */
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f9f9f9;
+            font-size: 12px; /* 调整字体大小 */
+            text-align: center;
+            color: #333;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+
+        /* 设置尺寸选项的宽高比 */
+        .size-option[data-ratio="16:9"] {
+            aspect-ratio: 16 / 9;
+        }
+
+        .size-option[data-ratio="9:16"] {
+            aspect-ratio: 9 / 16;
+        }
+
+        .size-option[data-ratio="4:3"] {
+            aspect-ratio: 4 / 3;
+        }
+
+        .size-option[data-ratio="3:4"] {
+            aspect-ratio: 3 / 4;
+        }
+
+        .size-option[data-ratio="1:1"] {
+            aspect-ratio: 1 / 1;
+        }
+
+        .size-option[data-ratio="9:19.5"] {
+            aspect-ratio: 9 / 19.5;
+        }
+
+        .size-option:hover {
+            background-color: #e0e0e0;
+        }
+
+        .size-option.active {
+            background-color: #3498db;
+            color: #ffffff;
+            border-color: #2980b9;
+        }
+
+        /* 背景预设卡片 */
+        .gradient-presets {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .gradient-card {
+            width: 80px;
+            height: 80px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.3s;
+        }
+
+        .gradient-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .gradient-card.active {
+            border-color: #3498db;
+            box-shadow: 0 4px 8px rgba(52, 152, 219, 0.5);
+        }
+
+        .gradient-card::after {
+            content: attr(data-name);
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            padding: 2px 5px;
+            font-size: 12px;
+            border-radius: 3px;
+        }
+
+        /* 自定义上传区域 */
+        .upload-area {
+            width: 100%;
+            height: 100px;
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            margin-bottom: 10px;
+            position: relative;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .upload-area.dragover {
+            background-color: #e0e0e0;
+            border-color: #3498db;
+        }
+
+        .upload-area input {
+            display: none;
+        }
+
+        /* 背景预览 */
+        .background-preview {
+            width: 100%;
+            height: 200px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            background-size: cover;
+            background-position: center;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .sidebar {
+                width: 350px;
+            }
+
+            #preview {
+                width: 700px;
+                height: 525px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: 50vh;
+                border-right: none;
+                border-bottom: 1px solid #ddd;
+            }
+
+            .main {
+                height: 50vh;
+                padding: 10px;
+            }
+
+            #preview {
+                width: 100%;
+                height: 100%;
+                aspect-ratio: 4 / 3;
+            }
+
+            .size-option {
+                flex: 1 1 calc(33.333% - 10px);
+            }
+        }
+
+        /* 颜色选择器样式 */
+        input[type="color"] {
+            width: 40px;
+            height: 40px;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            margin-top: 5px;
+            border-radius: 4px;
+        }
+
+        /* 增加边框和背景色 */
+        .sidebar,
+        .main {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 分隔预设主题选择 */
+        .preset-theme-section {
+            margin-top: 20px;
+        }
+
+        .preset-theme-section label {
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <h2>封面图制作</h2>
+        <div class="tabs">
+            <div class="tab" data-tab="theme-tab">主题</div>
+            <div class="tab active" data-tab="text-tab">文字</div>
+            <div class="tab" data-tab="background-tab">背景</div>
+            <div class="tab" data-tab="size-tab">尺寸</div>
+        </div>
+
+        <!-- 文字Tab内容 -->
+        <div class="tab-content active" id="text-tab">
+            <!-- 中间文本控制 -->
+            <div class="form-group">
+                <label for="middle-text">中间文本内容</label>
+                <textarea id="middle-text" placeholder="请输入中间文本">文字渐变色壁纸生成器，
+创建你的个性化渐变文字壁纸，支持多种样式和尺寸</textarea>
+            </div>
+            <div class="form-group">
+                <label for="font-family-middle">中间文本字体选择</label>
+                <select id="font-family-middle">
+                    <option value="Arial">Arial</option>
+                    <option value="'Courier New', Courier, monospace">Courier New</option>
+                    <option value="Georgia">Georgia</option>
+                    <option value="'Times New Roman', Times, serif">Times New Roman</option>
+                    <option value="Verdana">Verdana</option>
+                    <option value="'Roboto', sans-serif">Roboto</option>
+                    <option value="'Pacifico', cursive">Pacifico</option>
+                    <option value="'Montserrat', sans-serif">Montserrat</option>
+                    <option value="'Indie Flower', cursive">Indie Flower</option>
+                    <option value="'Lobster', cursive">Lobster</option>
+                    <option value="'Oswald', sans-serif">Oswald</option>
+                    <option value="'Roboto Mono', monospace">Roboto Mono</option>
+                    <!-- 更多字体可以添加 -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="font-size-middle">中间文本字体大小</label>
+                <input type="range" id="font-size-middle" min="10" max="100" value="24">
+            </div>
+            <div class="form-group">
+                <label>中间字体对齐方式</label>
+                <select id="text-align-middle">
+                    <option value="left">左对齐</option>
+                    <option value="center" selected>居中对齐</option>
+                    <option value="right">右对齐</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>中间字体颜色</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="color" id="font-color1-middle" value="#000000">
+                    <input type="color" id="font-color2-middle" value="#000000">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>中间文字阴影</label>
+                <input type="checkbox" id="text-shadow-toggle-middle">
+                <div id="text-shadow-options-middle" style="display: none; margin-top: 5px;">
+                    <label for="shadow-color-middle">阴影颜色</label>
+                    <input type="color" id="shadow-color-middle" value="#000000">
+                    <label for="shadow-blur-middle">阴影模糊</label>
+                    <input type="range" id="shadow-blur-middle" min="0" max="20" value="5">
+                    <label for="shadow-offset-middle">阴影偏移</label>
+                    <input type="range" id="shadow-offset-middle" min="-20" max="20" value="5">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>中间文字描边</label>
+                <input type="checkbox" id="text-outline-toggle-middle">
+                <div id="text-outline-options-middle" style="display: none; margin-top: 5px;">
+                    <label for="outline-color-middle">描边颜色</label>
+                    <input type="color" id="outline-color-middle" value="#000000">
+                    <label for="outline-width-middle">描边宽度</label>
+                    <input type="range" id="outline-width-middle" min="0" max="10" value="2">
+                </div>
+            </div>
+
+            <!-- 右上角文本控制 -->
+            <div class="form-group">
+                <label for="topright-text">右上角文本内容</label>
+                <input type="text" id="topright-text" value="蔚蓝工具导航" placeholder="请输入右上角文本">
+            </div>
+            <div class="form-group">
+                <label for="font-family-topright">右上角文本字体选择</label>
+                <select id="font-family-topright">
+                    <option value="Arial">Arial</option>
+                    <option value="'Courier New', Courier, monospace">Courier New</option>
+                    <option value="Georgia">Georgia</option>
+                    <option value="'Times New Roman', Times, serif">Times New Roman</option>
+                    <option value="Verdana">Verdana</option>
+                    <option value="'Roboto', sans-serif">Roboto</option>
+                    <option value="'Pacifico', cursive">Pacifico</option>
+                    <option value="'Montserrat', sans-serif">Montserrat</option>
+                    <option value="'Indie Flower', cursive">Indie Flower</option>
+                    <option value="'Lobster', cursive">Lobster</option>
+                    <option value="'Oswald', sans-serif">Oswald</option>
+                    <option value="'Roboto Mono', monospace">Roboto Mono</option>
+                    <!-- 更多字体可以添加 -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="font-size-topright">右上角文本字体大小</label>
+                <input type="range" id="font-size-topright" min="10" max="100" value="24">
+            </div>
+            <div class="form-group">
+                <label>右上角字体颜色</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="color" id="font-color1-topright" value="#000000">
+                    <input type="color" id="font-color2-topright" value="#000000">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>右上角文字阴影</label>
+                <input type="checkbox" id="text-shadow-toggle-topright">
+                <div id="text-shadow-options-topright" style="display: none; margin-top: 5px;">
+                    <label for="shadow-color-topright">阴影颜色</label>
+                    <input type="color" id="shadow-color-topright" value="#000000">
+                    <label for="shadow-blur-topright">阴影模糊</label>
+                    <input type="range" id="shadow-blur-topright" min="0" max="20" value="5">
+                    <label for="shadow-offset-topright">阴影偏移</label>
+                    <input type="range" id="shadow-offset-topright" min="-20" max="20" value="5">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>右上角文字描边</label>
+                <input type="checkbox" id="text-outline-toggle-topright">
+                <div id="text-outline-options-topright" style="display: none; margin-top: 5px;">
+                    <label for="outline-color-topright">描边颜色</label>
+                    <input type="color" id="outline-color-topright" value="#000000">
+                    <label for="outline-width-topright">描边宽度</label>
+                    <input type="range" id="outline-width-topright" min="0" max="10" value="2">
+                </div>
+            </div>
+        </div>
+
+        <!-- 背景Tab内容 -->
+        <div class="tab-content" id="background-tab">
+            <div class="form-group">
+                <label>选择背景样式</label>
+                <div class="preset-styles">
+                    <!-- 增加到3x3共9种预设样式 -->
+                    <div class="preset-card" data-style="minimalistic" title="简约" style="background-color: #ffffff;"></div>
+                    <div class="preset-card" data-style="elegant" title="优雅" style="background: linear-gradient(135deg, #f5f7fa, #c3cfe2);"></div>
+                    <div class="preset-card" data-style="natural" title="自然" style="background: linear-gradient(135deg, #a8edea, #fed6e3);"></div>
+                    <div class="preset-card" data-style="neon" title="霓虹" style="background: linear-gradient(135deg, #f093fb, #f5576c);"></div>
+                    <div class="preset-card" data-style="ocean" title="海洋" style="background: linear-gradient(135deg, #89f7fe, #66a6ff);"></div>
+                    <div class="preset-card" data-style="sunset" title="日落" style="background: linear-gradient(135deg, #ff9a9e, #fad0c4);"></div>
+                    <div class="preset-card" data-style="forest" title="森林" style="background: linear-gradient(135deg, #a1c4fd, #c2e9fb);"></div>
+                    <div class="preset-card" data-style="fire" title="火焰" style="background: linear-gradient(135deg, #ff7e5f, #feb47b);"></div>
+                    <div class="preset-card" data-style="sky" title="天空" style="background: linear-gradient(135deg, #c3ec52, #0ba29d);"></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="custom-bg-upload">自定义背景图</label>
+                <div class="upload-area" id="custom-bg-upload">
+                    <span>点击或拖拽上传背景图</span>
+                    <input type="file" accept="image/*" id="bg-upload-input">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>纯色背景</label>
+                <input type="color" id="solid-color" value="#ffffff">
+            </div>
+            <div class="form-group">
+                <label>渐变背景</label>
+                <div class="gradient-presets">
+                    <!-- 扩展到3x2共6种 -->
+                    <div class="gradient-card" data-gradient="linear-gradient(135deg, #f093fb, #f5576c)" data-name="霓虹" title="霓虹" style="background: linear-gradient(135deg, #f093fb, #f5576c);"></div>
+                    <div class="gradient-card" data-gradient="linear-gradient(135deg, #a8edea, #fed6e3)" data-name="自然" title="自然" style="background: linear-gradient(135deg, #a8edea, #fed6e3);"></div>
+                    <div class="gradient-card" data-gradient="linear-gradient(135deg, #89f7fe, #66a6ff)" data-name="海洋" title="海洋" style="background: linear-gradient(135deg, #89f7fe, #66a6ff);"></div>
+                    <div class="gradient-card" data-gradient="linear-gradient(135deg, #f5f7fa, #c3cfe2)" data-name="优雅" title="优雅" style="background: linear-gradient(135deg, #f5f7fa, #c3cfe2);"></div>
+                    <div class="gradient-card" data-gradient="linear-gradient(135deg, #ff9a9e, #fad0c4)" data-name="日落" title="日落" style="background: linear-gradient(135deg, #ff9a9e, #fad0c4);"></div>
+                    <div class="gradient-card" data-gradient="linear-gradient(135deg, #a1c4fd, #c2e9fb)" data-name="森林" title="森林" style="background: linear-gradient(135deg, #a1c4fd, #c2e9fb);"></div>
+                </div>
+                <div style="margin-top: 10px;">
+                    <label for="gradient-direction">渐变方向</label>
+                    <input type="range" id="gradient-direction" min="0" max="360" value="135">
+                </div>
+                <div style="margin-top: 10px;">
+                    <label for="gradient-color1">渐变颜色1</label>
+                    <input type="color" id="gradient-color1" value="#f093fb">
+                </div>
+                <div style="margin-top: 10px;">
+                    <label for="gradient-color2">渐变颜色2</label>
+                    <input type="color" id="gradient-color2" value="#f5576c">
+                </div>
+            </div>
+        </div>
+
+        <!-- 尺寸Tab内容 -->
+        <div class="tab-content" id="size-tab">
+            <div class="form-group">
+                <label>选择比例</label>
+                <div class="size-options">
+                    <!-- 常见电脑比例 -->
+                    <div class="size-option" data-ratio="16:9" title="16:9">16:9</div>
+                    <div class="size-option" data-ratio="4:3" title="4:3">4:3</div>
+                    <div class="size-option" data-ratio="1:1" title="1:1">1:1</div>
+                    <!-- 常见手机比例 -->
+                    <div class="size-option" data-ratio="9:16" title="9:16">9:16</div>
+                    <div class="size-option" data-ratio="3:4" title="3:4">3:4</div>
+                    <div class="size-option" data-ratio="9:19.5" title="9:19.5">9:19.5</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="custom-ratio-width">自定义宽度 (px)</label>
+                <input type="number" id="custom-ratio-width" placeholder="宽度（px）">
+            </div>
+            <div class="form-group">
+                <label for="custom-ratio-height">自定义高度 (px)</label>
+                <input type="number" id="custom-ratio-height" placeholder="高度（px）">
+            </div>
+            <button class="download-btn" id="set-ratio-btn">设置比例</button>
+        </div>
+
+        <!-- 主题样式Tab内容 -->
+        <div class="tab-content" id="theme-tab">
+            <div class="form-group">
+                <label>预设主题样式</label>
+                <div class="preset-styles">
+                    <div class="preset-card" data-style="minimalistic" title="简约" style="background-color: #ffffff;"></div>
+                    <div class="preset-card" data-style="elegant" title="优雅" style="background: linear-gradient(135deg, #f5f7fa, #c3cfe2);"></div>
+                    <div class="preset-card" data-style="natural" title="自然" style="background: linear-gradient(135deg, #a8edea, #fed6e3);"></div>
+                    <div class="preset-card" data-style="neon" title="霓虹" style="background: linear-gradient(135deg, #f093fb, #f5576c);"></div>
+                    <div class="preset-card" data-style="ocean" title="海洋" style="background: linear-gradient(135deg, #89f7fe, #66a6ff);"></div>
+                    <div class="preset-card" data-style="sunset" title="日落" style="background: linear-gradient(135deg, #ff9a9e, #fad0c4);"></div>
+                    <div class="preset-card" data-style="forest" title="森林" style="background: linear-gradient(135deg, #a1c4fd, #c2e9fb);"></div>
+                    <div class="preset-card" data-style="fire" title="火焰" style="background: linear-gradient(135deg, #ff7e5f, #feb47b);"></div>
+                    <div class="preset-card" data-style="sky" title="天空" style="background: linear-gradient(135deg, #c3ec52, #0ba29d);"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 下载按钮 -->
+        <button class="download-btn" id="download-btn">下载封面图</button>
+    </div>
+
+    <div class="main">
+        <div class="preview-container">
+            <div id="preview">
+                <!-- 右上角文本 -->
+                <div id="topright-text-element" class="text-element" style="top: 10px; right: 10px; color: #000000; font-size: 24px; font-family: Arial;">
+                    蔚蓝工具导航
+                </div>
+                <!-- 中间文本 -->
+                <div id="middle-text-element" class="text-element" style="top: 50%; left: 50%; transform: translate(-50%, -50%); color: #000000; font-size: 24px; font-family: Arial; text-align: center;">
+                    文字渐变色壁纸生成器，<br>创建你的个性化渐变文字壁纸，支持多种样式和尺寸
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // 标签切换功能
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+
+                    const target = tab.getAttribute('data-tab');
+                    tabContents.forEach(content => {
+                        if (content.id === target) {
+                            content.classList.add('active');
+                        } else {
+                            content.classList.remove('active');
+                        }
+                    });
+                });
+            });
+
+            // 获取元素引用
+            const preview = document.getElementById('preview');
+            const middleTextInput = document.getElementById('middle-text');
+            const toprightTextInput = document.getElementById('topright-text');
+
+            // 中间文本控制
+            const fontFamilyMiddle = document.getElementById('font-family-middle');
+            const fontSizeMiddleSlider = document.getElementById('font-size-middle');
+            const textAlignMiddle = document.getElementById('text-align-middle');
+            const fontColor1Middle = document.getElementById('font-color1-middle');
+            const fontColor2Middle = document.getElementById('font-color2-middle');
+            const textShadowToggleMiddle = document.getElementById('text-shadow-toggle-middle');
+            const textShadowOptionsMiddle = document.getElementById('text-shadow-options-middle');
+            const shadowColorMiddle = document.getElementById('shadow-color-middle');
+            const shadowBlurMiddle = document.getElementById('shadow-blur-middle');
+            const shadowOffsetMiddle = document.getElementById('shadow-offset-middle');
+            const textOutlineToggleMiddle = document.getElementById('text-outline-toggle-middle');
+            const textOutlineOptionsMiddle = document.getElementById('text-outline-options-middle');
+            const outlineColorMiddle = document.getElementById('outline-color-middle');
+            const outlineWidthMiddle = document.getElementById('outline-width-middle');
+
+            // 右上角文本控制
+            const fontFamilyTopright = document.getElementById('font-family-topright');
+            const fontSizeToprightSlider = document.getElementById('font-size-topright');
+            const fontColor1Topright = document.getElementById('font-color1-topright');
+            const fontColor2Topright = document.getElementById('font-color2-topright');
+            const textShadowToggleTopright = document.getElementById('text-shadow-toggle-topright');
+            const textShadowOptionsTopright = document.getElementById('text-shadow-options-topright');
+            const shadowColorTopright = document.getElementById('shadow-color-topright');
+            const shadowBlurTopright = document.getElementById('shadow-blur-topright');
+            const shadowOffsetTopright = document.getElementById('shadow-offset-topright');
+            const textOutlineToggleTopright = document.getElementById('text-outline-toggle-topright');
+            const textOutlineOptionsTopright = document.getElementById('text-outline-options-topright');
+            const outlineColorTopright = document.getElementById('outline-color-topright');
+            const outlineWidthTopright = document.getElementById('outline-width-topright');
+
+            const toprightTextElement = document.getElementById('topright-text-element');
+            const middleTextElement = document.getElementById('middle-text-element');
+
+            // 文字拖动功能
+            function makeDraggable(element) {
+                let isDragging = false;
+                let offsetX, offsetY;
+
+                element.addEventListener('mousedown', (e) => {
+                    isDragging = true;
+                    const rect = preview.getBoundingClientRect();
+                    offsetX = e.clientX - rect.left - element.offsetLeft;
+                    offsetY = e.clientY - rect.top - element.offsetTop;
+                    e.preventDefault();
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (isDragging) {
+                        const previewRect = preview.getBoundingClientRect();
+                        let x = e.clientX - previewRect.left - offsetX;
+                        let y = e.clientY - previewRect.top - offsetY;
+
+                        // 限制在预览区域内
+                        x = Math.max(0, Math.min(x, preview.clientWidth - element.offsetWidth));
+                        y = Math.max(0, Math.min(y, preview.clientHeight - element.offsetHeight));
+
+                        element.style.left = x + 'px';
+                        element.style.top = y + 'px';
+                        element.style.transform = 'translate(0, 0)';
+                    }
+                });
+
+                document.addEventListener('mouseup', () => {
+                    isDragging = false;
+                });
+            }
+
+            makeDraggable(toprightTextElement);
+            makeDraggable(middleTextElement);
+
+            // 中间文本内容实时更新
+            middleTextInput.addEventListener('input', (e) => {
+                middleTextElement.innerHTML = e.target.value.replace(/\n/g, '<br>');
+            });
+
+            // 右上角文本内容实时更新
+            toprightTextInput.addEventListener('input', (e) => {
+                toprightTextElement.textContent = e.target.value;
+            });
+
+            // 字体选择 - 中间文本
+            fontFamilyMiddle.addEventListener('change', (e) => {
+                const font = e.target.value;
+                middleTextElement.style.fontFamily = font;
+            });
+
+            // 字体选择 - 右上角文本
+            fontFamilyTopright.addEventListener('change', (e) => {
+                const font = e.target.value;
+                toprightTextElement.style.fontFamily = font;
+            });
+
+            // 字体大小调整 - 中间文本
+            fontSizeMiddleSlider.addEventListener('input', (e) => {
+                const size = e.target.value + 'px';
+                middleTextElement.style.fontSize = size;
+            });
+
+            // 字体大小调整 - 右上角文本
+            fontSizeToprightSlider.addEventListener('input', (e) => {
+                const size = e.target.value + 'px';
+                toprightTextElement.style.fontSize = size;
+            });
+
+            // 文字对齐方式 - 中间文本
+            textAlignMiddle.addEventListener('change', (e) => {
+                middleTextElement.style.textAlign = e.target.value;
+            });
+
+            // 字体颜色渐变 - 中间文本
+            function updateFontColorMiddle() {
+                const color1 = fontColor1Middle.value;
+                const color2 = fontColor2Middle.value;
+                middleTextElement.style.background = `linear-gradient(135deg, ${color1}, ${color2})`;
+                middleTextElement.style.webkitBackgroundClip = 'text';
+                middleTextElement.style.webkitTextFillColor = 'transparent';
+            }
+
+            fontColor1Middle.addEventListener('input', updateFontColorMiddle);
+            fontColor2Middle.addEventListener('input', updateFontColorMiddle);
+
+            // 字体颜色渐变 - 右上角文本
+            function updateFontColorTopright() {
+                const color1 = fontColor1Topright.value;
+                const color2 = fontColor2Topright.value;
+                toprightTextElement.style.background = `linear-gradient(135deg, ${color1}, ${color2})`;
+                toprightTextElement.style.webkitBackgroundClip = 'text';
+                toprightTextElement.style.webkitTextFillColor = 'transparent';
+            }
+
+            fontColor1Topright.addEventListener('input', updateFontColorTopright);
+            fontColor2Topright.addEventListener('input', updateFontColorTopright);
+
+            // 文字阴影 - 中间文本
+            textShadowToggleMiddle.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    textShadowOptionsMiddle.style.display = 'block';
+                } else {
+                    textShadowOptionsMiddle.style.display = 'none';
+                    middleTextElement.style.textShadow = 'none';
+                }
+            });
+
+            function updateTextShadowMiddle() {
+                const color = shadowColorMiddle.value;
+                const blur = shadowBlurMiddle.value;
+                const offset = shadowOffsetMiddle.value;
+                if (textShadowToggleMiddle.checked) {
+                    middleTextElement.style.textShadow = `${offset}px ${offset}px ${blur}px ${color}`;
+                }
+            }
+
+            shadowColorMiddle.addEventListener('input', updateTextShadowMiddle);
+            shadowBlurMiddle.addEventListener('input', updateTextShadowMiddle);
+            shadowOffsetMiddle.addEventListener('input', updateTextShadowMiddle);
+
+            // 文字阴影 - 右上角文本
+            textShadowToggleTopright.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    textShadowOptionsTopright.style.display = 'block';
+                } else {
+                    textShadowOptionsTopright.style.display = 'none';
+                    toprightTextElement.style.textShadow = 'none';
+                }
+            });
+
+            function updateTextShadowTopright() {
+                const color = shadowColorTopright.value;
+                const blur = shadowBlurTopright.value;
+                const offset = shadowOffsetTopright.value;
+                if (textShadowToggleTopright.checked) {
+                    toprightTextElement.style.textShadow = `${offset}px ${offset}px ${blur}px ${color}`;
+                }
+            }
+
+            shadowColorTopright.addEventListener('input', updateTextShadowTopright);
+            shadowBlurTopright.addEventListener('input', updateTextShadowTopright);
+            shadowOffsetTopright.addEventListener('input', updateTextShadowTopright);
+
+            // 文字描边 - 中间文本
+            textOutlineToggleMiddle.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    textOutlineOptionsMiddle.style.display = 'block';
+                } else {
+                    textOutlineOptionsMiddle.style.display = 'none';
+                    // 移除描边效果
+                    removeTextOutline(middleTextElement);
+                }
+            });
+
+            function updateTextOutlineMiddle() {
+                const color = outlineColorMiddle.value;
+                const width = parseInt(outlineWidthMiddle.value);
+                if (textOutlineToggleMiddle.checked) {
+                    // 生成模拟描边的text-shadow
+                    let shadows = [];
+                    for (let x = -width; x <= width; x++) {
+                        for (let y = -width; y <= width; y++) {
+                            if (x !== 0 || y !== 0) {
+                                shadows.push(`${x}px ${y}px 0 ${color}`);
+                            }
+                        }
+                    }
+                    // 保留现有text-shadow（如果有）
+                    const existingShadow = textShadowToggleMiddle.checked ? middleTextElement.style.textShadow : '';
+                    middleTextElement.style.textShadow = existingShadow + (existingShadow ? ', ' : '') + shadows.join(', ');
+                }
+            }
+
+            outlineColorMiddle.addEventListener('input', updateTextOutlineMiddle);
+            outlineWidthMiddle.addEventListener('input', updateTextOutlineMiddle);
+
+            // 文字描边 - 右上角文本
+            textOutlineToggleTopright.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    textOutlineOptionsTopright.style.display = 'block';
+                } else {
+                    textOutlineOptionsTopright.style.display = 'none';
+                    // 移除描边效果
+                    removeTextOutline(toprightTextElement);
+                }
+            });
+
+            function updateTextOutlineTopright() {
+                const color = outlineColorTopright.value;
+                const width = parseInt(outlineWidthTopright.value);
+                if (textOutlineToggleTopright.checked) {
+                    // 生成模拟描边的text-shadow
+                    let shadows = [];
+                    for (let x = -width; x <= width; x++) {
+                        for (let y = -width; y <= width; y++) {
+                            if (x !== 0 || y !== 0) {
+                                shadows.push(`${x}px ${y}px 0 ${color}`);
+                            }
+                        }
+                    }
+                    // 保留现有text-shadow（如果有）
+                    const existingShadow = textShadowToggleTopright.checked ? toprightTextElement.style.textShadow : '';
+                    toprightTextElement.style.textShadow = existingShadow + (existingShadow ? ', ' : '') + shadows.join(', ');
+                }
+            }
+
+            outlineColorTopright.addEventListener('input', updateTextOutlineTopright);
+            outlineWidthTopright.addEventListener('input', updateTextOutlineTopright);
+
+            // 移除文字描边效果的函数
+            function removeTextOutline(element) {
+                // 使用正则表达式移除描边的text-shadow
+                element.style.textShadow = element.style.textShadow.replace(/,\s*-?\d+px\s*-?\d+px\s*\d+px\s*#\w+/g, '');
+            }
+
+            // 预设样式选择
+            const presetCards = document.querySelectorAll('.preset-card');
+            presetCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    presetCards.forEach(c => c.classList.remove('active'));
+                    card.classList.add('active');
+                    const style = card.getAttribute('data-style');
+                    applyPresetStyle(style);
+                });
+            });
+
+            function applyPresetStyle(style) {
+                switch (style) {
+                    case 'minimalistic':
+                        preview.style.background = '#ffffff';
+                        break;
+                    case 'elegant':
+                        preview.style.background = 'linear-gradient(135deg, #f5f7fa, #c3cfe2)';
+                        break;
+                    case 'natural':
+                        preview.style.background = 'linear-gradient(135deg, #a8edea, #fed6e3)';
+                        break;
+                    case 'neon':
+                        preview.style.background = 'linear-gradient(135deg, #f093fb, #f5576c)';
+                        break;
+                    case 'ocean':
+                        preview.style.background = 'linear-gradient(135deg, #89f7fe, #66a6ff)';
+                        break;
+                    case 'sunset':
+                        preview.style.background = 'linear-gradient(135deg, #ff9a9e, #fad0c4)';
+                        break;
+                    case 'forest':
+                        preview.style.background = 'linear-gradient(135deg, #a1c4fd, #c2e9fb)';
+                        break;
+                    case 'fire':
+                        preview.style.background = 'linear-gradient(135deg, #ff7e5f, #feb47b)';
+                        break;
+                    case 'sky':
+                        preview.style.background = 'linear-gradient(135deg, #c3ec52, #0ba29d)';
+                        break;
+                    default:
+                        preview.style.background = '#ffffff';
+                }
+                // 移除其他背景选项的激活状态
+                gradientCards.forEach(card => card.classList.remove('active'));
+                solidColorInput.value = '#ffffff';
+                customBgUpload.classList.remove('dragover');
+            }
+
+            // 初始化默认预设样式（第三个预设，"natural"）
+            function initPresetStyle() {
+                const defaultStyle = 'natural';
+                const defaultCard = document.querySelector(`.preset-card[data-style="${defaultStyle}"]`);
+                if (defaultCard) {
+                    defaultCard.click();
+                }
+            }
+
+            // 背景上传功能
+            const customBgUpload = document.getElementById('custom-bg-upload');
+            const bgUploadInput = document.getElementById('bg-upload-input');
+
+            customBgUpload.addEventListener('click', () => {
+                bgUploadInput.click();
+            });
+
+            customBgUpload.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                customBgUpload.classList.add('dragover');
+            });
+
+            customBgUpload.addEventListener('dragleave', () => {
+                customBgUpload.classList.remove('dragover');
+            });
+
+            customBgUpload.addEventListener('drop', (e) => {
+                e.preventDefault();
+                customBgUpload.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    setBackgroundImage(files[0]);
+                }
+            });
+
+            bgUploadInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    setBackgroundImage(e.target.files[0]);
+                }
+            });
+
+            function setBackgroundImage(file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.style.background = `url(${e.target.result}) no-repeat center center / cover`;
+                    // 移除渐变和纯色背景选项的激活状态
+                    gradientCards.forEach(card => card.classList.remove('active'));
+                    presetCards.forEach(card => card.classList.remove('active'));
+                    solidColorInput.value = '#ffffff';
+                }
+                reader.readAsDataURL(file);
+            }
+
+            // 纯色背景选择
+            const solidColorInput = document.getElementById('solid-color');
+            solidColorInput.addEventListener('input', (e) => {
+                preview.style.background = e.target.value;
+                // 移除渐变和预设样式选中状态
+                gradientCards.forEach(card => card.classList.remove('active'));
+                presetCards.forEach(card => card.classList.remove('active'));
+            });
+
+            // 渐变背景预设选择
+            const gradientCards = document.querySelectorAll('.gradient-card');
+            gradientCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    gradientCards.forEach(c => c.classList.remove('active'));
+                    card.classList.add('active');
+                    const gradient = card.getAttribute('data-gradient');
+                    preview.style.background = gradient;
+                    // 移除纯色和预设样式选中状态
+                    presetCards.forEach(card => card.classList.remove('active'));
+                    solidColorInput.value = '#ffffff';
+                });
+            });
+
+            // 渐变方向和颜色调整
+            const gradientDirection = document.getElementById('gradient-direction');
+            const gradientColor1 = document.getElementById('gradient-color1');
+            const gradientColor2 = document.getElementById('gradient-color2');
+
+            function updateGradient() {
+                const direction = gradientDirection.value;
+                const color1 = gradientColor1.value;
+                const color2 = gradientColor2.value;
+                preview.style.background = `linear-gradient(${direction}deg, ${color1}, ${color2})`;
+                // 移除预设和纯色背景选中状态
+                gradientCards.forEach(card => card.classList.remove('active'));
+                presetCards.forEach(card => card.classList.remove('active'));
+                solidColorInput.value = '#ffffff';
+            }
+
+            gradientDirection.addEventListener('input', updateGradient);
+            gradientColor1.addEventListener('input', updateGradient);
+            gradientColor2.addEventListener('input', updateGradient);
+
+            // 尺寸选择
+            const sizeOptions = document.querySelectorAll('.size-option');
+            const customRatioWidthInput = document.getElementById('custom-ratio-width');
+            const customRatioHeightInput = document.getElementById('custom-ratio-height');
+            const setRatioBtn = document.getElementById('set-ratio-btn');
+
+            sizeOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    sizeOptions.forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                    const ratio = option.getAttribute('data-ratio');
+                    applyAspectRatio(ratio);
+                });
+            });
+
+            setRatioBtn.addEventListener('click', () => {
+                const width = customRatioWidthInput.value;
+                const height = customRatioHeightInput.value;
+                if (width && height && width > 0 && height > 0) {
+                    const ratio = `${width}:${height}`;
+                    applyAspectRatio(ratio);
+                    // 移除其他尺寸选项的激活状态
+                    sizeOptions.forEach(opt => opt.classList.remove('active'));
+                }
+            });
+
+            function applyAspectRatio(ratio) {
+                const [w, h] = ratio.split(':').map(Number);
+                if (isNaN(w) || isNaN(h) || w <= 0 || h <= 0) {
+                    alert('请输入有效的宽度和高度比例。');
+                    return;
+                }
+
+                // 获取主内容区的宽度和高度
+                const mainWidth = document.querySelector('.main').clientWidth;
+                const mainHeight = document.querySelector('.main').clientHeight;
+
+                // 计算预览区域的最大尺寸
+                const maxPreviewWidth = mainWidth - 40; // 考虑padding
+                const maxPreviewHeight = mainHeight - 40; // 考虑padding
+
+                // 根据比例计算合适的预览尺寸
+                let previewWidth = maxPreviewWidth;
+                let previewHeight = (h / w) * previewWidth;
+
+                if (previewHeight > maxPreviewHeight) {
+                    previewHeight = maxPreviewHeight;
+                    previewWidth = (w / h) * previewHeight;
+                }
+
+                preview.style.width = `${previewWidth}px`;
+                preview.style.height = `${previewHeight}px`;
+            }
+
+            // 下载功能 - 使用dom-to-image
+            const downloadBtn = document.getElementById('download-btn');
+            downloadBtn.addEventListener('click', () => {
+                domtoimage.toPng(preview)
+                    .then(function (dataUrl) {
+                        const link = document.createElement('a');
+                        link.download = 'cover_image.png';
+                        link.href = dataUrl;
+                        link.click();
+                    })
+                    .catch(function (error) {
+                        console.error('oops, something went wrong!', error);
+                    });
+            });
+
+            // 初始化默认设置
+            function init() {
+                // 设置默认预设样式
+                initPresetStyle();
+
+                // 设置默认字体颜色
+                updateFontColorMiddle();
+                updateFontColorTopright();
+
+                // 设置默认比例
+                const defaultRatio = '16:9';
+                const defaultOption = document.querySelector(`.size-option[data-ratio="${defaultRatio}"]`);
+                if (defaultOption) {
+                    defaultOption.click();
+                }
+            }
+
+            init();
+        });
+    </script>
+</body>
+
+</html>

@@ -4,11 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <title>封面图制作</title>
-    <link rel="icon" href="tools.png" type="image/png"> <!-- 新增favicon -->
+    <link rel="icon" href="tools.png" type="image/png">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- 引入Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Pacifico&family=Montserrat&family=Indie+Flower&family=Lobster&family=Oswald&family=Roboto+Mono&display=swap" rel="stylesheet">
-    <!-- 引入dom-to-image库 -->
+    <!-- 引入更多酷炫艺术字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Pacifico&family=Montserrat&family=Indie+Flower&family=Lobster&family=Oswald&family=Roboto+Mono&family=Great+Vibes&family=Dancing+Script&family=Bebas+Neue&family=Abril+Fatface&family=Playfair+Display&family=Permanent+Marker&family=Creepster&family=Bangers&family=Press+Start+2P&family=Fredericka+the+Great&family=UnifrakturMaguntia&family=Nosifer&family=Gruppo&family=Audiowide&family=Monoton&family=Silkscreen&display=swap" rel="stylesheet">
+    <!-- 添加中文艺术字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&family=ZCOOL+XiaoWei&family=ZCOOL+QingKe+HuangYou&family=ZCOOL+KuaiLe&family=Ma+Shan+Zheng&family=Zhi+Mang+Xing&family=Long+Cang&family=Liu+Jian+Mao+Cao&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
     <style>
         /* 通用样式 */
@@ -87,8 +88,10 @@
         }
 
         #preview {
-            width: 100%;
-            height: 100%;
+            width: 90%;
+            height: 90%;
+            /*max-width: 800px; */ /* 设置最大宽度 */
+            /*max-height: 600px; */ /* 设置最大高度 */
             position: relative;
             background-size: cover;
             background-position: center;
@@ -199,6 +202,11 @@
             position: relative;
             overflow: hidden;
             transition: transform 0.2s, box-shadow 0.2s, border-color 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f9f9f9;
+            box-sizing: border-box;
         }
 
         .preset-card:hover {
@@ -222,6 +230,8 @@
             padding: 2px 5px;
             font-size: 12px;
             border-radius: 3px;
+            /* 始终显示名称 */
+            display: block;
         }
 
         /* 下载按钮样式 */
@@ -251,6 +261,7 @@
             word-break: break-word;
             /* 默认无文本阴影和描边 */
             text-shadow: none;
+            /* 为蒙版效果预留空间 */
         }
 
         /* 尺寸选择按钮 */
@@ -331,6 +342,10 @@
             position: relative;
             overflow: hidden;
             transition: transform 0.2s, box-shadow 0.2s, border-color 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
         }
 
         .gradient-card:hover {
@@ -354,6 +369,8 @@
             padding: 2px 5px;
             font-size: 12px;
             border-radius: 3px;
+            /* 始终显示名称 */
+            display: block;
         }
 
         /* 自定义上传区域 */
@@ -398,10 +415,10 @@
                 width: 350px;
             }
 
-            #preview {
+            /* #preview {
                 width: 700px;
                 height: 525px;
-            }
+            } */
         }
 
         @media (max-width: 992px) {
@@ -461,6 +478,24 @@
             margin-bottom: 10px;
             display: block;
         }
+
+        /* 新增文字蒙版相关样式 */
+        .text-mask {
+            position: absolute;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: rgba(0, 0, 0, 0.5);
+            transition: background-color 0.3s;
+        }
+
+        /* 新增字体预览样式 */
+        .font-preview {
+            font-size: 16px;
+            margin-left: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
     </style>
 </head>
 
@@ -497,7 +532,31 @@
                     <option value="'Lobster', cursive">Lobster</option>
                     <option value="'Oswald', sans-serif">Oswald</option>
                     <option value="'Roboto Mono', monospace">Roboto Mono</option>
-                    <!-- 更多字体可以添加 -->
+                    <!-- 新增艺术字体 -->
+                    <option value="'Great Vibes', cursive">Great Vibes</option>
+                    <option value="'Dancing Script', cursive">Dancing Script</option>
+                    <option value="'Bebas Neue', sans-serif">Bebas Neue</option>
+                    <option value="'Abril Fatface', cursive">Abril Fatface</option>
+                    <option value="'Playfair Display', serif">Playfair Display</option>
+                    <!-- 新增艺术字体 -->
+                    <option value="'Press Start 2P', cursive">Press Start 2P</option>
+                    <option value="'Creepster', cursive">Creepster</option>
+                    <option value="'Bangers', cursive">Bangers</option>
+                    <option value="'Fredericka the Great', cursive">Fredericka the Great</option>
+                    <option value="'UnifrakturMaguntia', cursive">UnifrakturMaguntia</option>
+                    <option value="'Nosifer', cursive">Nosifer</option>
+                    <option value="'Gruppo', sans-serif">Gruppo</option>
+                    <option value="'Audiowide', cursive">Audiowide</option>
+                    <option value="'Monoton', cursive">Monoton</option>
+                    <option value="'Silkscreen', cursive">Silkscreen</option>
+                    <!-- 中文艺术字体 -->
+                    <option value="'ZCOOL XiaoWei', serif">ZCOOL XiaoWei</option>
+                    <option value="'ZCOOL QingKe HuangYou', cursive">ZCOOL QingKe HuangYou</option>
+                    <option value="'ZCOOL KuaiLe', cursive">ZCOOL KuaiLe</option>
+                    <option value="'Ma Shan Zheng', cursive">Ma Shan Zheng</option>
+                    <option value="'Zhi Mang Xing', cursive">Zhi Mang Xing</option>
+                    <option value="'Long Cang', cursive">Long Cang</option>
+                    <option value="'Liu Jian Mao Cao', cursive">Liu Jian Mao Cao</option>
                 </select>
             </div>
             <div class="form-group">
@@ -541,6 +600,20 @@
                     <input type="range" id="outline-width-middle" min="0" max="10" value="2">
                 </div>
             </div>
+            <div class="form-group">
+                <label>中间文字蒙版</label>
+                <input type="checkbox" id="text-mask-toggle-middle">
+                <div id="text-mask-options-middle" style="display: none; margin-top: 5px;">
+                    <label for="mask-color-middle">蒙版颜色</label>
+                    <input type="color" id="mask-color-middle" value="#000000">
+                    <label for="mask-opacity-middle">蒙版透明度</label>
+                    <input type="range" id="mask-opacity-middle" min="0" max="100" value="50">
+                    <label for="mask-blur-middle">蒙版模糊</label>
+                    <input type="range" id="mask-blur-middle" min="0" max="20" value="0">
+                    <label for="mask-padding-middle">蒙版内边距</label>
+                    <input type="range" id="mask-padding-middle" min="0" max="50" value="10">
+                </div>
+            </div>
 
             <!-- 右上角文本控制 -->
             <div class="form-group">
@@ -562,7 +635,31 @@
                     <option value="'Lobster', cursive">Lobster</option>
                     <option value="'Oswald', sans-serif">Oswald</option>
                     <option value="'Roboto Mono', monospace">Roboto Mono</option>
-                    <!-- 更多字体可以添加 -->
+                    <!-- 新增艺术字体 -->
+                    <option value="'Great Vibes', cursive">Great Vibes</option>
+                    <option value="'Dancing Script', cursive">Dancing Script</option>
+                    <option value="'Bebas Neue', sans-serif">Bebas Neue</option>
+                    <option value="'Abril Fatface', cursive">Abril Fatface</option>
+                    <option value="'Playfair Display', serif">Playfair Display</option>
+                    <!-- 新增艺术字体 -->
+                    <option value="'Press Start 2P', cursive">Press Start 2P</option>
+                    <option value="'Creepster', cursive">Creepster</option>
+                    <option value="'Bangers', cursive">Bangers</option>
+                    <option value="'Fredericka the Great', cursive">Fredericka the Great</option>
+                    <option value="'UnifrakturMaguntia', cursive">UnifrakturMaguntia</option>
+                    <option value="'Nosifer', cursive">Nosifer</option>
+                    <option value="'Gruppo', sans-serif">Gruppo</option>
+                    <option value="'Audiowide', cursive">Audiowide</option>
+                    <option value="'Monoton', cursive">Monoton</option>
+                    <option value="'Silkscreen', cursive">Silkscreen</option>
+                    <!-- 中文艺术字体 -->
+                    <option value="'ZCOOL XiaoWei', serif">ZCOOL XiaoWei</option>
+                    <option value="'ZCOOL QingKe HuangYou', cursive">ZCOOL QingKe HuangYou</option>
+                    <option value="'ZCOOL KuaiLe', cursive">ZCOOL KuaiLe</option>
+                    <option value="'Ma Shan Zheng', cursive">Ma Shan Zheng</option>
+                    <option value="'Zhi Mang Xing', cursive">Zhi Mang Xing</option>
+                    <option value="'Long Cang', cursive">Long Cang</option>
+                    <option value="'Liu Jian Mao Cao', cursive">Liu Jian Mao Cao</option>
                 </select>
             </div>
             <div class="form-group">
@@ -598,6 +695,20 @@
                     <input type="range" id="outline-width-topright" min="0" max="10" value="2">
                 </div>
             </div>
+            <div class="form-group">
+                <label>右上角文字蒙版</label>
+                <input type="checkbox" id="text-mask-toggle-topright">
+                <div id="text-mask-options-topright" style="display: none; margin-top: 5px;">
+                    <label for="mask-color-topright">蒙版颜色</label>
+                    <input type="color" id="mask-color-topright" value="#000000">
+                    <label for="mask-opacity-topright">蒙版透明度</label>
+                    <input type="range" id="mask-opacity-topright" min="0" max="100" value="50">
+                    <label for="mask-blur-topright">蒙版模糊</label>
+                    <input type="range" id="mask-blur-topright" min="0" max="20" value="0">
+                    <label for="mask-padding-topright">蒙版内边距</label>
+                    <input type="range" id="mask-padding-topright" min="0" max="50" value="10">
+                </div>
+            </div>
         </div>
 
         <!-- 背景Tab内容 -->
@@ -606,15 +717,15 @@
                 <label>选择背景样式</label>
                 <div class="preset-styles">
                     <!-- 增加到3x3共9种预设样式 -->
-                    <div class="preset-card" data-style="minimalistic" title="简约" style="background-color: #ffffff;"></div>
-                    <div class="preset-card" data-style="elegant" title="优雅" style="background: linear-gradient(135deg, #f5f7fa, #c3cfe2);"></div>
-                    <div class="preset-card" data-style="natural" title="自然" style="background: linear-gradient(135deg, #a8edea, #fed6e3);"></div>
-                    <div class="preset-card" data-style="neon" title="霓虹" style="background: linear-gradient(135deg, #f093fb, #f5576c);"></div>
-                    <div class="preset-card" data-style="ocean" title="海洋" style="background: linear-gradient(135deg, #89f7fe, #66a6ff);"></div>
-                    <div class="preset-card" data-style="sunset" title="日落" style="background: linear-gradient(135deg, #ff9a9e, #fad0c4);"></div>
-                    <div class="preset-card" data-style="forest" title="森林" style="background: linear-gradient(135deg, #a1c4fd, #c2e9fb);"></div>
-                    <div class="preset-card" data-style="fire" title="火焰" style="background: linear-gradient(135deg, #ff7e5f, #feb47b);"></div>
-                    <div class="preset-card" data-style="sky" title="天空" style="background: linear-gradient(135deg, #c3ec52, #0ba29d);"></div>
+                    <div class="preset-card" data-style="minimalistic" data-name="简约" title="简约" style="background-color: #ffffff;"></div>
+                    <div class="preset-card" data-style="elegant" data-name="优雅" title="优雅" style="background: linear-gradient(135deg, #f5f7fa, #c3cfe2);"></div>
+                    <div class="preset-card" data-style="natural" data-name="自然" title="自然" style="background: linear-gradient(135deg, #a8edea, #fed6e3);"></div>
+                    <div class="preset-card" data-style="neon" data-name="霓虹" title="霓虹" style="background: linear-gradient(135deg, #f093fb, #f5576c);"></div>
+                    <div class="preset-card" data-style="ocean" data-name="海洋" title="海洋" style="background: linear-gradient(135deg, #89f7fe, #66a6ff);"></div>
+                    <div class="preset-card" data-style="sunset" data-name="日落" title="日落" style="background: linear-gradient(135deg, #ff9a9e, #fad0c4);"></div>
+                    <div class="preset-card" data-style="forest" data-name="森林" title="森林" style="background: linear-gradient(135deg, #a1c4fd, #c2e9fb);"></div>
+                    <div class="preset-card" data-style="fire" data-name="火焰" title="火焰" style="background: linear-gradient(135deg, #ff7e5f, #feb47b);"></div>
+                    <div class="preset-card" data-style="sky" data-name="天空" title="天空" style="background: linear-gradient(135deg, #c3ec52, #0ba29d);"></div>
                 </div>
             </div>
             <div class="form-group">
@@ -685,15 +796,15 @@
             <div class="form-group">
                 <label>预设主题样式</label>
                 <div class="preset-styles">
-                    <div class="preset-card" data-style="minimalistic" title="简约" style="background-color: #ffffff;"></div>
-                    <div class="preset-card" data-style="elegant" title="优雅" style="background: linear-gradient(135deg, #f5f7fa, #c3cfe2);"></div>
-                    <div class="preset-card" data-style="natural" title="自然" style="background: linear-gradient(135deg, #a8edea, #fed6e3);"></div>
-                    <div class="preset-card" data-style="neon" title="霓虹" style="background: linear-gradient(135deg, #f093fb, #f5576c);"></div>
-                    <div class="preset-card" data-style="ocean" title="海洋" style="background: linear-gradient(135deg, #89f7fe, #66a6ff);"></div>
-                    <div class="preset-card" data-style="sunset" title="日落" style="background: linear-gradient(135deg, #ff9a9e, #fad0c4);"></div>
-                    <div class="preset-card" data-style="forest" title="森林" style="background: linear-gradient(135deg, #a1c4fd, #c2e9fb);"></div>
-                    <div class="preset-card" data-style="fire" title="火焰" style="background: linear-gradient(135deg, #ff7e5f, #feb47b);"></div>
-                    <div class="preset-card" data-style="sky" title="天空" style="background: linear-gradient(135deg, #c3ec52, #0ba29d);"></div>
+                    <div class="preset-card" data-style="minimalistic" data-name="简约" title="简约" style="background-color: #ffffff;"></div>
+                    <div class="preset-card" data-style="elegant" data-name="优雅" title="优雅" style="background: linear-gradient(135deg, #f5f7fa, #c3cfe2);"></div>
+                    <div class="preset-card" data-style="natural" data-name="自然" title="自然" style="background: linear-gradient(135deg, #a8edea, #fed6e3);"></div>
+                    <div class="preset-card" data-style="neon" data-name="霓虹" title="霓虹" style="background: linear-gradient(135deg, #f093fb, #f5576c);"></div>
+                    <div class="preset-card" data-style="ocean" data-name="海洋" title="海洋" style="background: linear-gradient(135deg, #89f7fe, #66a6ff);"></div>
+                    <div class="preset-card" data-style="sunset" data-name="日落" title="日落" style="background: linear-gradient(135deg, #ff9a9e, #fad0c4);"></div>
+                    <div class="preset-card" data-style="forest" data-name="森林" title="森林" style="background: linear-gradient(135deg, #a1c4fd, #c2e9fb);"></div>
+                    <div class="preset-card" data-style="fire" data-name="火焰" title="火焰" style="background: linear-gradient(135deg, #ff7e5f, #feb47b);"></div>
+                    <div class="preset-card" data-style="sky" data-name="天空" title="天空" style="background: linear-gradient(135deg, #c3ec52, #0ba29d);"></div>
                 </div>
             </div>
         </div>
@@ -815,12 +926,11 @@
             makeDraggable(toprightTextElement);
             makeDraggable(middleTextElement);
 
-            // 中间文本内容实时更新
+            // 文字内容实时更新
             middleTextInput.addEventListener('input', (e) => {
                 middleTextElement.innerHTML = e.target.value.replace(/\n/g, '<br>');
             });
 
-            // 右上角文本内容实时更新
             toprightTextInput.addEventListener('input', (e) => {
                 toprightTextElement.textContent = e.target.value;
             });
@@ -1007,6 +1117,82 @@
                 });
             });
 
+            // 定义主题对应的文字样式
+            const themeTextStyles = {
+                'minimalistic': {
+                    middleFont: "'Roboto', sans-serif",
+                    middleColor1: "#000000",
+                    middleColor2: "#000000",
+                    toprightFont: "'Roboto', sans-serif",
+                    toprightColor1: "#000000",
+                    toprightColor2: "#000000"
+                },
+                'elegant': {
+                    middleFont: "'Playfair Display', serif",
+                    middleColor1: "#2c3e50",
+                    middleColor2: "#8e44ad",
+                    toprightFont: "'Great Vibes', cursive",
+                    toprightColor1: "#2c3e50",
+                    toprightColor2: "#8e44ad"
+                },
+                'natural': {
+                    middleFont: "'Montserrat', sans-serif",
+                    middleColor1: "#27ae60",
+                    middleColor2: "#2ecc71",
+                    toprightFont: "'Dancing Script', cursive",
+                    toprightColor1: "#27ae60",
+                    toprightColor2: "#2ecc71"
+                },
+                'neon': {
+                    middleFont: "'Oswald', sans-serif",
+                    middleColor1: "#ff00ff",
+                    middleColor2: "#00ffff",
+                    toprightFont: "'Bebas Neue', sans-serif",
+                    toprightColor1: "#ff00ff",
+                    toprightColor2: "#00ffff"
+                },
+                'ocean': {
+                    middleFont: "'Pacifico', cursive",
+                    middleColor1: "#1e90ff",
+                    middleColor2: "#00bfff",
+                    toprightFont: "'Lobster', cursive",
+                    toprightColor1: "#1e90ff",
+                    toprightColor2: "#00bfff"
+                },
+                'sunset': {
+                    middleFont: "'Great Vibes', cursive",
+                    middleColor1: "#ff7e5f",
+                    middleColor2: "#feb47b",
+                    toprightFont: "'Abril Fatface', cursive",
+                    toprightColor1: "#ff7e5f",
+                    toprightColor2: "#feb47b"
+                },
+                'forest': {
+                    middleFont: "'Montserrat', sans-serif",
+                    middleColor1: "#228B22",
+                    middleColor2: "#6B8E23",
+                    toprightFont: "'Dancing Script', cursive",
+                    toprightColor1: "#228B22",
+                    toprightColor2: "#6B8E23"
+                },
+                'fire': {
+                    middleFont: "'Roboto Mono', monospace",
+                    middleColor1: "#ff4500",
+                    middleColor2: "#ff6347",
+                    toprightFont: "'Bebas Neue', sans-serif",
+                    toprightColor1: "#ff4500",
+                    toprightColor2: "#ff6347"
+                },
+                'sky': {
+                    middleFont: "'Playfair Display', serif",
+                    middleColor1: "#1E90FF",
+                    middleColor2: "#87CEFA",
+                    toprightFont: "'Great Vibes', cursive",
+                    toprightColor1: "#1E90FF",
+                    toprightColor2: "#87CEFA"
+                }
+            };
+
             function applyPresetStyle(style) {
                 switch (style) {
                     case 'minimalistic':
@@ -1039,13 +1225,32 @@
                     default:
                         preview.style.background = '#ffffff';
                 }
+
+                // 设置文字样式
+                if (themeTextStyles[style]) {
+                    const ts = themeTextStyles[style];
+                    // 中间文本
+                    middleTextElement.style.fontFamily = ts.middleFont;
+                    fontFamilyMiddle.value = ts.middleFont;
+                    fontColor1Middle.value = ts.middleColor1;
+                    fontColor2Middle.value = ts.middleColor2;
+                    updateFontColorMiddle();
+
+                    // 右上角文本
+                    toprightTextElement.style.fontFamily = ts.toprightFont;
+                    fontFamilyTopright.value = ts.toprightFont;
+                    fontColor1Topright.value = ts.toprightColor1;
+                    fontColor2Topright.value = ts.toprightColor2;
+                    updateFontColorTopright();
+                }
+
                 // 移除其他背景选项的激活状态
                 gradientCards.forEach(card => card.classList.remove('active'));
                 solidColorInput.value = '#ffffff';
                 customBgUpload.classList.remove('dragover');
             }
 
-            // 初始化默认预设样式（第三个预设，"natural"）
+            // 初始化默认预设样式（自然）
             function initPresetStyle() {
                 const defaultStyle = 'natural';
                 const defaultCard = document.querySelector(`.preset-card[data-style="${defaultStyle}"]`);
@@ -1118,6 +1323,9 @@
                     // 移除纯色和预设样式选中状态
                     presetCards.forEach(card => card.classList.remove('active'));
                     solidColorInput.value = '#ffffff';
+
+                    // 同步更新渐变方向和颜色输入框
+                    // 这里暂时不处理，因为解析渐变字符串可能会有复杂性
                 });
             });
 
@@ -1195,20 +1403,149 @@
                 preview.style.height = `${previewHeight}px`;
             }
 
+            // 添加文字蒙版功能
+            // 将十六进制颜色转换为 rgba 格式
+            function hexToRgba(hex, opacity) {
+                hex = hex.replace('#', '');
+                if (hex.length === 3) {
+                    hex = hex.split('').map(c => c + c).join('');
+                }
+                const bigint = parseInt(hex, 16);
+                const r = (bigint >> 16) & 255;
+                const g = (bigint >> 8) & 255;
+                const b = bigint & 255;
+                return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+            }
+
+            // 添加文字蒙版功能
+            function setupTextMask(element, toggleId, optionsId, colorId, opacityId, blurId, paddingId) {
+                const toggle = document.getElementById(toggleId);
+                const options = document.getElementById(optionsId);
+                const color = document.getElementById(colorId);
+                const opacity = document.getElementById(opacityId);
+                const blur = document.getElementById(blurId);
+                const padding = document.getElementById(paddingId);
+
+                toggle.addEventListener('change', (e) => {
+                    options.style.display = e.target.checked ? 'block' : 'none';
+                    updateMask();
+                });
+
+                function updateMask() {
+                    if (toggle.checked) {
+                        const maskColor = color.value;
+                        const maskOpacity = opacity.value / 100;
+                        const maskBlur = blur.value + 'px';
+                        const maskPadding = padding.value + 'px';
+
+                        // 将十六进制颜色转换为 rgba
+                        element.style.backgroundColor = hexToRgba(maskColor, maskOpacity);
+                        // 移除或调整 backdrop-filter
+                        // element.style.backdropFilter = `blur(${maskBlur})`; // 如果需要模糊效果，可以取消注释
+                        // 设置 padding 以调整蒙版的位置
+                        element.style.padding = maskPadding;
+                    } else {
+                        element.style.backgroundColor = 'transparent';
+                        // 移除 backdrop-filter
+                        // element.style.backdropFilter = 'none'; // 如果使用 backdrop-filter，可以取消注释
+                        element.style.padding = '0';
+                    }
+                }
+
+                color.addEventListener('input', updateMask);
+                opacity.addEventListener('input', updateMask);
+                blur.addEventListener('input', updateMask);
+                padding.addEventListener('input', updateMask);
+            }
+
             // 下载功能 - 使用dom-to-image
             const downloadBtn = document.getElementById('download-btn');
             downloadBtn.addEventListener('click', () => {
-                domtoimage.toPng(preview)
+
+                // 克隆预览元素
+                const clonedPreview = preview.cloneNode(true);
+                const container = document.createElement('div');
+                container.style.position = 'absolute';
+                container.style.left = '-9999px';
+                container.style.top = '-9999px';
+                container.appendChild(clonedPreview);
+                document.body.appendChild(container);
+
+                // 设置克隆元素的样式
+                clonedPreview.style.width = preview.offsetWidth + 'px';
+                clonedPreview.style.height = preview.offsetHeight + 'px';
+                clonedPreview.style.position = 'static';
+
+                domtoimage.toPng(clonedPreview)
                     .then(function (dataUrl) {
                         const link = document.createElement('a');
                         link.download = 'cover_image.png';
                         link.href = dataUrl;
                         link.click();
+                        document.body.removeChild(container);
                     })
                     .catch(function (error) {
-                        console.error('oops, something went wrong!', error);
+                        console.error('下载出错:', error);
+                        document.body.removeChild(container);
                     });
             });
+
+            // 设置中间文本和右上角文本的蒙版
+            setupTextMask(
+                middleTextElement,
+                'text-mask-toggle-middle',
+                'text-mask-options-middle',
+                'mask-color-middle',
+                'mask-opacity-middle',
+                'mask-blur-middle',
+                'mask-padding-middle'
+            );
+
+            setupTextMask(
+                toprightTextElement,
+                'text-mask-toggle-topright',
+                'text-mask-options-topright',
+                'mask-color-topright',
+                'mask-opacity-topright',
+                'mask-blur-topright',
+                'mask-padding-topright'
+            );
+
+            // 添加新的艺术字体
+            const additionalFonts = [
+                "'Press Start 2P', cursive",
+                "'Creepster', cursive",
+                "'Bangers', cursive",
+                "'Fredericka the Great', cursive",
+                "'UnifrakturMaguntia', cursive",
+                "'Nosifer', cursive",
+                "'Gruppo', sans-serif",
+                "'Audiowide', cursive",
+                "'Monoton', cursive",
+                "'Silkscreen', cursive",
+                // 中文艺术字体
+                "'ZCOOL XiaoWei', serif",
+                "'ZCOOL QingKe HuangYou', cursive",
+                "'ZCOOL KuaiLe', cursive",
+                "'Ma Shan Zheng', cursive",
+                "'Zhi Mang Xing', cursive",
+                "'Long Cang', cursive",
+                "'Liu Jian Mao Cao', cursive"
+            ];
+
+            // 添加新字体到字体选择下拉框
+            function addFontsToSelect(selectElement) {
+                additionalFonts.forEach(font => {
+                    const option = document.createElement('option');
+                    option.value = font;
+                    option.style.fontFamily = font;
+                    option.textContent = font.split(',')[0].replace(/[']/g, '');
+                    selectElement.appendChild(option);
+                });
+            }
+
+            addFontsToSelect(fontFamilyMiddle);
+            addFontsToSelect(fontFamilyTopright);
 
             // 初始化默认设置
             function init() {

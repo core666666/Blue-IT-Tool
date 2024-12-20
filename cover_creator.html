@@ -7,9 +7,13 @@
     <link rel="icon" href="tools.png" type="image/png">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- 引入更多酷炫艺术字体 -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Pacifico&family=Montserrat&family=Indie+Flower&family=Lobster&family=Oswald&family=Roboto+Mono&family=Great+Vibes&family=Dancing+Script&family=Bebas+Neue&family=Abril+Fatface&family=Playfair+Display&family=Permanent+Marker&family=Creepster&family=Bangers&family=Press+Start+2P&family=Fredericka+the+Great&family=UnifrakturMaguntia&family=Nosifer&family=Gruppo&family=Audiowide&family=Monoton&family=Silkscreen&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Pacifico&family=Montserrat&family=Indie+Flower&family=Lobster&family=Oswald&family=Roboto+Mono&family=Great+Vibes&family=Dancing+Script&family=Bebas+Neue&family=Abril+Fatface&family=Playfair+Display&family=Permanent+Marker&family=Creepster&family=Bangers&family=Press+Start+2P&family=Fredericka+the+Great&family=UnifrakturMaguntia&family=Nosifer&family=Gruppo&family=Audiowide&family=Monoton&family=Silkscreen&display=swap"
+        rel="stylesheet">
     <!-- 添加中文艺术字体 -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&family=ZCOOL+XiaoWei&family=ZCOOL+QingKe+HuangYou&family=ZCOOL+KuaiLe&family=Ma+Shan+Zheng&family=Zhi+Mang+Xing&family=Long+Cang&family=Liu+Jian+Mao+Cao&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&family=ZCOOL+XiaoWei&family=ZCOOL+QingKe+HuangYou&family=ZCOOL+KuaiLe&family=Ma+Shan+Zheng&family=Zhi+Mang+Xing&family=Long+Cang&family=Liu+Jian+Mao+Cao&display=swap"
+        rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
     <style>
         /* 通用样式 */
@@ -32,8 +36,8 @@
             display: flex;
             flex-direction: column;
             overflow-y: auto;
-            overflow-x: hidden; /* 移除x轴滚动条 */
-            flex-shrink: 0; /* 防止侧边栏被挤压 */
+            overflow-x: hidden;
+            flex-shrink: 0;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
@@ -66,7 +70,7 @@
             box-sizing: border-box;
             position: relative;
             background-color: #f0f0f0;
-            overflow: auto; /* 允许主内容区滚动 */
+            overflow: auto;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
@@ -77,21 +81,19 @@
             background-color: #ffffff;
             border: 1px solid #ddd;
             position: relative;
-            overflow: hidden; /* 修改为隐藏滚动条 */
+            overflow: hidden;
             border-radius: 10px;
             display: flex;
             justify-content: center;
             align-items: center;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            max-width: 100%; /* 确保不超出屏幕 */
-            max-height: 100%; /* 确保不超出屏幕 */
+            max-width: 100%;
+            max-height: 100%;
         }
 
         #preview {
             width: 90%;
             height: 90%;
-            /*max-width: 800px; */ /* 设置最大宽度 */
-            /*max-height: 600px; */ /* 设置最大高度 */
             position: relative;
             background-size: cover;
             background-position: center;
@@ -137,7 +139,7 @@
             display: none;
             flex: 1;
             overflow-y: auto;
-            padding-right: 10px; /* 避免内容被滚动条遮挡 */
+            padding-right: 10px;
         }
 
         .tab-content.active {
@@ -230,7 +232,6 @@
             padding: 2px 5px;
             font-size: 12px;
             border-radius: 3px;
-            /* 始终显示名称 */
             display: block;
         }
 
@@ -255,13 +256,33 @@
         /* 预览中的文本样式 */
         .text-element {
             position: absolute;
+            z-index: 1;
+            /* 添加 z-index */
             cursor: move;
             user-select: none;
             white-space: pre-wrap;
             word-break: break-word;
-            /* 默认无文本阴影和描边 */
             text-shadow: none;
-            /* 为蒙版效果预留空间 */
+            box-sizing: border-box;
+            --mask-color: rgba(0, 0, 0, 0);
+            --mask-blur: 0px;
+            --mask-padding: 0px;
+        }
+
+        /* 使用伪元素实现蒙版 */
+        .text-element::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--mask-color);
+            border-radius: 5px;
+            z-index: 0;
+            /* 修改 z-index 为 0 */
+            filter: blur(var(--mask-blur));
+            opacity: 1;
         }
 
         /* 尺寸选择按钮 */
@@ -272,8 +293,8 @@
         }
 
         .size-option {
-            width: 100px; /* 调整宽度 */
-            height: 56px; /* 默认高度，比例16:9 */
+            width: 100px;
+            height: 56px;
             border: 1px solid #ddd;
             border-radius: 5px;
             cursor: pointer;
@@ -284,7 +305,7 @@
             justify-content: center;
             align-items: center;
             background-color: #f9f9f9;
-            font-size: 12px; /* 调整字体大小 */
+            font-size: 12px;
             text-align: center;
             color: #333;
             flex-direction: column;
@@ -369,7 +390,6 @@
             padding: 2px 5px;
             font-size: 12px;
             border-radius: 3px;
-            /* 始终显示名称 */
             display: block;
         }
 
@@ -414,11 +434,6 @@
             .sidebar {
                 width: 350px;
             }
-
-            /* #preview {
-                width: 700px;
-                height: 525px;
-            } */
         }
 
         @media (max-width: 992px) {
@@ -477,15 +492,6 @@
             font-weight: bold;
             margin-bottom: 10px;
             display: block;
-        }
-
-        /* 新增文字蒙版相关样式 */
-        .text-mask {
-            position: absolute;
-            padding: 10px;
-            border-radius: 5px;
-            background-color: rgba(0, 0, 0, 0.5);
-            transition: background-color 0.3s;
         }
 
         /* 新增字体预览样式 */
@@ -717,15 +723,24 @@
                 <label>选择背景样式</label>
                 <div class="preset-styles">
                     <!-- 增加到3x3共9种预设样式 -->
-                    <div class="preset-card" data-style="minimalistic" data-name="简约" title="简约" style="background-color: #ffffff;"></div>
-                    <div class="preset-card" data-style="elegant" data-name="优雅" title="优雅" style="background: linear-gradient(135deg, #f5f7fa, #c3cfe2);"></div>
-                    <div class="preset-card" data-style="natural" data-name="自然" title="自然" style="background: linear-gradient(135deg, #a8edea, #fed6e3);"></div>
-                    <div class="preset-card" data-style="neon" data-name="霓虹" title="霓虹" style="background: linear-gradient(135deg, #f093fb, #f5576c);"></div>
-                    <div class="preset-card" data-style="ocean" data-name="海洋" title="海洋" style="background: linear-gradient(135deg, #89f7fe, #66a6ff);"></div>
-                    <div class="preset-card" data-style="sunset" data-name="日落" title="日落" style="background: linear-gradient(135deg, #ff9a9e, #fad0c4);"></div>
-                    <div class="preset-card" data-style="forest" data-name="森林" title="森林" style="background: linear-gradient(135deg, #a1c4fd, #c2e9fb);"></div>
-                    <div class="preset-card" data-style="fire" data-name="火焰" title="火焰" style="background: linear-gradient(135deg, #ff7e5f, #feb47b);"></div>
-                    <div class="preset-card" data-style="sky" data-name="天空" title="天空" style="background: linear-gradient(135deg, #c3ec52, #0ba29d);"></div>
+                    <div class="preset-card" data-style="minimalistic" data-name="简约" title="简约"
+                        style="background-color: #ffffff;"></div>
+                    <div class="preset-card" data-style="elegant" data-name="优雅" title="优雅"
+                        style="background: linear-gradient(135deg, #f5f7fa, #c3cfe2);"></div>
+                    <div class="preset-card" data-style="natural" data-name="自然" title="自然"
+                        style="background: linear-gradient(135deg, #a8edea, #fed6e3);"></div>
+                    <div class="preset-card" data-style="neon" data-name="霓虹" title="霓虹"
+                        style="background: linear-gradient(135deg, #f093fb, #f5576c);"></div>
+                    <div class="preset-card" data-style="ocean" data-name="海洋" title="海洋"
+                        style="background: linear-gradient(135deg, #89f7fe, #66a6ff);"></div>
+                    <div class="preset-card" data-style="sunset" data-name="日落" title="日落"
+                        style="background: linear-gradient(135deg, #ff9a9e, #fad0c4);"></div>
+                    <div class="preset-card" data-style="forest" data-name="森林" title="森林"
+                        style="background: linear-gradient(135deg, #a1c4fd, #c2e9fb);"></div>
+                    <div class="preset-card" data-style="fire" data-name="火焰" title="火焰"
+                        style="background: linear-gradient(135deg, #ff7e5f, #feb47b);"></div>
+                    <div class="preset-card" data-style="sky" data-name="天空" title="天空"
+                        style="background: linear-gradient(135deg, #c3ec52, #0ba29d);"></div>
                 </div>
             </div>
             <div class="form-group">
@@ -743,12 +758,18 @@
                 <label>渐变背景</label>
                 <div class="gradient-presets">
                     <!-- 扩展到3x2共6种 -->
-                    <div class="gradient-card" data-gradient="linear-gradient(135deg, #f093fb, #f5576c)" data-name="霓虹" title="霓虹" style="background: linear-gradient(135deg, #f093fb, #f5576c);"></div>
-                    <div class="gradient-card" data-gradient="linear-gradient(135deg, #a8edea, #fed6e3)" data-name="自然" title="自然" style="background: linear-gradient(135deg, #a8edea, #fed6e3);"></div>
-                    <div class="gradient-card" data-gradient="linear-gradient(135deg, #89f7fe, #66a6ff)" data-name="海洋" title="海洋" style="background: linear-gradient(135deg, #89f7fe, #66a6ff);"></div>
-                    <div class="gradient-card" data-gradient="linear-gradient(135deg, #f5f7fa, #c3cfe2)" data-name="优雅" title="优雅" style="background: linear-gradient(135deg, #f5f7fa, #c3cfe2);"></div>
-                    <div class="gradient-card" data-gradient="linear-gradient(135deg, #ff9a9e, #fad0c4)" data-name="日落" title="日落" style="background: linear-gradient(135deg, #ff9a9e, #fad0c4);"></div>
-                    <div class="gradient-card" data-gradient="linear-gradient(135deg, #a1c4fd, #c2e9fb)" data-name="森林" title="森林" style="background: linear-gradient(135deg, #a1c4fd, #c2e9fb);"></div>
+                    <div class="gradient-card" data-gradient="linear-gradient(135deg, #f093fb, #f5576c)" data-name="霓虹"
+                        title="霓虹" style="background: linear-gradient(135deg, #f093fb, #f5576c);"></div>
+                    <div class="gradient-card" data-gradient="linear-gradient(135deg, #a8edea, #fed6e3)" data-name="自然"
+                        title="自然" style="background: linear-gradient(135deg, #a8edea, #fed6e3);"></div>
+                    <div class="gradient-card" data-gradient="linear-gradient(135deg, #89f7fe, #66a6ff)" data-name="海洋"
+                        title="海洋" style="background: linear-gradient(135deg, #89f7fe, #66a6ff);"></div>
+                    <div class="gradient-card" data-gradient="linear-gradient(135deg, #f5f7fa, #c3cfe2)" data-name="优雅"
+                        title="优雅" style="background: linear-gradient(135deg, #f5f7fa, #c3cfe2);"></div>
+                    <div class="gradient-card" data-gradient="linear-gradient(135deg, #ff9a9e, #fad0c4)" data-name="日落"
+                        title="日落" style="background: linear-gradient(135deg, #ff9a9e, #fad0c4);"></div>
+                    <div class="gradient-card" data-gradient="linear-gradient(135deg, #a1c4fd, #c2e9fb)" data-name="森林"
+                        title="森林" style="background: linear-gradient(135deg, #a1c4fd, #c2e9fb);"></div>
                 </div>
                 <div style="margin-top: 10px;">
                     <label for="gradient-direction">渐变方向</label>
@@ -796,15 +817,24 @@
             <div class="form-group">
                 <label>预设主题样式</label>
                 <div class="preset-styles">
-                    <div class="preset-card" data-style="minimalistic" data-name="简约" title="简约" style="background-color: #ffffff;"></div>
-                    <div class="preset-card" data-style="elegant" data-name="优雅" title="优雅" style="background: linear-gradient(135deg, #f5f7fa, #c3cfe2);"></div>
-                    <div class="preset-card" data-style="natural" data-name="自然" title="自然" style="background: linear-gradient(135deg, #a8edea, #fed6e3);"></div>
-                    <div class="preset-card" data-style="neon" data-name="霓虹" title="霓虹" style="background: linear-gradient(135deg, #f093fb, #f5576c);"></div>
-                    <div class="preset-card" data-style="ocean" data-name="海洋" title="海洋" style="background: linear-gradient(135deg, #89f7fe, #66a6ff);"></div>
-                    <div class="preset-card" data-style="sunset" data-name="日落" title="日落" style="background: linear-gradient(135deg, #ff9a9e, #fad0c4);"></div>
-                    <div class="preset-card" data-style="forest" data-name="森林" title="森林" style="background: linear-gradient(135deg, #a1c4fd, #c2e9fb);"></div>
-                    <div class="preset-card" data-style="fire" data-name="火焰" title="火焰" style="background: linear-gradient(135deg, #ff7e5f, #feb47b);"></div>
-                    <div class="preset-card" data-style="sky" data-name="天空" title="天空" style="background: linear-gradient(135deg, #c3ec52, #0ba29d);"></div>
+                    <div class="preset-card" data-style="minimalistic" data-name="简约" title="简约"
+                        style="background-color: #ffffff;"></div>
+                    <div class="preset-card" data-style="elegant" data-name="优雅" title="优雅"
+                        style="background: linear-gradient(135deg, #f5f7fa, #c3cfe2);"></div>
+                    <div class="preset-card" data-style="natural" data-name="自然" title="自然"
+                        style="background: linear-gradient(135deg, #a8edea, #fed6e3);"></div>
+                    <div class="preset-card" data-style="neon" data-name="霓虹" title="霓虹"
+                        style="background: linear-gradient(135deg, #f093fb, #f5576c);"></div>
+                    <div class="preset-card" data-style="ocean" data-name="海洋" title="海洋"
+                        style="background: linear-gradient(135deg, #89f7fe, #66a6ff);"></div>
+                    <div class="preset-card" data-style="sunset" data-name="日落" title="日落"
+                        style="background: linear-gradient(135deg, #ff9a9e, #fad0c4);"></div>
+                    <div class="preset-card" data-style="forest" data-name="森林" title="森林"
+                        style="background: linear-gradient(135deg, #a1c4fd, #c2e9fb);"></div>
+                    <div class="preset-card" data-style="fire" data-name="火焰" title="火焰"
+                        style="background: linear-gradient(135deg, #ff7e5f, #feb47b);"></div>
+                    <div class="preset-card" data-style="sky" data-name="天空" title="天空"
+                        style="background: linear-gradient(135deg, #c3ec52, #0ba29d);"></div>
                 </div>
             </div>
         </div>
@@ -817,11 +847,13 @@
         <div class="preview-container">
             <div id="preview">
                 <!-- 右上角文本 -->
-                <div id="topright-text-element" class="text-element" style="top: 10px; right: 10px; color: #000000; font-size: 24px; font-family: Arial;">
+                <div id="topright-text-element" class="text-element"
+                    style="top: 10px; right: 10px; color: #000000; font-size: 24px; font-family: Arial;">
                     蔚蓝工具导航
                 </div>
                 <!-- 中间文本 -->
-                <div id="middle-text-element" class="text-element" style="top: 50%; left: 50%; transform: translate(-50%, -50%); color: #000000; font-size: 24px; font-family: Arial; text-align: center;">
+                <div id="middle-text-element" class="text-element"
+                    style="top: 50%; left: 50%; transform: translate(-50%, -50%); color: #000000; font-size: 24px; font-family: Arial; text-align: center;">
                     文字渐变色壁纸生成器，<br>创建你的个性化渐变文字壁纸，支持多种样式和尺寸
                 </div>
             </div>
@@ -1323,9 +1355,6 @@
                     // 移除纯色和预设样式选中状态
                     presetCards.forEach(card => card.classList.remove('active'));
                     solidColorInput.value = '#ffffff';
-
-                    // 同步更新渐变方向和颜色输入框
-                    // 这里暂时不处理，因为解析渐变字符串可能会有复杂性
                 });
             });
 
@@ -1403,7 +1432,6 @@
                 preview.style.height = `${previewHeight}px`;
             }
 
-            // 添加文字蒙版功能
             // 将十六进制颜色转换为 rgba 格式
             function hexToRgba(hex, opacity) {
                 hex = hex.replace('#', '');
@@ -1439,16 +1467,20 @@
                         const maskPadding = padding.value + 'px';
 
                         // 将十六进制颜色转换为 rgba
-                        element.style.backgroundColor = hexToRgba(maskColor, maskOpacity);
-                        // 移除或调整 backdrop-filter
-                        // element.style.backdropFilter = `blur(${maskBlur})`; // 如果需要模糊效果，可以取消注释
-                        // 设置 padding 以调整蒙版的位置
-                        element.style.padding = maskPadding;
+                        const rgbaColor = hexToRgba(maskColor, maskOpacity);
+                        // 设置CSS变量
+                        element.style.setProperty('--mask-color', rgbaColor);
+                        element.style.setProperty('--mask-blur', maskBlur);
+                        element.style.setProperty('--mask-padding', maskPadding);
+
+                        console.log(`Mask applied to ${element.id}: Color=${rgbaColor}, Blur=${maskBlur}, Padding=${maskPadding}`);
                     } else {
-                        element.style.backgroundColor = 'transparent';
-                        // 移除 backdrop-filter
-                        // element.style.backdropFilter = 'none'; // 如果使用 backdrop-filter，可以取消注释
-                        element.style.padding = '0';
+                        // 重置CSS变量
+                        element.style.setProperty('--mask-color', 'rgba(0, 0, 0, 0)');
+                        element.style.setProperty('--mask-blur', '0px');
+                        element.style.setProperty('--mask-padding', '0px');
+
+                        console.log(`Mask removed from ${element.id}`);
                     }
                 }
 

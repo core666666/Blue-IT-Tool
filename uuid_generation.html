@@ -1,20 +1,15 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
     <meta charset="UTF-8">
-    <title>密码生成器</title>
+    <title>UUID生成器</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="tools.png">
-    <!-- 引入苹果字体 -->
     <link href="https://fonts.googleapis.com/css?family=SF+Pro+Display:400,600&display=swap" rel="stylesheet">
-    <!-- 引入图标库 -->
     <link rel="stylesheet" href="allmin.css" />
-    <!-- 引入自定义CSS -->
     <link rel="stylesheet" href="styles.css">
     <style>
-        /* 密码生成器特定样式 */
-        .password-generator {
+        .uuid-generator {
             max-width: 800px;
             margin: 95px auto;
             padding: 45px;
@@ -23,45 +18,30 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
-        .option-group {
-            margin: 15px 0;
-            padding: 10px;
-            background: #f5f5f5;
-            border-radius: 4px;
-        }
-
-        .checkbox-group {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .checkbox-group span {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .result-area {
-            margin-top: 20px;
-        }
-
-        #password-output {
+        .form-table {
             width: 100%;
-            padding: 10px;
-            margin: 10px 0;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .form-table td {
+            padding: 12px;
+            border: 1px solid #ddd;
+        }
+
+        .form-table td:first-child {
+            background: #F5F5F5;
+            width: 120px;
+            text-align: right;
+        }
+
+        .all_srk_1 {
+            padding: 5px;
             border: 1px solid #ddd;
             border-radius: 4px;
         }
 
-        .button-group {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin: 15px 0;
-        }
-
-        button {
+        .all_an_1 {
             padding: 8px 16px;
             border: none;
             border-radius: 4px;
@@ -70,58 +50,40 @@
             cursor: pointer;
         }
 
-        button:hover {
+        .all_an_1:hover {
             background: #0056b3;
         }
 
-        select {
-            padding: 5px;
+        #jie_guo_biao_ti {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        #jie_guo_nei_rong {
+            padding: 15px;
+            background: #f5f5f5;
             border-radius: 4px;
-            border: 1px solid #ddd;
-        }
-
-        /* 历史记录相关样式 */
-        .history-settings {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 10px;
-        }
-
-        #history-panel {
             margin-top: 10px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
 
-        .history-header {
-            margin-bottom: 10px;
-            font-size: 14px;
-            color: #666;
-        }
-
-        #history-output {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background: #f9f9f9;
-            resize: vertical;
-        }
-
-        #clear-history-btn {
-            padding: 4px 8px;
-            font-size: 12px;
-            background: #dc3545;
+        #jie_guo_nei_rong_copy_btn {
+            display: inline-block;
             margin-left: 10px;
+            color: #007bff;
+            text-decoration: none;
         }
 
-        #clear-history-btn:hover {
-            background: #c82333;
+        #jie_guo_nei_rong_copy_btn_ok {
+            display: none;
+            color: green;
+            margin-left: 10px;
         }
     </style>
 </head>
 
 <body>
-    <!-- 导航栏 -->
     <nav class="navbar">
         <div class="nav-logo">
             <img src="tools.png" alt="Tools Logo" style="width: 30px;">
@@ -139,225 +101,98 @@
         </div>
     </nav>
 
-    <!-- 主内容 -->
-    <main class="password-generator">
-        <h1>密码生成器</h1>
+    <main class="uuid-generator">
+        <h1>UUID生成器</h1>
         
-        <div class="option-group">
-            <h3>字符选项</h3>
-            <div class="checkbox-group">
-                <span>
-                    <input type="checkbox" id="lowercase" checked>
-                    <label for="lowercase">小写字母(a-z)</label>
-                </span>
-                <span>
-                    <input type="checkbox" id="uppercase" checked>
-                    <label for="uppercase">大写字母(A-Z)</label>
-                </span>
-                <span>
-                    <input type="checkbox" id="numbers" checked>
-                    <label for="numbers">数字(0-9)</label>
-                </span>
-                <span>
-                    <input type="checkbox" id="symbols">
-                    <label for="symbols">特殊字符</label>
-                    <input type="text" id="custom-symbols" value="!@#$%^&*" size="8">
-                </span>
-            </div>
-        </div>
+        <form id="uuid-form">
+            <table class="form-table">
+                <tr>
+                    <td>生成数量：</td>
+                    <td>
+                        <input id="uuid_shuliang" type="number" size="4" min="1" max="3000" value="1" maxlength="4" class="all_srk_1">
+                        （1-3000）
+                    </td>
+                </tr>
+                <tr>
+                    <td>大小写：</td>
+                    <td>
+                        <label><input id="uuid_xiaoxie" name="uuid_daxiaoxie" type="radio" value="0" checked="checked">小写</label>
+                        <label><input type="radio" name="uuid_daxiaoxie" value="1">大写</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>分隔符（-）：</td>
+                    <td>
+                        <label><input id="uuid_fengefubaoliu" name="uuid_fengefu" type="radio" value="0" checked="checked">保留</label>
+                        <label><input type="radio" name="uuid_fengefu" value="1">取消</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: center;">
+                        <button type="button" id="generate-btn" class="all_an_1">生成</button>
+                    </td>
+                </tr>
+            </table>
+        </form>
 
-        <div class="option-group">
-            <h3>排除字符</h3>
-            <div class="checkbox-group">
-                <span>
-                    <input type="checkbox" id="exclude-chars">
-                    <label for="exclude-chars">排除</label>
-                    <input type="text" id="excluded-chars" value="iIl1o0O" size="8">
-                </span>
-            </div>
-        </div>
-
-        <div class="option-group">
-            <div class="settings-group">
-                <span>
-                    <label for="password-length">密码长度：</label>
-                    <select id="password-length"></select>
-                </span>
-                <span>
-                    <label for="password-count">生成数量：</label>
-                    <select id="password-count"></select>
-                </span>
-            </div>
-        </div>
-
-        <div class="button-group">
-            <button id="generate-btn">生成密码</button>
-            <button id="copy-btn">复制密码</button>
-            <button id="clear-btn">清空</button>
-        </div>
-
-        <div class="result-area">
-            <textarea id="password-output" rows="5" readonly></textarea>
-            <div id="password-strength"></div>
-        </div>
-
-        <div class="option-group">
-            <div class="history-settings">
-                <span>
-                    <input type="checkbox" id="save-history" checked>
-                    <label for="save-history">记录历史记录</label>
-                </span>
-                <button id="view-history-btn">查看历史记录</button>
-            </div>
-            
-            <div id="history-panel" style="display: none;">
-                <div class="history-header">
-                    <p>该功能将记录您最近生成的1000个密码。并且历史记录不是存储在我们云端服务器上，而是存储在您的浏览器本地存储中。
-                        <button id="clear-history-btn">清空记录</button>
-                    </p>
-                </div>
-                <textarea id="history-output" rows="5" readonly></textarea>
-            </div>
-        </div>
+        <div id="jie_guo_biao_ti">生成的UUID如下：</div>
+        <a id="jie_guo_nei_rong_copy_btn" href="javascript:void(0);">[复制]</a>
+        <span id="jie_guo_nei_rong_copy_btn_ok">复制成功！</span>
+        <pre id="jie_guo_nei_rong"></pre>
     </main>
 
-    <!-- 页脚 -->
     <footer>
-        <p>
-            &copy; 2024 蔚蓝个人工具导航站
+        <p>&copy; 2024 蔚蓝个人工具导航站 
             <a href="https://github.com/core666666/Blue-IT-Tool" target="_blank">GitHub开源地址</a>
         </p>
     </footer>
 
     <script>
-        // 初始化下拉选项
-        window.onload = function() {
-            const lengthSelect = document.getElementById('password-length');
-            const countSelect = document.getElementById('password-count');
-            
-            // 添加密码长度选项（1-99）
-            for(let i = 1; i <= 99; i++) {
-                const option = document.createElement('option');
-                option.value = i;
-                option.text = i;
-                if(i === 16) option.selected = true;
-                lengthSelect.appendChild(option);
-            }
-            
-            // 添加密码数量选项（1-99）
-            for(let i = 1; i <= 99; i++) {
-                const option = document.createElement('option');
-                option.value = i;
-                option.text = i;
-                countSelect.appendChild(option);
-            }
-        }
-
-        // 历史记录相关常量和函数
-        const HISTORY_KEY = 'password_history';
-        const MAX_HISTORY = 1000;
-
-        function saveToHistory(passwords) {
-            if (!document.getElementById('save-history').checked) return;
-            
-            let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-            const timestamp = new Date().toLocaleString();
-            
-            passwords.forEach(password => {
-                history.unshift({
-                    password: password,
-                    timestamp: timestamp
-                });
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0,
+                    v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
             });
-            
-            // 限制历史记录数量
-            if (history.length > MAX_HISTORY) {
-                history = history.slice(0, MAX_HISTORY);
-            }
-            
-            localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
         }
 
-        function loadHistory() {
-            const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-            const formattedHistory = history.map(item => 
-                `${item.timestamp}: ${item.password}`
-            ).join('\n');
+        function generateUUIDs() {
+            const count = parseInt(document.getElementById('uuid_shuliang').value);
+            const isUpperCase = document.querySelector('input[name="uuid_daxiaoxie"]:checked').value === "1";
+            const removeHyphens = document.querySelector('input[name="uuid_fengefu"]:checked').value === "1";
             
-            document.getElementById('history-output').value = formattedHistory;
-        }
-
-        function clearHistory() {
-            localStorage.removeItem(HISTORY_KEY);
-            document.getElementById('history-output').value = '';
-        }
-
-        // 生成密码的主要函数
-        function generatePassword() {
-            const lowercase = 'abcdefghijklmnopqrstuvwxyz';
-            const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            const numbers = '0123456789';
-            const symbols = document.getElementById('custom-symbols').value;
-            
-            let chars = '';
-            if(document.getElementById('lowercase').checked) chars += lowercase;
-            if(document.getElementById('uppercase').checked) chars += uppercase;
-            if(document.getElementById('numbers').checked) chars += numbers;
-            if(document.getElementById('symbols').checked) chars += symbols;
-            
-            // 排除字符
-            if(document.getElementById('exclude-chars').checked) {
-                const excludeChars = document.getElementById('excluded-chars').value;
-                chars = chars.split('').filter(char => !excludeChars.includes(char)).join('');
-            }
-            
-            const length = parseInt(document.getElementById('password-length').value);
-            const count = parseInt(document.getElementById('password-count').value);
-            
-            let passwords = [];
+            let uuids = [];
             for(let i = 0; i < count; i++) {
-                let password = '';
-                for(let j = 0; j < length; j++) {
-                    password += chars.charAt(Math.floor(Math.random() * chars.length));
+                let uuid = generateUUID();
+                if (removeHyphens) {
+                    uuid = uuid.replace(/-/g, '');
                 }
-                passwords.push(password);
+                if (isUpperCase) {
+                    uuid = uuid.toUpperCase();
+                }
+                uuids.push(uuid);
             }
             
-            document.getElementById('password-output').value = passwords.join('\n');
-            
-            // 保存到历史记录
-            saveToHistory(passwords);
+            document.getElementById('jie_guo_nei_rong').textContent = uuids.join('\n');
         }
 
-        // 添加事件监听器
-        document.getElementById('generate-btn').addEventListener('click', generatePassword);
-        
-        document.getElementById('copy-btn').addEventListener('click', function() {
-            const output = document.getElementById('password-output');
-            output.select();
-            document.execCommand('copy');
-        });
-        
-        document.getElementById('clear-btn').addEventListener('click', function() {
-            document.getElementById('password-output').value = '';
-        });
-
-        document.getElementById('view-history-btn').addEventListener('click', function() {
-            const historyPanel = document.getElementById('history-panel');
-            if (historyPanel.style.display === 'none') {
-                historyPanel.style.display = 'block';
-                loadHistory();
-            } else {
-                historyPanel.style.display = 'none';
-            }
+        // 复制功能
+        document.getElementById('jie_guo_nei_rong_copy_btn').addEventListener('click', function() {
+            const text = document.getElementById('jie_guo_nei_rong').textContent;
+            navigator.clipboard.writeText(text).then(function() {
+                const successMsg = document.getElementById('jie_guo_nei_rong_copy_btn_ok');
+                successMsg.style.display = 'inline';
+                setTimeout(() => {
+                    successMsg.style.display = 'none';
+                }, 2000);
+            });
         });
 
-        document.getElementById('clear-history-btn').addEventListener('click', function() {
-            if (confirm('确定要清空所有历史记录吗？')) {
-                clearHistory();
-            }
-        });
+        // 生成按钮事件
+        document.getElementById('generate-btn').addEventListener('click', generateUUIDs);
+
+        // 页面加载时生成一个初始UUID
+        window.onload = generateUUIDs;
     </script>
 </body>
-
 </html>

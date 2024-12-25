@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>密码生成器</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="tools.png">
+    <!-- 引入苹果字体 -->
+    <link href="https://fonts.googleapis.com/css?family=SF+Pro+Display:400,600&display=swap" rel="stylesheet">
+    <!-- 引入图标库 -->
+    <link rel="stylesheet" href="allmin.css" />
+    <!-- 引入自定义CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <style>
+       
+    </style>
+</head>
+
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-logo">
+            <img src="tools.png" alt="Tools Logo" style="width: 30px;">
+            <a href="index.html">蔚蓝工具导航</a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html#preview">返回</a></li>
+        </ul>
+        <div class="theme-switch">
+            <input type="checkbox" id="theme-toggle">
+            <label for="theme-toggle">
+                <i class="fas fa-sun"></i>
+                <i class="fas fa-moon"></i>
+            </label>
+        </div>
+    </nav>
+
+    <!-- 主内容 -->
+    <main class="password-generator">
+        <h1>密码生成器</h1>
+        
+        <div class="option-group">
+            <h3>字符选项</h3>
+            <div class="checkbox-group">
+                <span>
+                    <input type="checkbox" id="lowercase" checked>
+                    <label for="lowercase">小写字母(a-z)</label>
+                </span>
+                <span>
+                    <input type="checkbox" id="uppercase" checked>
+                    <label for="uppercase">大写字母(A-Z)</label>
+                </span>
+                <span>
+                    <input type="checkbox" id="numbers" checked>
+                    <label for="numbers">数字(0-9)</label>
+                </span>
+                <span>
+                    <input type="checkbox" id="symbols">
+                    <label for="symbols">特殊字符</label>
+                    <input type="text" id="custom-symbols" value="!@#$%^&*" size="8">
+                </span>
+            </div>
+        </div>
+
+        <div class="option-group">
+            <h3>排除字符</h3>
+            <div class="checkbox-group">
+                <span>
+                    <input type="checkbox" id="exclude-chars">
+                    <label for="exclude-chars">排除</label>
+                    <input type="text" id="excluded-chars" value="iIl1o0O" size="8">
+                </span>
+            </div>
+        </div>
+
+        <div class="option-group">
+            <div class="settings-group">
+                <span>
+                    <label for="password-length">密码长度：</label>
+                    <select id="password-length"></select>
+                </span>
+                <span>
+                    <label for="password-count">生成数量：</label>
+                    <select id="password-count"></select>
+                </span>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button id="generate-btn">生成密码</button>
+            <button id="copy-btn">复制密码</button>
+            <button id="clear-btn">清空</button>
+        </div>
+
+        <div class="result-area">
+            <textarea id="password-output" rows="5" readonly></textarea>
+            <div id="password-strength"></div>
+        </div>
+
+        <div class="option-group">
+            <div class="history-settings">
+                <span>
+                    <input type="checkbox" id="save-history" checked>
+                    <label for="save-history">记录历史记录</label>
+                </span>
+                <button id="view-history-btn">查看历史记录</button>
+            </div>
+            
+            <div id="history-panel" style="display: none;">
+                <div class="history-header">
+                    <p>该功能将记录您最近生成的1000个密码。并且历史记录不是存储在我们云端服务器上，而是存储在您的浏览器本地存储中。
+                        <button id="clear-history-btn">清空记录</button>
+                    </p>
+                </div>
+                <textarea id="history-output" rows="5" readonly></textarea>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer>
+        <p>
+            &copy; 2024 蔚蓝个人工具导航站
+            <a href="https://github.com/core666666/Blue-IT-Tool" target="_blank">GitHub开源地址</a>
+        </p>
+    </footer>
+
+    <script>
+       //...
+    </script>
+</body>
+
+</html>

@@ -49,6 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const clearHtmlBtn = document.getElementById("clear-html-btn");
   const maximizeBtn = document.getElementById("maximize-btn");
   const restoreBtn = document.getElementById("restore-btn");
+  const pasteHtmlBtn = document.getElementById("paste-html-btn");
 
   // 自动运行
   function runHtml() {
@@ -77,6 +78,41 @@ document.addEventListener("DOMContentLoaded", function () {
     htmlInput.value = "";
     htmlOutput.srcdoc = "";
   });
+
+  pasteHtmlBtn.addEventListener("click", async () => {
+    // 添加加载状态
+    pasteHtmlBtn.disabled = true;
+    pasteHtmlBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 粘贴中...';
+    
+    try {
+        // 清空现有内容
+        htmlInput.value = "";
+        htmlOutput.srcdoc = "";
+        
+        // 读取剪贴板
+        const clipboardText = await navigator.clipboard.readText();
+        
+        if (clipboardText.trim() === "") {
+            throw new Error("剪贴板为空");
+        }
+        
+        // 设置新内容
+        htmlInput.value = clipboardText;
+        htmlOutput.srcdoc = clipboardText;
+        
+    } catch (err) {
+        if (err.message === "剪贴板为空") {
+            alert("剪贴板中没有内容");
+        } else {
+            alert("无法访问剪贴板，请确保已授予剪贴板访问权限。");
+        }
+        console.error("剪贴板访问错误:", err);
+    } finally {
+        // 恢复按钮状态
+        pasteHtmlBtn.disabled = false;
+        pasteHtmlBtn.innerHTML = '<i class="fas fa-paste"></i> 清空并粘贴';
+    }
+});
 
   // 最大化功能
   maximizeBtn.addEventListener("click", () => {

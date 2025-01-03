@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>拼字幕截图生成器</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 网站图标 (favicon) -->
+    <link rel="icon" href="tools.png">
+    <!-- 字体示例引用，可按需修改/删除 -->
+    <link href="https://fonts.googleapis.com/css?family=SF+Pro+Display:400,600&display=swap" rel="stylesheet">
+    <!-- 样式文件，你可根据需要替换为自己的allmin.css / styles.css -->
+    <link rel="stylesheet" href="allmin.css" />
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        /* 页面整体布局 */
+        body {
+            font-family: 'SF Pro Display', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+        }
+
+        .theme-switch {
+            display: flex;
+            align-items: center;
+        }
+
+        /* 左右布局 */
+        /* .container {
+            display: flex;
+            max-width: 1200px;
+            margin: 90px auto 10px auto;
+            padding: 20px;
+            gap: 20px;
+            flex-wrap: wrap;
+        } */
+        .main-container {
+            max-width: 1600px;
+            margin: 66px auto 0px auto;
+            padding: 20px;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 8px;
+            padding: 20px;
+            background-color: #35d1c5;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-section h1 {
+            font-size: 2.5em;
+            margin: 0;
+            color: #333;
+        }
+
+        .header-section p {
+            font-family: "Times New Roman Italic", serif;
+            font-size: 1.2em;
+            color: #585555;
+            margin: 10px 0 0 0;
+        }
+
+        .content-container {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* 预览区域 */
+        .preview-section {
+            flex: 1;
+            min-width: 300px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        #canvas {
+            max-width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        /* 功能区域 */
+        .controls-section {
+            flex: 1;
+            min-width: 300px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        /* 表格样式 */
+        .form-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .form-table td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            vertical-align: top;
+        }
+
+        .form-table td:first-child {
+            background: #F5F5F5;
+            width: 150px;
+            text-align: right;
+            font-weight: 600;
+        }
+
+        /* 输入框、按钮的样式 */
+        .all_srk_1 {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .all_an_1 {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            background: #28a745;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        .all_an_1:hover {
+            background: #218838;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        /* 隐藏元素 */
+        .hidden {
+            display: none;
+        }
+
+        /* Loading 样式 */
+        .loading-mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-logo">
+            <img src="tools.png" alt="Tools Logo" style="width: 30px;">
+            <a href="index.html">蔚蓝工具导航</a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html#preview">返回</a></li>
+        </ul>
+        <div class="theme-switch">
+            <input type="checkbox" id="theme-toggle">
+            <label for="theme-toggle">
+                <i class="fas fa-sun"></i>
+                <i class="fas fa-moon"></i>
+            </label>
+        </div>
+    </nav>
+
+    <!-- 主体内容 -->
+    <div class="main-container">
+        <!-- 添加的标题和说明 -->
+        <div class="header-section">
+            <h1>字幕截图生成器</h1>
+            <p>“都有截图了一定是真的”</p>
+        </div>
+        <div class="content-container">
+            <!-- 预览区域 -->
+            <div class="preview-section">
+                <h2>预览</h2>
+                <canvas id="canvas"></canvas>
+            </div>
+
+            <!-- 控制区域 -->
+            <div class="controls-section">
+                <h2>生成设置</h2>
+                <!-- 功能表单 -->
+                <form id="zimu-form">
+                    <table class="form-table">
+                        <tr>
+                            <td>选择英雄：</td>
+                            <td>
+                                <select id="hero-select" class="all_srk_1">
+                                    <option value="screenshotgenerationimages/郭德纲.jpg">郭德纲</option>
+                                    <option value="screenshotgenerationimages/刘能.jpg">刘能</option>
+                                    <option value="screenshotgenerationimages/鲁迅.jpg">鲁迅</option>
+                                    <option value="screenshotgenerationimages/罗永浩.jpg">罗永浩</option>
+                                    <option value="screenshotgenerationimages/马斯克.jpg">马斯克</option>
+                                    <option value="screenshotgenerationimages/马云.jpg">马云</option>
+                                    <option value="screenshotgenerationimages/莫言.jpg">莫言</option>
+                                    <option value="screenshotgenerationimages/乔布斯.jpg">乔布斯</option>
+                                    <option value="screenshotgenerationimages/杨澜.jpg">杨澜</option>
+                                    <option value="screenshotgenerationimages/于丹.jpg">于丹</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>上传背景：</td>
+                            <td>
+                                <input type="file" id="bg-upload" accept="image/*" class="all_srk_1">
+                                <br><small>（可替换背景，也可直接使用左侧英雄）</small>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>字幕文本：</td>
+                            <td>
+                                <textarea id="text-input" rows="4" class="all_srk_1"
+                                    placeholder="输入字幕内容，按 Enter 换行"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label><input type="checkbox" id="double-check"> 双字幕</label></td>
+                            <td>
+                                <textarea id="text2-input" rows="4" class="all_srk_1 hidden"
+                                    placeholder="输入翻译字幕内容，按 Enter 换行"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>字号：</td>
+                            <td>
+                                <input type="range" id="fontsize-slider" min="10" max="50" value="26" class="all_srk_1">
+                                <span id="fontsize-value">26</span> px
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>行距：</td>
+                            <td>
+                                <input type="range" id="lineheight-slider" min="20" max="100" value="50"
+                                    class="all_srk_1">
+                                <span id="lineheight-value">50</span> px
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>字幕下边距：</td>
+                            <td>
+                                <input type="range" id="textbottommargin-slider" min="0" max="100" value="30"
+                                    class="all_srk_1">
+                                <span id="textbottommargin-value">30</span> px
+                            </td>
+                        </tr>
+                        <tr id="text2offset-row" class="hidden">
+                            <td>双字幕偏移：</td>
+                            <td>
+                                <input type="range" id="text2offset-slider" min="0" max="200" value="80"
+                                    class="all_srk_1">
+                                <span id="text2offset-value">80</span> % of 字号
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>水印：</td>
+                            <td>
+                                <label><input type="checkbox" id="watermark-check" checked> 显示水印</label>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+
+                <!-- 操作按钮 -->
+                <div style="text-align: center;">
+                    <button type="button" id="save-btn" class="all_an_1">保存图片</button>
+                    <button type="button" id="home-btn" class="all_an_1 btn-secondary">返回首页</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer style="text-align: center; padding: 20px; background-color: #f8f9fa;">
+        <p>&copy; 2025 蔚蓝个人工具导航站
+            <a href="https://github.com/core666666/Blue-IT-Tool" target="_blank">GitHub开源地址</a>
+        </p>
+    </footer>
+
+    <!-- 简易的loading提示 -->
+    <div id="loading-mask" class="loading-mask">
+        正在生成中，请稍候...
+    </div>
+
+    <script>
+        // 预定义的字幕文案
+        const subtitleSets = [
+            [
+                "生活就像一盒巧克力，你永远不知道你会得到什么。",
+                "别害怕失败，害怕的是不敢尝试。",
+                "时间是最好的医生，也是最糟的美容师。",
+                "努力不一定会成功，但放弃一定不会成功。",
+                "每一天都是一个新的开始，不要被过去困扰。",
+                "相信自己，你比你想象的更强大。"
+            ],
+            [
+                "成功的秘诀在于坚持自己的目标。",
+                "机会总是留给有准备的人。",
+                "梦想不会逃跑，逃跑的总是自己。",
+                "每一次努力都是幸运的伏笔。",
+                "不要等待机会，而要创造机会。",
+                "逆境中见真情，困境中显英雄。"
+            ],
+            [
+                "生活不是等待风暴过去，而是学会在风暴中跳舞。",
+                "勇气不是没有恐惧，而是克服恐惧。",
+                "只有经历了地狱般的磨练，才能炼出创造天堂的力量。",
+                "每一个不曾起舞的日子，都是对生命的辜负。",
+                "心有多大，舞台就有多大。",
+                "相信自己，奇迹才会发生。"
+            ]
+            // 可以根据需要添加更多字幕集
+        ];
+
+        // 随机选择一组字幕
+        function getRandomSubtitles() {
+            const randomSet = subtitleSets[Math.floor(Math.random() * subtitleSets.length)];
+            // 随机选择6行
+            const shuffled = randomSet.sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, 6);
+        }
+
+        // 初始化字幕输入
+        function initializeSubtitles() {
+            const subtitles = getRandomSubtitles();
+            // 默认字幕和翻译字幕各3行
+            textInput.value = subtitles.slice(0, 3).join('\n');
+            text2Input.value = subtitles.slice(3, 6).join('\n');
+        }
+
+        // 1. 获取元素
+        const heroSelect = document.getElementById('hero-select');
+        const bgUpload = document.getElementById('bg-upload');
+        const textInput = document.getElementById('text-input');
+        const doubleCheck = document.getElementById('double-check');
+        const text2Input = document.getElementById('text2-input');
+
+        const fontsizeSlider = document.getElementById('fontsize-slider');
+        const fontsizeValue = document.getElementById('fontsize-value');
+        const lineheightSlider = document.getElementById('lineheight-slider');
+        const lineheightValue = document.getElementById('lineheight-value');
+
+        const watermarkCheck = document.getElementById('watermark-check');
+        const canvas = document.getElementById('canvas');
+        const saveBtn = document.getElementById('save-btn');
+        const homeBtn = document.getElementById('home-btn');
+        const loadingMask = document.getElementById('loading-mask');
+
+        const textBottomMarginSlider = document.getElementById('textbottommargin-slider');
+        const textBottomMarginValue = document.getElementById('textbottommargin-value');
+        const text2OffsetSlider = document.getElementById('text2offset-slider');
+        const text2OffsetValue = document.getElementById('text2offset-value');
+        const text2OffsetRow = document.getElementById('text2offset-row');
+
+        textBottomMarginSlider.addEventListener('input', () => {
+            textBottomMarginValue.textContent = textBottomMarginSlider.value;
+            generateImage();
+        });
+
+        text2OffsetSlider.addEventListener('input', () => {
+            text2OffsetValue.textContent = text2OffsetSlider.value;
+            generateImage();
+        });
+
+        // 2. 初始化变量
+        let bgImage = new Image();  // 背景图
+        bgImage.src = heroSelect.value;
+
+        // 默认显示水印
+        watermarkCheck.checked = true;
+
+        // 当水印复选框状态改变时，重新生成图片
+        watermarkCheck.addEventListener('change', generateImage);
+
+        // 3. 切换是否显示双字幕输入框
+        doubleCheck.addEventListener('change', () => {
+            if (doubleCheck.checked) {
+                text2Input.classList.remove('hidden');
+                text2OffsetRow.classList.remove('hidden');
+            } else {
+                text2Input.classList.add('hidden');
+                text2OffsetRow.classList.add('hidden');
+            }
+            generateImage();
+        });
+
+        // 4. 同步显示字号、行距的数值
+        fontsizeSlider.addEventListener('input', () => {
+            fontsizeValue.textContent = fontsizeSlider.value;
+            generateImage();
+        });
+        lineheightSlider.addEventListener('input', () => {
+            lineheightValue.textContent = lineheightSlider.value;
+            generateImage();
+        });
+
+        // 5. 预加载图片
+        bgImage.onload = function () {
+            generateImage();
+        };
+
+        // 当选择英雄时，自动切换背景
+        heroSelect.addEventListener('change', () => {
+            bgUpload.value = ''; // 清空上传选择
+            bgImage.src = heroSelect.value;
+        });
+
+        // 当上传背景时，优先使用上传文件
+        bgUpload.addEventListener('change', () => {
+            if (bgUpload.files && bgUpload.files[0]) {
+                let file = bgUpload.files[0];
+                let reader = new FileReader();
+                reader.onload = (e) => {
+                    bgImage.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // 6. 字幕输入事件
+        textInput.addEventListener('input', () => {
+            generateImage();
+        });
+
+        text2Input.addEventListener('input', () => {
+            if (doubleCheck.checked) {
+                generateImage();
+            }
+        });
+
+        // 7. 生成图片函数
+        function generateImage() {
+            showLoading();
+
+            // 确保背景图已加载
+            if (!bgImage.complete) {
+                bgImage.onload = () => {
+                    drawToCanvas();
+                    hideLoading();
+                };
+            } else {
+                drawToCanvas();
+                hideLoading();
+            }
+        }
+
+        // 8. 真正的绘图逻辑
+        function drawToCanvas() {
+            let fontSize = parseInt(fontsizeSlider.value, 10);
+            let lineHeight = parseInt(lineheightSlider.value, 12);
+
+            // 从滑动条获取动态参数
+            let textBottomMargin = parseInt(textBottomMarginSlider.value, 10);
+            let text2OffsetPercent = parseInt(text2OffsetSlider.value, 10); // 百分比值
+            let text2Offset = fontSize * (text2OffsetPercent / 100);
+
+            // 准备字幕内容
+            let textLines = textInput.value.split('\n').filter(line => line.trim() !== '');
+            let text2Lines = doubleCheck.checked ? text2Input.value.split('\n').filter(line => line.trim() !== '') : [];
+
+            // 计算总的字幕行数（每组字幕只算作一行）
+            let totalSubtitleLines = textLines.length;
+
+            // 由于第一行字幕在原图上，所以需要额外增加的行数为总行数减一
+            let extraSubtitleLines = Math.max(0, totalSubtitleLines - 1);
+
+            // 计算需要增加的高度
+            let subtitleHeight = extraSubtitleLines * lineHeight + 33; // 额外留白
+
+            // 限制字幕区域不超过原图高度
+            let maxSubtitleHeight = bgImage.height;
+            if (subtitleHeight > maxSubtitleHeight) {
+                subtitleHeight = maxSubtitleHeight;
+                lineHeight = Math.floor((subtitleHeight - 15) / extraSubtitleLines);
+                lineheightSlider.value = lineHeight;
+                lineheightValue.textContent = lineHeight;
+            }
+
+            // 设置 canvas 的大小
+            canvas.width = bgImage.width;
+            canvas.height = bgImage.height + subtitleHeight;
+
+            let ctx = canvas.getContext('2d');
+
+            // 画原图
+            ctx.drawImage(bgImage, 0, 0, bgImage.width, bgImage.height);
+
+            // 为每一行额外的字幕绘制对应的背景部分（从第二行开始）
+            for (let i = 0; i < extraSubtitleLines; i++) {
+                let srcX = 0;
+                let srcWidth = bgImage.width;
+                let srcHeight = Math.min(lineHeight, bgImage.height);
+                let srcY = bgImage.height - srcHeight;
+
+                let destX = 0;
+                let destY = bgImage.height + i * lineHeight;
+                let destWidth = bgImage.width;
+                let destHeight = srcHeight;
+
+                ctx.drawImage(bgImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight);
+            }
+
+            // 设置文本样式
+            ctx.font = `${fontSize}px Arial`;
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = 2;
+
+            let x = canvas.width / 2;
+            // let textBottomMargin = 30;
+            // let text2Offset = fontSize * 0.8; // 第二行文本的垂直偏移量
+
+            // 计算主字幕的 Y 坐标
+            function getSubtitleY(index) {
+                if (index === 0) {
+                    // 第一行字幕在原图上
+                    return bgImage.height - textBottomMargin;
+                } else {
+                    // 其他字幕在拼接的部分
+                    let lineIndex = index - 1;
+                    return bgImage.height + lineIndex * lineHeight + lineHeight - textBottomMargin;
+                }
+            }
+
+            // 绘制字幕
+            for (let i = 0; i < textLines.length; i++) {
+                let y = getSubtitleY(i);
+
+                // 绘制主字幕
+                ctx.font = `${fontSize}px Arial`;
+                ctx.strokeText(textLines[i], x, y);
+                ctx.fillText(textLines[i], x, y);
+
+                // 如果启用双字幕且有对应的第二行文本，绘制在主字幕下方
+                if (doubleCheck.checked && text2Lines[i]) {
+                    let text2FontSize = Math.floor(fontSize * 0.8); // 第二行文本字体略小
+                    ctx.font = `${text2FontSize}px Arial`;
+                    ctx.strokeText(text2Lines[i], x, y + text2Offset);
+                    ctx.fillText(text2Lines[i], x, y + text2Offset);
+                }
+            }
+
+            // 绘制水印
+            if (watermarkCheck.checked) {
+                ctx.font = '16px Arial';
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'top';
+                ctx.fillText('@蔚蓝工具导航-截图生成器', canvas.width - 10, 10);
+            }
+        }
+
+        // 9. 保存图片
+        saveBtn.addEventListener('click', () => {
+            if (canvas.width === 0 || canvas.height === 0) {
+                alert('图片尚未生成，请先生成图片。');
+                return;
+            }
+            canvas.toBlob(function (blob) {
+                let url = URL.createObjectURL(blob);
+                let link = document.createElement('a');
+                link.download = 'subtitle_image.png';
+                link.href = url;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            }, 'image/png');
+        });
+
+        // 10. 返回首页
+        homeBtn.addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+
+        // 11. Loading 提示
+        function showLoading() {
+            loadingMask.style.display = 'flex';
+        }
+        function hideLoading() {
+            loadingMask.style.display = 'none';
+        }
+
+        // 12. 页面初始生成
+        window.onload = function () {
+            // 初始化随机字幕
+            initializeSubtitles();
+
+            // 根据默认设置生成初始图片
+            generateImage();
+        };
+    </script>
+</body>
+
+</html>

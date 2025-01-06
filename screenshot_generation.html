@@ -561,8 +561,6 @@
             ctx.lineWidth = 2;
 
             let x = canvas.width / 2;
-            // let textBottomMargin = 30;
-            // let text2Offset = fontSize * 0.8; // 第二行文本的垂直偏移量
 
             // 计算主字幕的 Y 坐标
             function getSubtitleY(index) {
@@ -585,9 +583,8 @@
                 ctx.strokeText(textLines[i], x, y);
                 ctx.fillText(textLines[i], x, y);
 
-                // 如果启用双字幕且有对应的第二行文本，绘制在主字幕下方
                 if (doubleCheck.checked && text2Lines[i]) {
-                    let text2FontSize = Math.floor(fontSize * 0.8); // 第二行文本字体略小
+                    let text2FontSize = Math.floor(fontSize * 0.8);
                     ctx.font = `${text2FontSize}px Arial`;
                     ctx.strokeText(text2Lines[i], x, y + text2Offset);
                     ctx.fillText(text2Lines[i], x, y + text2Offset);
@@ -596,12 +593,18 @@
 
             // 绘制水印
             if (watermarkCheck.checked) {
-                ctx.font = '16px Arial';
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
                 ctx.textAlign = 'right';
                 ctx.textBaseline = 'top';
+
+                ctx.font = '20px Arial';
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
                 ctx.fillText('@蔚蓝工具导航-截图生成器', canvas.width - 10, 10);
+
+                ctx.font = '20px Arial'; 
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                ctx.fillText('tools.51rexue.cn', canvas.width - 10, 30);
             }
+
         }
 
         // 9. 保存图片

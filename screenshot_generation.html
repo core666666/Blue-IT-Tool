@@ -317,46 +317,67 @@
         // 预定义的字幕文案
         const subtitleSets = [
             [
-                "生活就像一盒巧克力，你永远不知道你会得到什么。",
-                "别害怕失败，害怕的是不敢尝试。",
-                "时间是最好的医生，也是最糟的美容师。",
-                "努力不一定会成功，但放弃一定不会成功。",
-                "每一天都是一个新的开始，不要被过去困扰。",
-                "相信自己，你比你想象的更强大。"
+                {
+                    cn: "生活就像一盒巧克力，你永远不知道你会得到什么。",
+                    en: "Life is like a box of chocolates, you never know what you're gonna get."
+                },
+                {
+                    cn: "别害怕失败，害怕的是不敢尝试。",
+                    en: "Don't fear failure, fear not trying."
+                },
+                {
+                    cn: "时间是最好的医生，也是最糟的美容师。",
+                    en: "Time is the best healer but the worst beautician."
+                },
+                {
+                    cn: "努力不一定会成功，但放弃一定不会成功。",
+                    en: "Hard work might not guarantee success, but giving up guarantees failure."
+                },
+                {
+                    cn: "每一天都是一个新的开始，不要被过去困扰。",
+                    en: "Every day is a new beginning, don't let the past trouble you."
+                }
             ],
             [
-                "成功的秘诀在于坚持自己的目标。",
-                "机会总是留给有准备的人。",
-                "梦想不会逃跑，逃跑的总是自己。",
-                "每一次努力都是幸运的伏笔。",
-                "不要等待机会，而要创造机会。",
-                "逆境中见真情，困境中显英雄。"
-            ],
-            [
-                "生活不是等待风暴过去，而是学会在风暴中跳舞。",
-                "勇气不是没有恐惧，而是克服恐惧。",
-                "只有经历了地狱般的磨练，才能炼出创造天堂的力量。",
-                "每一个不曾起舞的日子，都是对生命的辜负。",
-                "心有多大，舞台就有多大。",
-                "相信自己，奇迹才会发生。"
+                {
+                    cn: "成功的秘诀在于坚持自己的目标。",
+                    en: "The key to success is persisting in your goals."
+                },
+                {
+                    cn: "机会总是留给有准备的人。",
+                    en: "Opportunity favors the prepared mind."
+                },
+                {
+                    cn: "梦想不会逃跑，逃跑的总是自己。",
+                    en: "Dreams don't run away, we do."
+                },
+                {
+                    cn: "每一次努力都是幸运的伏笔。",
+                    en: "Every effort is a foreshadowing of luck."
+                },
+                {
+                    cn: "不要等待机会，而要创造机会。",
+                    en: "Don't wait for opportunities, create them."
+                }
             ]
-            // 可以根据需要添加更多字幕集
         ];
 
         // 随机选择一组字幕
         function getRandomSubtitles() {
             const randomSet = subtitleSets[Math.floor(Math.random() * subtitleSets.length)];
-            // 随机选择6行
-            const shuffled = randomSet.sort(() => 0.5 - Math.random());
-            return shuffled.slice(0, 6);
+            const shuffled = [...randomSet].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, 5);
         }
 
         // 初始化字幕输入
         function initializeSubtitles() {
             const subtitles = getRandomSubtitles();
-            // 默认字幕和翻译字幕各3行
-            textInput.value = subtitles.slice(0, 3).join('\n');
-            text2Input.value = subtitles.slice(3, 6).join('\n');
+            textInput.value = subtitles.map(item => item.cn).join('\n');
+            text2Input.value = subtitles.map(item => item.en).join('\n');
+            // 自动勾选双字幕选项
+            doubleCheck.checked = true;
+            text2Input.classList.remove('hidden');
+            text2OffsetRow.classList.remove('hidden');
         }
 
         // 1. 获取元素

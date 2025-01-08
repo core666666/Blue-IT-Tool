@@ -1,0 +1,151 @@
+body {
+    font-family: 'SF Pro Display', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f7fa;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+    width: 80%;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+.content-wrapper {
+    margin-top: 7%; 
+    display: flex;
+    width: 100%;
+    gap: 30px;
+    justify-content: space-between;
+}
+
+.section {
+    flex: 1;
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    min-width: 0;
+}
+
+textarea {
+    width: 100%;
+    font-size: 16px;
+    padding: 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    resize: vertical;
+    min-height: 100px;
+    max-height: 300px;
+    transition: border-color 0.3s ease;
+}
+
+@media (max-width: 1200px) {
+    main {
+        width: 90%;
+    }
+}
+
+@media (max-width: 968px) {
+    main {
+        width: 95%;
+        padding: 15px;
+        margin: 10px auto;
+    }
+
+    .content-wrapper {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .section {
+        width: 9%;
+        padding: 20px;
+    }
+}
+
+@media (max-width: 600px) {
+    main {
+        width: 100%;
+        padding: 10px;
+    }
+
+    .section {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+
+    textarea {
+        min-height: 80px;
+    }
+
+    .button-group {
+        flex-wrap: wrap;
+    }
+
+    button {
+        padding: 10px 20px;
+        font-size: 14px;
+        flex: 1 1 auto;
+        min-width: 120px;
+    }
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+button {
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 100px;
+}
+
+h2 {
+    color: #2c3e50;
+    font-size: 22px;
+    margin-bottom: 20px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #0078D7;
+}
+
+.option-group {
+    margin-bottom: 20px;
+}
+
+label {
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+body.dark-mode .section {
+    background-color: #1e1e1e;
+    color: #fff;
+}
+
+body.dark-mode textarea {
+    background-color: #2d2d2d;
+    border-color: #444;
+    color: #fff;
+}
+
+body.dark-mode button {
+    background-color: #0A84FF;
+    color: white;
+}
+
+body.dark-mode button:hover {
+    background-color: #0056b3;
+} 

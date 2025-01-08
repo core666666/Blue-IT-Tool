@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>UUID生成器</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../tools.png">
+    <link href="https://fonts.googleapis.com/css?family=SF+Pro+Display:400,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/common.css" />
+    <link rel="stylesheet" href="../styles/uuid_generation.css">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-logo">
+            <img src="../tools.png" alt="Tools Logo" style="width: 30px;">
+            <a href="../index.html">蔚蓝工具导航</a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="../index.html#preview">返回</a></li>
+        </ul>
+        <div class="theme-switch">
+            <input type="checkbox" id="theme-toggle">
+            <label for="theme-toggle">
+                <i class="fas fa-sun"></i>
+                <i class="fas fa-moon"></i>
+            </label>
+        </div>
+    </nav>
+
+    <main class="uuid-generator">
+        <h1>UUID生成器</h1>
+        
+        <form id="uuid-form">
+            <table class="form-table">
+                <tr>
+                    <td>生成数量：</td>
+                    <td>
+                        <input id="uuid_shuliang" type="number" size="4" min="1" max="3000" value="1" maxlength="4" class="all_srk_1">
+                        （1-3000）
+                    </td>
+                </tr>
+                <tr>
+                    <td>大小写：</td>
+                    <td>
+                        <label><input id="uuid_xiaoxie" name="uuid_daxiaoxie" type="radio" value="0" checked="checked">小写</label>
+                        <label><input type="radio" name="uuid_daxiaoxie" value="1">大写</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>分隔符（-）：</td>
+                    <td>
+                        <label><input id="uuid_fengefubaoliu" name="uuid_fengefu" type="radio" value="0" checked="checked">保留</label>
+                        <label><input type="radio" name="uuid_fengefu" value="1">取消</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: center;">
+                        <button type="button" id="generate-btn" class="all_an_1">生成</button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+
+        <div id="jie_guo_biao_ti">生成的UUID如下：</div>
+        <a id="jie_guo_nei_rong_copy_btn" href="javascript:void(0);">[复制]</a>
+        <span id="jie_guo_nei_rong_copy_btn_ok">复制成功！</span>
+        <pre id="jie_guo_nei_rong"></pre>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 蔚蓝个人工具导航站 
+            <a href="https://github.com/core666666/Blue-IT-Tool" target="_blank">GitHub开源地址</a>
+        </p>
+    </footer>
+
+    <script src="../scripts/index.js"></script>
+    <script src="../scripts/uuid_generation.js"></script>
+</body>
+</html> 

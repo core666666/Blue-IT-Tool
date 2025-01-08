@@ -1,47 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // 主题切换功能保持不变
-  const themeToggle = document.getElementById("theme-toggle");
-  const body = document.body;
-
   let isCollapsed = false; // 初始状态为未折叠
-
-  function setTheme(theme) {
-    if (theme === "dark") {
-      body.classList.remove("light-mode");
-      body.classList.add("dark-mode");
-      themeToggle.checked = true;
-      localStorage.setItem("theme", "dark");
-    } else {
-      body.classList.remove("dark-mode");
-      body.classList.add("light-mode");
-      themeToggle.checked = false;
-      localStorage.setItem("theme", "light");
-    }
-  }
-
-  themeToggle.addEventListener("change", () => {
-    if (themeToggle.checked) {
-      setTheme("dark");
-    } else {
-      setTheme("light");
-    }
-  });
-
-  // 检查本地存储中的主题设置
-  const savedTheme = localStorage.getItem("theme");
-  if (savedTheme) {
-    setTheme(savedTheme);
-  } else {
-    // 根据系统偏好设置
-    if (
-      window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
-    ) {
-      setTheme("dark");
-    } else {
-      setTheme("light");
-    }
-  }
 
   // JSON格式化功能
   const jsonInput = document.getElementById("json-input");
@@ -73,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
       jsonInput.value = JSON.stringify(json, null, 4);
       jsonEditor.set(json);
       isCollapsed = false;
-       collapseBtn.innerHTML = '<i class="fas fa-compress-arrows-alt"></i> 折叠';
+      collapseBtn.innerHTML = '<i class="fas fa-compress-arrows-alt"></i> 折叠';
     } catch (e) {
       // 在编辑器中显示错误信息
       jsonEditor.setText("JSON格式不正确：" + e.message);
@@ -92,11 +50,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function collapseJSON() {
     if (!isCollapsed) {
-        jsonEditor.collapseAll();
-        collapseBtn.innerHTML = '<i class="fas fa-expand-arrows-alt"></i> 展开';
+      jsonEditor.collapseAll();
+      collapseBtn.innerHTML = '<i class="fas fa-expand-arrows-alt"></i> 展开';
     } else {
-        jsonEditor.expandAll();
-        collapseBtn.innerHTML = '<i class="fas fa-compress-arrows-alt"></i> 折叠';
+      jsonEditor.expandAll();
+      collapseBtn.innerHTML = '<i class="fas fa-compress-arrows-alt"></i> 折叠';
     }
     isCollapsed = !isCollapsed; // 切换状态
   }
@@ -149,9 +107,9 @@ document.addEventListener("DOMContentLoaded", function () {
   // 监听 Esc 键恢复窗口
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape" && document.body.classList.contains("maximized")) {
-        document.body.classList.remove("maximized");
-        maximizeBtn.style.display = "inline-block";
-        restoreBtn.style.display = "none";
+      document.body.classList.remove("maximized");
+      maximizeBtn.style.display = "inline-block";
+      restoreBtn.style.display = "none";
     }
   });
 
@@ -183,4 +141,4 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // 初始格式化
   formatJSON();
-});
+}); 

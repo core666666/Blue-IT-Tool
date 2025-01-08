@@ -1,46 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // 主题切换功能保持不变
-  const themeToggle = document.getElementById("theme-toggle");
-  const body = document.body;
-
-  function setTheme(theme) {
-    if (theme === "dark") {
-      body.classList.remove("light-mode");
-      body.classList.add("dark-mode");
-      themeToggle.checked = true;
-      localStorage.setItem("theme", "dark");
-    } else {
-      body.classList.remove("dark-mode");
-      body.classList.add("light-mode");
-      themeToggle.checked = false;
-      localStorage.setItem("theme", "light");
-    }
-  }
-
-  themeToggle.addEventListener("change", () => {
-    if (themeToggle.checked) {
-      setTheme("dark");
-    } else {
-      setTheme("light");
-    }
-  });
-
-  // 检查本地存储中的主题设置
-  const savedTheme = localStorage.getItem("theme");
-  if (savedTheme) {
-    setTheme(savedTheme);
-  } else {
-    // 根据系统偏好设置
-    if (
-      window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
-    ) {
-      setTheme("dark");
-    } else {
-      setTheme("light");
-    }
-  }
-
   // HTML预览功能
   const htmlInput = document.getElementById("html-input");
   const htmlOutput = document.getElementById("html-output");
@@ -112,7 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
         pasteHtmlBtn.disabled = false;
         pasteHtmlBtn.innerHTML = '<i class="fas fa-paste"></i> 清空并粘贴';
     }
-});
+  });
 
   // 最大化功能
   maximizeBtn.addEventListener("click", () => {
@@ -172,4 +130,4 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // 初始运行
   runHtml();
-});
+}); 

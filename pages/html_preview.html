@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>HTML在线预览工具</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../tools.png">
+    <!-- 引入苹果字体 -->
+    <link href="https://fonts.googleapis.com/css?family=SF+Pro+Display:400,600&display=swap" rel="stylesheet">
+    <!-- 引入图标库 -->
+    <link rel="stylesheet" href="../allmin.css" />
+    <!-- 引入自定义CSS -->
+    <link rel="stylesheet" href="../styles/common.css">
+    <link rel="stylesheet" href="../styles/html-preview.css">
+</head>
+
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-logo"><img src="../tools.png" alt="Tools Logo" style="width: 30px;"><a href="../index.html">蔚蓝工具导航</a></div>
+        <ul class="nav-links">
+            <li><a href="../index.html#preview">返回</a></li>
+        </ul>
+        <!-- 主题切换按钮 -->
+        <div class="theme-switch">
+            <input type="checkbox" id="theme-toggle">
+            <label for="theme-toggle">
+                <i class="fas fa-sun"></i>
+                <i class="fas fa-moon"></i>
+            </label>
+        </div>
+    </nav>
+
+    <!-- 主内容 -->
+    <main class="html-preview">
+        <div class="editor-wrapper">
+            <div class="toolbar">
+                <h1>HTML在线预览工具</h1>
+                <div class="buttons">
+                    <button id="format-html-btn"><i class="fas fa-code"></i> 格式化</button>
+                    <button id="unescape-btn"><i class="fas fa-undo"></i> 反转义</button>
+                    <button id="maximize-btn"><i class="fas fa-expand"></i> 最大化</button>
+                    <button id="restore-btn" style="display:none;"><i class="fas fa-compress"></i> 还原</button>
+                    <button id="clear-html-btn"><i class="fas fa-trash"></i> 清空</button>
+                    <button id="paste-html-btn"><i class="fas fa-paste"></i> 清空并粘贴</button>
+                </div>
+            </div>
+            <div class="editor-container">
+                <div class="editor-pane" id="input-pane">
+                    <textarea id="html-input" placeholder="在此处编写您的HTML代码"></textarea>
+                </div>
+                <div class="dragbar" id="dragbar"></div>
+                <div class="editor-pane" id="output-pane">
+                    <iframe id="html-output" title="预览"></iframe>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer>
+        <p>
+            &copy; 2024 蔚蓝个人工具导航站
+            <!-- <a href="https://beian.miit.gov.cn/" target="_blank">粤ICP备20230401001号</a> -->
+            <a href="https://github.com/core666666/Blue-IT-Tool" target="_blank">GitHub开源地址</a></p>
+    </footer>
+
+    <!-- 引入自定义JS -->
+    <script src="../scripts/index.js"></script>
+    <script src="../scripts/html-preview.js"></script>
+    <!-- 引入代码格式化库（如js-beautify） -->
+    <script src="https://cdn.jsdelivr.net/npm/js-beautify@1.14.0/js/lib/beautify-html.js"></script>
+</body>
+
+</html> 

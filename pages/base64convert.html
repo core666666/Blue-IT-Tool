@@ -1,0 +1,99 @@
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Base64 编码/解码器</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../tools.png">
+    <link href="https://fonts.googleapis.com/css?family=SF+Pro+Display:400,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/common.css" />
+    <link rel="stylesheet" href="../styles/base64convert.css">
+</head>
+
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-logo">
+            <img src="../tools.png" alt="Tools Logo" style="width: 30px;">
+            <a href="../index.html">蔚蓝工具导航</a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="../index.html#preview">返回</a></li>
+        </ul>
+        <div class="theme-switch">
+            <input type="checkbox" id="theme-toggle">
+            <label for="theme-toggle">
+                <i class="fas fa-sun"></i>
+                <i class="fas fa-moon"></i>
+            </label>
+        </div>
+    </nav>
+
+    <!-- 主内容 -->
+    <main>
+        <div class="content-wrapper">
+            <!-- 左侧编码部分 -->
+            <div class="section">
+                <h2>字符串转 Base64</h2>
+                <div class="option-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="encode-url-safe">
+                        <label for="encode-url-safe">URL 安全编码</label>
+                    </div>
+                </div>
+                <div class="option-group">
+                    <label for="string-to-encode">要编码的字符串</label>
+                    <textarea id="string-to-encode" placeholder="在此输入您的字符串..."></textarea>
+                </div>
+                <div class="button-group">
+                    <button id="encode-btn">编码</button>
+                </div>
+                <div class="option-group">
+                    <label for="encoded-string">字符串的 Base64</label>
+                    <textarea id="encoded-string" placeholder="您的字符串的 Base64 编码将在此显示" readonly></textarea>
+                </div>
+                <div class="button-group">
+                    <button id="copy-encoded-btn">复制 Base64</button>
+                    <button id="clear-encode-btn">清空</button>
+                </div>
+            </div>
+
+            <!-- 右侧解码部分 -->
+            <div class="section">
+                <h2>Base64 转字符串</h2>
+                <div class="option-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="decode-url-safe">
+                        <label for="decode-url-safe">URL 安全解码</label>
+                    </div>
+                </div>
+                <div class="option-group">
+                    <label for="base64-to-decode">要解码的 Base64 字符串</label>
+                    <textarea id="base64-to-decode" placeholder="在此输入您的 Base64 字符串..."></textarea>
+                </div>
+                <div class="button-group">
+                    <button id="decode-btn">解码</button>
+                </div>
+                <div class="option-group">
+                    <label for="decoded-string">解码后的字符串</label>
+                    <textarea id="decoded-string" placeholder="解码后的字符串将在此显示" readonly></textarea>
+                </div>
+                <div class="button-group">
+                    <button id="copy-decoded-btn">复制解码后的字符串</button>
+                    <button id="clear-decode-btn">清空</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer>
+        <p>
+            &copy; 2023 蔚蓝个人工具导航站
+            <a href="https://github.com/core666666/Blue-IT-Tool" target="_blank">GitHub 开源地址</a>
+        </p>
+    </footer>
+
+    <script src="../scripts/index.js"></script>
+    <script src="../scripts/base64convert.js"></script>
+</body>
+</html> 

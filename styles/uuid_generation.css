@@ -1,0 +1,108 @@
+.uuid-generator {
+    max-width: 800px;
+    margin: 95px auto;
+    padding: 45px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.form-table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+}
+
+.form-table td:first-child {
+    background: #F5F5F5;
+    width: 120px;
+    text-align: right;
+}
+
+.all_srk_1 {
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.all_an_1 {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    background: #007bff;
+    color: white;
+    cursor: pointer;
+}
+
+.all_an_1:hover {
+    background: #0056b3;
+}
+
+#jie_guo_biao_ti {
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+#jie_guo_nei_rong {
+    padding: 15px;
+    background: #f5f5f5;
+    border-radius: 4px;
+    margin-top: 10px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+#jie_guo_nei_rong_copy_btn {
+    display: inline-block;
+    margin-left: 10px;
+    color: #007bff;
+    text-decoration: none;
+}
+
+#jie_guo_nei_rong_copy_btn_ok {
+    display: none;
+    color: green;
+    margin-left: 10px;
+}
+
+/* Dark mode styles */
+body.dark-mode .uuid-generator {
+    background: #1e1e1e;
+    color: #fff;
+}
+
+body.dark-mode .form-table td {
+    border-color: #444;
+}
+
+body.dark-mode .form-table td:first-child {
+    background: #2d2d2d;
+}
+
+body.dark-mode .all_srk_1 {
+    background: #2d2d2d;
+    border-color: #444;
+    color: #fff;
+}
+
+body.dark-mode .all_an_1 {
+    background: #0A84FF;
+}
+
+body.dark-mode .all_an_1:hover {
+    background: #0056b3;
+}
+
+body.dark-mode #jie_guo_nei_rong {
+    background: #2d2d2d;
+    color: #fff;
+}
+
+body.dark-mode #jie_guo_nei_rong_copy_btn {
+    color: #0A84FF;
+} 

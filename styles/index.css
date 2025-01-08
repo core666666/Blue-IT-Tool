@@ -245,11 +245,6 @@ body.dark-mode .tool-card:hover {
     transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.scroll-reveal.visible {
-    opacity: 1;
-    transform: translateY(0);
-}
-
 /* 响应式设计 */
 @media (max-width: 768px) {
     .notice {
@@ -261,7 +256,7 @@ body.dark-mode .tool-card:hover {
         padding: 20px 10px;
         gap: 15px;
     }
-    
+
     .tool-card {
         width: calc(50% - 20px);
         min-width: 160px;

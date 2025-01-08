@@ -52,3 +52,68 @@ searchInput.addEventListener('keyup', () => {
         }
     });
 });
+
+// 添加滚动显示动画
+function handleScrollAnimation() {
+    const cards = document.querySelectorAll('.tool-card');
+    cards.forEach((card, index) => {
+        card.style.setProperty('--card-index', index);
+        card.classList.add('scroll-reveal');
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, {
+        threshold: 0.1
+    });
+
+    document.querySelectorAll('.scroll-reveal').forEach(element => {
+        observer.observe(element);
+    });
+}
+
+// 添加卡片鼠标跟踪效果
+function handleCardMouseEffects() {
+    const cards = document.querySelectorAll('.tool-card');
+    
+    cards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / card.clientWidth) * 100;
+            const y = ((e.clientY - rect.top) / card.clientHeight) * 100;
+            
+            // 更新光效位置
+            card.style.setProperty('--mouse-x', `${x}%`);
+            card.style.setProperty('--mouse-y', `${y}%`);
+            
+            // 添加倾斜效果
+            const rotateY = ((e.clientX - rect.left) / rect.width - 0.5) * 10;
+            const rotateX = ((e.clientY - rect.top) / rect.height - 0.5) * -10;
+            
+            card.style.transform = `
+                perspective(1000px)
+                rotateX(${rotateX}deg)
+                rotateY(${rotateY}deg)
+                translateY(-15px)
+            `;
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translateY(0) perspective(1000px)';
+            setTimeout(() => {
+                card.style.setProperty('--mouse-x', '50%');
+                card.style.setProperty('--mouse-y', '50%');
+            }, 100);
+        });
+    });
+}
+
+// 页面加载完成后初始化动画和效果
+document.addEventListener('DOMContentLoaded', () => {
+    handleScrollAnimation();
+    handleCardMouseEffects();
+});

@@ -1,0 +1,88 @@
+/* 工具页通用样式 */
+.toolbar {
+    position: sticky;
+    top: 60px;
+    z-index: 100;
+    background-color: inherit;
+    padding: 10px;
+}
+
+.toolbar h1 {
+    margin: 0;
+}
+
+.toolbar .buttons button {
+    margin: 0 5px;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #007AFF;
+    color: white;
+    transition: background-color 0.3s;
+}
+
+.toolbar .buttons button:hover {
+    background-color: #0056b3;
+}
+
+.toolbar .buttons button:focus {
+    outline: none;
+}
+
+.editor-container {
+    flex-grow: 1;
+    overflow: hidden;
+    display: flex;
+    width: 90%;
+    height: calc(100vh - 150px);
+    position: relative;
+}
+
+.editor-pane {
+    flex: 1;
+    overflow: hidden;
+}
+
+.dragbar {
+    width: 4px;
+    cursor: col-resize;
+    background-color: #ddd;
+    transition: background-color 0.3s;
+}
+
+body.dark-mode .dragbar {
+    background-color: #444;
+}
+
+/* 最大化状态样式 */
+.maximized .editor-container {
+    width: 100%;
+    height: 100vh;
+}
+
+.maximized .editor-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    background-color: inherit;
+}
+
+.maximized .toolbar {
+    padding: 10px 20px;
+}
+
+.maximized .toolbar h1 {
+    margin: 0;
+}
+
+.maximized #maximize-btn {
+    display: none;
+}
+
+.maximized #restore-btn {
+    display: inline-block;
+} 

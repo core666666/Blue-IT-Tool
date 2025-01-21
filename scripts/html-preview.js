@@ -8,6 +8,18 @@ document.addEventListener("DOMContentLoaded", function () {
   const maximizeBtn = document.getElementById("maximize-btn");
   const restoreBtn = document.getElementById("restore-btn");
   const pasteHtmlBtn = document.getElementById("paste-html-btn");
+  const dragbar = document.getElementById("dragbar");
+  const inputPane = document.getElementById("input-pane");
+  const outputPane = document.getElementById("output-pane");
+
+  // 初始化面板宽度
+  function initializePanels() {
+    inputPane.style.width = "49.8%";  // 50% - dragbar宽度的一半
+    outputPane.style.width = "49.8%"; // 50% - dragbar宽度的一半
+  }
+
+  // 页面加载时初始化面板
+  initializePanels();
 
   // 自动运行
   function runHtml() {
@@ -97,10 +109,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // 拖动分割条调整布局
-  const dragbar = document.getElementById("dragbar");
-  const inputPane = document.getElementById("input-pane");
-  const outputPane = document.getElementById("output-pane");
-
   dragbar.addEventListener("mousedown", (e) => {
     e.preventDefault();
     document.addEventListener("mousemove", resize);
@@ -111,9 +119,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const containerWidth = inputPane.parentNode.offsetWidth;
     const newWidth = (e.clientX / containerWidth) * 100;
     if (newWidth > 10 && newWidth < 90) {
-      // 限制最小和最大宽度
-      inputPane.style.flex = `0 0 ${newWidth}%`;
-      outputPane.style.flex = `0 0 ${100 - newWidth}%`;
+      inputPane.style.width = `${newWidth}%`;
+      outputPane.style.width = `${100 - newWidth - 0.4}%`; // 减去dragbar的宽度(0.4%)
     }
   }
 

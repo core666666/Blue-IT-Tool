@@ -3,13 +3,34 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>封面图制作</title>
-    <link rel="icon" href="tools.png" type="image/png">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- 引入更多酷炫艺术字体 -->
-    <link
-        href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Pacifico&family=Montserrat&family=Indie+Flower&family=Lobster&family=Oswald&family=Roboto+Mono&family=Great+Vibes&family=Dancing+Script&family=Bebas+Neue&family=Abril+Fatface&family=Playfair+Display&family=Permanent+Marker&family=Creepster&family=Bangers&family=Press+Start+2P&family=Fredericka+the+Great&family=UnifrakturMaguntia&family=Nosifer&family=Gruppo&family=Audiowide&family=Monoton&family=Silkscreen&display=swap"
-        rel="stylesheet">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="免费在线封面图制作工具，支持多种艺术字体、背景图片、滤镜效果。轻松制作社交媒体封面、文章封面、视频封面等。提供丰富的模板和自定义选项，让你的作品更专业。">
+    <meta name="keywords" content="封面制作,封面图片,封面设计,在线设计,图片编辑器,封面生成器,社交媒体封面,文章封面,视频封面">
+    <meta name="author" content="蔚蓝工具导航站">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../assets/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon/favicon-16x16.png">
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="封面图制作工具 - 蔚蓝工具导航站">
+    <meta property="og:description" content="专业的在线封面图制作工具，支持多种艺术字体和特效，让你轻松制作精美的封面图片。提供丰富的模板和自定义选项，适用于各种场景。">
+    <meta property="og:image" content="../tools.png">
+    <meta property="og:url" content="https://your-domain.com/cover_creator.html">
+    <meta property="og:type" content="website">
+    
+    <!-- Additional SEO Tags -->
+    <meta name="application-name" content="蔚蓝工具导航站">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="canonical" href="https://your-domain.com/cover_creator.html">
+    
+    <title>封面图制作工具 - 蔚蓝工具导航站</title>
+    <link rel="icon" href="tools.png" type="image/png">
     <!-- 添加中文艺术字体 -->
     <link
         href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&family=ZCOOL+XiaoWei&family=ZCOOL+QingKe+HuangYou&family=ZCOOL+KuaiLe&family=Ma+Shan+Zheng&family=Zhi+Mang+Xing&family=Long+Cang&family=Liu+Jian+Mao+Cao&display=swap"
@@ -1279,7 +1300,6 @@
                 // 移除其他背景选项的激活状态
                 gradientCards.forEach(card => card.classList.remove('active'));
                 solidColorInput.value = '#ffffff';
-                customBgUpload.classList.remove('dragover');
             }
 
             // 初始化默认预设样式（自然）

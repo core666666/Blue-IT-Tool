@@ -136,8 +136,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const containerWidth = inputPane.parentNode.offsetWidth;
     const newWidth = (e.clientX / containerWidth) * 100;
     if (newWidth > 10 && newWidth < 90) {
-      inputPane.style.width = `${newWidth}%`;
-      outputPane.style.width = `${100 - newWidth - 0.4}%`; // 减去dragbar的宽度(0.4%)
+      inputPane.style.flexBasis = `${newWidth}%`;
+      outputPane.style.flexBasis = `${100 - newWidth}%`;
     }
   }
 

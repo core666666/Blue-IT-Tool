@@ -1,15 +1,17 @@
 .html-preview {
     padding-top: 60px;
-    height: calc(100vh - 60px);
-    overflow: hidden;
+    min-height: calc(100vh - 120px);
+    display: flex;
+    flex-direction: column;
 }
 
 .editor-wrapper {
     margin: 0 auto;
     width: 95%;
-    height: calc(100vh - 120px);
+    flex: 1;
     display: flex;
     flex-direction: column;
+    padding-bottom: 20px;
 }
 
 .toolbar {
@@ -29,40 +31,48 @@
 }
 
 .editor-container {
-    flex: 1;
+    flex: 1 1 auto;
     display: flex;
-    height: calc(100vh - 180px);
-    margin-top: 10px;
     position: relative;
     overflow: hidden;
+    margin-top: 36px;
+    min-height: calc(100vh - 250px);
 }
 
 .editor-pane {
-    height: 100%;
+    flex: 1 0 0%;
     min-width: 10%;
     max-width: 90%;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
     padding: 10px;
     position: relative;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
 }
 
 #html-input {
-    width: 100%;
-    height: 100%;
+    flex: 1;
+    width: 98%;
     border: 1px solid #ddd;
     border-radius: 4px;
     padding: 10px;
     font-family: monospace;
     resize: none;
+    min-height: 96%;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 #html-output {
+    flex: 1;
     width: 100%;
-    height: 100%;
     border: 1px solid #ddd;
     border-radius: 4px;
-    overflow: auto;
+    min-height: 96%;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .maximized {
@@ -80,6 +90,7 @@
     width: 100%;
     height: 100vh;
     margin: 0;
+    padding: 0;
 }
 
 .maximized .toolbar {
@@ -116,12 +127,13 @@ body.dark-mode #html-output {
 }
 
 .dragbar {
-    width: 0.4%;
+    width: 4px;
     background-color: #ddd;
     cursor: col-resize;
     position: relative;
     z-index: 10;
     transition: background-color 0.3s;
+    flex: 0 0 4px;
 }
 
 .dragbar:hover {
@@ -153,4 +165,13 @@ body.dark-mode .buttons button {
 
 body.dark-mode .buttons button:hover {
     background-color: #0056b3;
+}
+
+footer {
+    position: relative;
+    width: 100%;
+    padding: 15px 0;
+    background-color: inherit;
+    text-align: center;
+    border-top: 1px solid #ddd;
 } 

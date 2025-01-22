@@ -51,18 +51,42 @@
             <button class="category-btn" data-category="objects">
                 <i class="fas fa-lightbulb"></i>物品
             </button>
+            <button class="category-btn" data-category="festival">
+                <i class="fas fa-gift"></i>节日
+            </button>
+            <button class="category-btn" data-category="travel">
+                <i class="fas fa-plane"></i>旅行
+            </button>
+            <button class="category-btn" data-category="weather">
+                <i class="fas fa-cloud-sun"></i>天气
+            </button>
+            <button class="category-btn" data-category="love">
+                <i class="fas fa-heart"></i>爱情
+            </button>
+            <button class="category-btn" data-category="music">
+                <i class="fas fa-music"></i>音乐
+            </button>
         </div>
 
         <!-- 右侧内容区 -->
         <div class="emoji-content">
-            <h1>Emoji 选择器</h1>
+            <div class="header-container">
+                <h1>Emoji 选择器</h1>
+                <!-- 搜索框 -->
+                <div class="search-container">
+                    <div class="search-box">
+                        <i class=""></i><!--fas fa-search-->
+                        <input type="text" id="emoji-search" placeholder="搜索表情...">
+                    </div>
+                </div>
+            </div>
             <div class="emoji-grid">
                 <!-- 表情类 -->
-                <div class="emoji-item" data-category="faces" data-emoji="😊">
+                <div class="emoji-item" data-category="faces" data-emoji="😊" data-keywords="微笑,笑脸,开心,happy,smile">
                     <span class="emoji">😊</span>
                     <span class="description">微笑</span>
                 </div>
-                <div class="emoji-item" data-category="faces" data-emoji="🥰">
+                <div class="emoji-item" data-category="faces" data-emoji="🥰" data-keywords="爱心,喜欢,love,heart">
                     <span class="emoji">🥰</span>
                     <span class="description">带爱心的笑脸</span>
                 </div>
@@ -73,6 +97,38 @@
                 <div class="emoji-item" data-category="faces" data-emoji="🤔">
                     <span class="emoji">🤔</span>
                     <span class="description">思考</span>
+                </div>
+                <div class="emoji-item" data-category="faces" data-emoji="😂">
+                    <span class="emoji">😂</span>
+                    <span class="description">笑哭</span>
+                </div>
+                <div class="emoji-item" data-category="faces" data-emoji="🥺">
+                    <span class="emoji">🥺</span>
+                    <span class="description">可怜巴巴</span>
+                </div>
+                <div class="emoji-item" data-category="faces" data-emoji="😴">
+                    <span class="emoji">😴</span>
+                    <span class="description">睡觉</span>
+                </div>
+                <div class="emoji-item" data-category="faces" data-emoji="🤩">
+                    <span class="emoji">🤩</span>
+                    <span class="description">星星眼</span>
+                </div>
+                <div class="emoji-item" data-category="faces" data-emoji="😭" data-keywords="哭泣,伤心,难过,cry">
+                    <span class="emoji">😭</span>
+                    <span class="description">大哭</span>
+                </div>
+                <div class="emoji-item" data-category="faces" data-emoji="🤣" data-keywords="笑,开心,搞笑,laugh">
+                    <span class="emoji">🤣</span>
+                    <span class="description">笑倒</span>
+                </div>
+                <div class="emoji-item" data-category="faces" data-emoji="😅" data-keywords="尴尬,汗,awkward">
+                    <span class="emoji">😅</span>
+                    <span class="description">尴尬笑</span>
+                </div>
+                <div class="emoji-item" data-category="faces" data-emoji="😱" data-keywords="害怕,惊恐,scared">
+                    <span class="emoji">😱</span>
+                    <span class="description">惊恐</span>
                 </div>
                 <!-- 自然类 -->
                 <div class="emoji-item" data-category="nature" data-emoji="🌈">
@@ -91,6 +147,34 @@
                     <span class="emoji">🍀</span>
                     <span class="description">四叶草</span>
                 </div>
+                <div class="emoji-item" data-category="nature" data-emoji="🌙">
+                    <span class="emoji">🌙</span>
+                    <span class="description">月亮</span>
+                </div>
+                <div class="emoji-item" data-category="nature" data-emoji="⭐">
+                    <span class="emoji">⭐</span>
+                    <span class="description">星星</span>
+                </div>
+                <div class="emoji-item" data-category="nature" data-emoji="🌞">
+                    <span class="emoji">🌞</span>
+                    <span class="description">太阳</span>
+                </div>
+                <div class="emoji-item" data-category="nature" data-emoji="🌊">
+                    <span class="emoji">🌊</span>
+                    <span class="description">海浪</span>
+                </div>
+                <div class="emoji-item" data-category="nature" data-emoji="🌹" data-keywords="玫瑰,花,rose">
+                    <span class="emoji">🌹</span>
+                    <span class="description">玫瑰</span>
+                </div>
+                <div class="emoji-item" data-category="nature" data-emoji="🌴" data-keywords="椰子树,热带,palm">
+                    <span class="emoji">🌴</span>
+                    <span class="description">椰子树</span>
+                </div>
+                <div class="emoji-item" data-category="nature" data-emoji="🌵" data-keywords="仙人掌,沙漠,cactus">
+                    <span class="emoji">🌵</span>
+                    <span class="description">仙人掌</span>
+                </div>
                 <!-- 食物类 -->
                 <div class="emoji-item" data-category="food" data-emoji="🍜">
                     <span class="emoji">🍜</span>
@@ -108,6 +192,34 @@
                     <span class="emoji">🍰</span>
                     <span class="description">蛋糕</span>
                 </div>
+                <div class="emoji-item" data-category="food" data-emoji="🍕">
+                    <span class="emoji">🍕</span>
+                    <span class="description">披萨</span>
+                </div>
+                <div class="emoji-item" data-category="food" data-emoji="🍔">
+                    <span class="emoji">🍔</span>
+                    <span class="description">汉堡</span>
+                </div>
+                <div class="emoji-item" data-category="food" data-emoji="🍗">
+                    <span class="emoji">🍗</span>
+                    <span class="description">鸡腿</span>
+                </div>
+                <div class="emoji-item" data-category="food" data-emoji="🥤">
+                    <span class="emoji">🥤</span>
+                    <span class="description">饮料</span>
+                </div>
+                <div class="emoji-item" data-category="food" data-emoji="🍎" data-keywords="苹果,水果,apple">
+                    <span class="emoji">🍎</span>
+                    <span class="description">红苹果</span>
+                </div>
+                <div class="emoji-item" data-category="food" data-emoji="🍇" data-keywords="葡萄,水果,grape">
+                    <span class="emoji">🍇</span>
+                    <span class="description">葡萄</span>
+                </div>
+                <div class="emoji-item" data-category="food" data-emoji="🥑" data-keywords="牛油果,水果,avocado">
+                    <span class="emoji">🥑</span>
+                    <span class="description">牛油果</span>
+                </div>
                 <!-- 活动类 -->
                 <div class="emoji-item" data-category="activities" data-emoji="⚽">
                     <span class="emoji">⚽</span>
@@ -117,13 +229,37 @@
                     <span class="emoji">🎮</span>
                     <span class="description">游戏</span>
                 </div>
-                <div class="emoji-item" data-category="activities" data-emoji="🎨">
+                <div class="emoji-item" data-category="activities" data-emoji="🎨" data-keywords="画画,艺术,art">
                     <span class="emoji">🎨</span>
-                    <span class="description">艺术</span>
+                    <span class="description">绘画</span>
                 </div>
                 <div class="emoji-item" data-category="activities" data-emoji="🎭">
                     <span class="emoji">🎭</span>
                     <span class="description">表演</span>
+                </div>
+                <div class="emoji-item" data-category="activities" data-emoji="🎸">
+                    <span class="emoji">🎸</span>
+                    <span class="description">吉他</span>
+                </div>
+                <div class="emoji-item" data-category="activities" data-emoji="🎤">
+                    <span class="emoji">🎤</span>
+                    <span class="description">麦克风</span>
+                </div>
+                <div class="emoji-item" data-category="activities" data-emoji="🎯">
+                    <span class="emoji">🎯</span>
+                    <span class="description">靶心</span>
+                </div>
+                <div class="emoji-item" data-category="activities" data-emoji="🎲">
+                    <span class="emoji">🎲</span>
+                    <span class="description">骰子</span>
+                </div>
+                <div class="emoji-item" data-category="activities" data-emoji="🏃" data-keywords="跑步,运动,run">
+                    <span class="emoji">🏃</span>
+                    <span class="description">跑步</span>
+                </div>
+                <div class="emoji-item" data-category="activities" data-emoji="🎪" data-keywords="马戏团,表演,circus">
+                    <span class="emoji">🎪</span>
+                    <span class="description">马戏团</span>
                 </div>
                 <!-- 物品类 -->
                 <div class="emoji-item" data-category="objects" data-emoji="💻">
@@ -141,6 +277,680 @@
                 <div class="emoji-item" data-category="objects" data-emoji="💡">
                     <span class="emoji">💡</span>
                     <span class="description">灯泡</span>
+                </div>
+                <div class="emoji-item" data-category="objects" data-emoji="🎁">
+                    <span class="emoji">🎁</span>
+                    <span class="description">礼物</span>
+                </div>
+                <div class="emoji-item" data-category="objects" data-emoji="📚">
+                    <span class="emoji">📚</span>
+                    <span class="description">书籍</span>
+                </div>
+                <div class="emoji-item" data-category="objects" data-emoji="🎧">
+                    <span class="emoji">🎧</span>
+                    <span class="description">耳机</span>
+                </div>
+                <div class="emoji-item" data-category="objects" data-emoji="🔋">
+                    <span class="emoji">🔋</span>
+                    <span class="description">电池</span>
+                </div>
+                <div class="emoji-item" data-category="objects" data-emoji="🎈" data-keywords="气球,庆祝,balloon">
+                    <span class="emoji">🎈</span>
+                    <span class="description">气球</span>
+                </div>
+                <div class="emoji-item" data-category="objects" data-emoji="🔑" data-keywords="钥匙,key">
+                    <span class="emoji">🔑</span>
+                    <span class="description">钥匙</span>
+                </div>
+                <div class="emoji-item" data-category="objects" data-emoji="💎" data-keywords="钻石,宝石,diamond">
+                    <span class="emoji">💎</span>
+                    <span class="description">钻石</span>
+                </div>
+                <!-- 表情类新增 -->
+                <div class="emoji-item" data-category="faces" data-emoji="🤗" data-keywords="拥抱,开心,hug">
+                    <span class="emoji">🤗</span>
+                    <span class="description">拥抱</span>
+                </div>
+                <div class="emoji-item" data-category="faces" data-emoji="😍" data-keywords="爱心眼,喜欢,love">
+                    <span class="emoji">😍</span>
+                    <span class="description">爱心眼</span>
+                </div>
+                <div class="emoji-item" data-category="faces" data-emoji="🤪" data-keywords="搞怪,疯狂,crazy">
+                    <span class="emoji">🤪</span>
+                    <span class="description">搞怪</span>
+                </div>
+                <div class="emoji-item" data-category="faces" data-emoji="😤" data-keywords="生气,愤怒,angry">
+                    <span class="emoji">😤</span>
+                    <span class="description">生气</span>
+                </div>
+                <div class="emoji-item" data-category="faces" data-emoji="🥳" data-keywords="庆祝,派对,party">
+                    <span class="emoji">🥳</span>
+                    <span class="description">派对</span>
+                </div>
+                <!-- 自然类新增 -->
+                <div class="emoji-item" data-category="nature" data-emoji="🌍" data-keywords="地球,世界,earth">
+                    <span class="emoji">🌍</span>
+                    <span class="description">地球</span>
+                </div>
+                <div class="emoji-item" data-category="nature" data-emoji="🦋" data-keywords="蝴蝶,昆虫,butterfly">
+                    <span class="emoji">🦋</span>
+                    <span class="description">蝴蝶</span>
+                </div>
+                <div class="emoji-item" data-category="nature" data-emoji="🐼" data-keywords="熊猫,动物,panda">
+                    <span class="emoji">🐼</span>
+                    <span class="description">熊猫</span>
+                </div>
+                <div class="emoji-item" data-category="nature" data-emoji="🦁" data-keywords="狮子,动物,lion">
+                    <span class="emoji">🦁</span>
+                    <span class="description">狮子</span>
+                </div>
+                <!-- 食物类新增 -->
+                <div class="emoji-item" data-category="food" data-emoji="🥞" data-keywords="煎饼,早餐,pancake">
+                    <span class="emoji">🥞</span>
+                    <span class="description">煎饼</span>
+                </div>
+                <div class="emoji-item" data-category="food" data-emoji="🍱" data-keywords="便当,午餐,bento">
+                    <span class="emoji">🍱</span>
+                    <span class="description">便当</span>
+                </div>
+                <div class="emoji-item" data-category="food" data-emoji="🥗" data-keywords="沙拉,健康,salad">
+                    <span class="emoji">🥗</span>
+                    <span class="description">沙拉</span>
+                </div>
+                <div class="emoji-item" data-category="food" data-emoji="🍺" data-keywords="啤酒,饮品,beer">
+                    <span class="emoji">🍺</span>
+                    <span class="description">啤酒</span>
+                </div>
+                <!-- 活动类新增 -->
+                <div class="emoji-item" data-category="activities" data-emoji="🎪" data-keywords="马戏团,表演,circus">
+                    <span class="emoji">🎪</span>
+                    <span class="description">马戏团</span>
+                </div>
+                <div class="emoji-item" data-category="activities" data-emoji="🎭" data-keywords="戏剧,表演,drama">
+                    <span class="emoji">🎭</span>
+                    <span class="description">戏剧</span>
+                </div>
+                <div class="emoji-item" data-category="activities" data-emoji="🎨" data-keywords="艺术,绘画,art">
+                    <span class="emoji">🎨</span>
+                    <span class="description">艺术</span>
+                </div>
+                <div class="emoji-item" data-category="activities" data-emoji="🎬" data-keywords="电影,拍摄,movie">
+                    <span class="emoji">🎬</span>
+                    <span class="description">电影</span>
+                </div>
+                <!-- 物品类新增 -->
+                <div class="emoji-item" data-category="objects" data-emoji="📸" data-keywords="相机,摄影,camera">
+                    <span class="emoji">📸</span>
+                    <span class="description">相机</span>
+                </div>
+                <div class="emoji-item" data-category="objects" data-emoji="🎵" data-keywords="音乐,音符,music">
+                    <span class="emoji">🎵</span>
+                    <span class="description">音符</span>
+                </div>
+                <div class="emoji-item" data-category="objects" data-emoji="🎪" data-keywords="帐篷,露营,tent">
+                    <span class="emoji">🎪</span>
+                    <span class="description">帐篷</span>
+                </div>
+                <div class="emoji-item" data-category="objects" data-emoji="🚗" data-keywords="汽车,交通,car">
+                    <span class="emoji">🚗</span>
+                    <span class="description">汽车</span>
+                </div>
+                <!-- 表情类第二批 -->
+                <div class="emoji-item" data-category="faces" data-emoji="🤓" data-keywords="书呆子,聪明,nerd">
+                    <span class="emoji">🤓</span>
+                    <span class="description">书呆子</span>
+                </div>
+                <div class="emoji-item" data-category="faces" data-emoji="😇" data-keywords="天使,善良,angel">
+                    <span class="emoji">😇</span>
+                    <span class="description">天使</span>
+                </div>
+                <div class="emoji-item" data-category="faces" data-emoji="🥴" data-keywords="晕,困惑,dizzy">
+                    <span class="emoji">🥴</span>
+                    <span class="description">晕晕的</span>
+                </div>
+                <!-- 自然类第二批 -->
+                <div class="emoji-item" data-category="nature" data-emoji="🌋" data-keywords="火山,自然,volcano">
+                    <span class="emoji">🌋</span>
+                    <span class="description">火山</span>
+                </div>
+                <div class="emoji-item" data-category="nature" data-emoji="🦊" data-keywords="狐狸,动物,fox">
+                    <span class="emoji">🦊</span>
+                    <span class="description">狐狸</span>
+                </div>
+                <div class="emoji-item" data-category="nature" data-emoji="🦉" data-keywords="猫头鹰,鸟,owl">
+                    <span class="emoji">🦉</span>
+                    <span class="description">猫头鹰</span>
+                </div>
+                <!-- 食物类第二批 -->
+                <div class="emoji-item" data-category="food" data-emoji="🥨" data-keywords="椒盐卷饼,零食,pretzel">
+                    <span class="emoji">🥨</span>
+                    <span class="description">椒盐卷饼</span>
+                </div>
+                <div class="emoji-item" data-category="food" data-emoji="🥝" data-keywords="猕猴桃,水果,kiwi">
+                    <span class="emoji">🥝</span>
+                    <span class="description">猕猴桃</span>
+                </div>
+                <div class="emoji-item" data-category="food" data-emoji="🍫" data-keywords="巧克力,甜点,chocolate">
+                    <span class="emoji">🍫</span>
+                    <span class="description">巧克力</span>
+                </div>
+                <!-- 活动类第二批 -->
+                <div class="emoji-item" data-category="activities" data-emoji="🏊" data-keywords="游泳,运动,swim">
+                    <span class="emoji">🏊</span>
+                    <span class="description">游泳</span>
+                </div>
+                <div class="emoji-item" data-category="activities" data-emoji="🚴" data-keywords="骑车,运动,bike">
+                    <span class="emoji">🚴</span>
+                    <span class="description">骑行</span>
+                </div>
+                <div class="emoji-item" data-category="activities" data-emoji="⛷️" data-keywords="滑雪,运动,ski">
+                    <span class="emoji">⛷️</span>
+                    <span class="description">滑雪</span>
+                </div>
+                <!-- 物品类第二批 -->
+                <div class="emoji-item" data-category="objects" data-emoji="⌨️" data-keywords="键盘,电脑,keyboard">
+                    <span class="emoji">⌨️</span>
+                    <span class="description">键盘</span>
+                </div>
+                <div class="emoji-item" data-category="objects" data-emoji="🎮" data-keywords="游戏手柄,游戏,gamepad">
+                    <span class="emoji">🎮</span>
+                    <span class="description">游戏手柄</span>
+                </div>
+                <div class="emoji-item" data-category="objects" data-emoji="🔍" data-keywords="放大镜,搜索,search">
+                    <span class="emoji">🔍</span>
+                    <span class="description">放大镜</span>
+                </div>
+                <!-- 表情类第三批 -->
+                <div class="emoji-item" data-category="faces" data-emoji="🥶" data-keywords="冷,寒冷,cold">
+                    <span class="emoji">🥶</span>
+                    <span class="description">冷冻</span>
+                </div>
+                <div class="emoji-item" data-category="faces" data-emoji="🤯" data-keywords="爆炸,震惊,explode">
+                    <span class="emoji">🤯</span>
+                    <span class="description">头炸了</span>
+                </div>
+                <div class="emoji-item" data-category="faces" data-emoji="🤫" data-keywords="安静,嘘,quiet">
+                    <span class="emoji">🤫</span>
+                    <span class="description">嘘</span>
+                </div>
+                <!-- 自然类第三批 -->
+                <div class="emoji-item" data-category="nature" data-emoji="🦄" data-keywords="独角兽,神话,unicorn">
+                    <span class="emoji">🦄</span>
+                    <span class="description">独角兽</span>
+                </div>
+                <div class="emoji-item" data-category="nature" data-emoji="🦈" data-keywords="鲨鱼,海洋,shark">
+                    <span class="emoji">🦈</span>
+                    <span class="description">鲨鱼</span>
+                </div>
+                <div class="emoji-item" data-category="nature" data-emoji="🦩" data-keywords="火烈鸟,鸟类,flamingo">
+                    <span class="emoji">🦩</span>
+                    <span class="description">火烈鸟</span>
+                </div>
+                <!-- 食物类第三批 -->
+                <div class="emoji-item" data-category="food" data-emoji="🥐" data-keywords="牛角包,面包,croissant">
+                    <span class="emoji">🥐</span>
+                    <span class="description">牛角包</span>
+                </div>
+                <div class="emoji-item" data-category="food" data-emoji="🧋" data-keywords="珍珠奶茶,饮品,boba">
+                    <span class="emoji">🧋</span>
+                    <span class="description">珍珠奶茶</span>
+                </div>
+                <div class="emoji-item" data-category="food" data-emoji="🥩" data-keywords="牛排,肉类,steak">
+                    <span class="emoji">🥩</span>
+                    <span class="description">牛排</span>
+                </div>
+                <!-- 活动类第三批 -->
+                <div class="emoji-item" data-category="activities" data-emoji="🎣" data-keywords="钓鱼,休闲,fishing">
+                    <span class="emoji">🎣</span>
+                    <span class="description">钓鱼</span>
+                </div>
+                <div class="emoji-item" data-category="activities" data-emoji="🎯" data-keywords="射箭,目标,target">
+                    <span class="emoji">🎯</span>
+                    <span class="description">射箭</span>
+                </div>
+                <div class="emoji-item" data-category="activities" data-emoji="🎪" data-keywords="马戏团,表演,circus">
+                    <span class="emoji">🎪</span>
+                    <span class="description">马戏团</span>
+                </div>
+                <!-- 物品类第三批 -->
+                <div class="emoji-item" data-category="objects" data-emoji="🎥" data-keywords="摄像机,电影,camera">
+                    <span class="emoji">🎥</span>
+                    <span class="description">摄像机</span>
+                </div>
+                <div class="emoji-item" data-category="objects" data-emoji="💻" data-keywords="笔记本,电脑,laptop">
+                    <span class="emoji">💻</span>
+                    <span class="description">笔记本</span>
+                </div>
+                <div class="emoji-item" data-category="objects" data-emoji="🎨" data-keywords="调色板,绘画,palette">
+                    <span class="emoji">🎨</span>
+                    <span class="description">调色板</span>
+                </div>
+                <!-- 节日类 -->
+                <div class="emoji-item" data-category="festival" data-emoji="🎄" data-keywords="圣诞树,圣诞节,christmas">
+                    <span class="emoji">🎄</span>
+                    <span class="description">圣诞树</span>
+                </div>
+                <div class="emoji-item" data-category="festival" data-emoji="🎅" data-keywords="圣诞老人,圣诞节,santa">
+                    <span class="emoji">🎅</span>
+                    <span class="description">圣诞老人</span>
+                </div>
+                <div class="emoji-item" data-category="festival" data-emoji="🧨" data-keywords="鞭炮,春节,firecracker">
+                    <span class="emoji">🧨</span>
+                    <span class="description">鞭炮</span>
+                </div>
+                <div class="emoji-item" data-category="festival" data-emoji="🎆" data-keywords="烟花,庆祝,fireworks">
+                    <span class="emoji">🎆</span>
+                    <span class="description">烟花</span>
+                </div>
+                <div class="emoji-item" data-category="festival" data-emoji="🏮" data-keywords="灯笼,元宵,lantern">
+                    <span class="emoji">🏮</span>
+                    <span class="description">灯笼</span>
+                </div>
+
+                <!-- 旅行类 -->
+                <div class="emoji-item" data-category="travel" data-emoji="✈️" data-keywords="飞机,航空,plane">
+                    <span class="emoji">✈️</span>
+                    <span class="description">飞机</span>
+                </div>
+                <div class="emoji-item" data-category="travel" data-emoji="🗺️" data-keywords="地图,导航,map">
+                    <span class="emoji">🗺️</span>
+                    <span class="description">地图</span>
+                </div>
+                <div class="emoji-item" data-category="travel" data-emoji="🎡" data-keywords="摩天轮,游乐园,ferris-wheel">
+                    <span class="emoji">🎡</span>
+                    <span class="description">摩天轮</span>
+                </div>
+                <div class="emoji-item" data-category="travel" data-emoji="🏖️" data-keywords="沙滩,海边,beach">
+                    <span class="emoji">🏖️</span>
+                    <span class="description">沙滩</span>
+                </div>
+                <div class="emoji-item" data-category="travel" data-emoji="🗽" data-keywords="自由女神,纽约,statue-of-liberty">
+                    <span class="emoji">🗽</span>
+                    <span class="description">自由女神</span>
+                </div>
+
+                <!-- 天气类 -->
+                <div class="emoji-item" data-category="weather" data-emoji="☀️" data-keywords="太阳,晴天,sun">
+                    <span class="emoji">☀️</span>
+                    <span class="description">晴天</span>
+                </div>
+                <div class="emoji-item" data-category="weather" data-emoji="🌧️" data-keywords="下雨,雨天,rain">
+                    <span class="emoji">🌧️</span>
+                    <span class="description">下雨</span>
+                </div>
+                <div class="emoji-item" data-category="weather" data-emoji="⛈️" data-keywords="雷雨,暴雨,thunderstorm">
+                    <span class="emoji">⛈️</span>
+                    <span class="description">雷雨</span>
+                </div>
+                <div class="emoji-item" data-category="weather" data-emoji="🌈" data-keywords="彩虹,晴雨,rainbow">
+                    <span class="emoji">🌈</span>
+                    <span class="description">彩虹</span>
+                </div>
+                <div class="emoji-item" data-category="weather" data-emoji="❄️" data-keywords="雪花,下雪,snow">
+                    <span class="emoji">❄️</span>
+                    <span class="description">雪花</span>
+                </div>
+
+                <!-- 爱情类 -->
+                <div class="emoji-item" data-category="love" data-emoji="💑" data-keywords="情侣,恋人,couple">
+                    <span class="emoji">💑</span>
+                    <span class="description">情侣</span>
+                </div>
+                <div class="emoji-item" data-category="love" data-emoji="💘" data-keywords="丘比特之箭,爱情,cupid">
+                    <span class="emoji">💘</span>
+                    <span class="description">丘比特之箭</span>
+                </div>
+                <div class="emoji-item" data-category="love" data-emoji="💝" data-keywords="心形礼物,礼物,heart-gift">
+                    <span class="emoji">💝</span>
+                    <span class="description">心形礼物</span>
+                </div>
+                <div class="emoji-item" data-category="love" data-emoji="💖" data-keywords="闪烁爱心,爱心,sparkling-heart">
+                    <span class="emoji">💖</span>
+                    <span class="description">闪烁爱心</span>
+                </div>
+                <div class="emoji-item" data-category="love" data-emoji="💕" data-keywords="双心,爱情,two-hearts">
+                    <span class="emoji">💕</span>
+                    <span class="description">双心</span>
+                </div>
+
+                <!-- 音乐类 -->
+                <div class="emoji-item" data-category="music" data-emoji="🎼" data-keywords="乐谱,音乐,musical-score">
+                    <span class="emoji">🎼</span>
+                    <span class="description">乐谱</span>
+                </div>
+                <div class="emoji-item" data-category="music" data-emoji="🎹" data-keywords="钢琴,键盘,piano">
+                    <span class="emoji">🎹</span>
+                    <span class="description">钢琴</span>
+                </div>
+                <div class="emoji-item" data-category="music" data-emoji="🎸" data-keywords="吉他,弦乐器,guitar">
+                    <span class="emoji">🎸</span>
+                    <span class="description">吉他</span>
+                </div>
+                <div class="emoji-item" data-category="music" data-emoji="🎺" data-keywords="小号,管乐器,trumpet">
+                    <span class="emoji">🎺</span>
+                    <span class="description">小号</span>
+                </div>
+                <div class="emoji-item" data-category="music" data-emoji="🥁" data-keywords="鼓,打击乐器,drum">
+                    <span class="emoji">🥁</span>
+                    <span class="description">鼓</span>
+                </div>
+                <!-- 节日类补充 -->
+                <div class="emoji-item" data-category="festival" data-emoji="🎋" data-keywords="七夕,竹子,tanabata">
+                    <span class="emoji">🎋</span>
+                    <span class="description">七夕竹子</span>
+                </div>
+                <div class="emoji-item" data-category="festival" data-emoji="🎎" data-keywords="雛人形,娃娃,dolls">
+                    <span class="emoji">🎎</span>
+                    <span class="description">节日娃娃</span>
+                </div>
+                <div class="emoji-item" data-category="festival" data-emoji="🎊" data-keywords="彩球,庆祝,confetti">
+                    <span class="emoji">🎊</span>
+                    <span class="description">彩球</span>
+                </div>
+                <div class="emoji-item" data-category="festival" data-emoji="🥮" data-keywords="月饼,中秋节,mooncake">
+                    <span class="emoji">🥮</span>
+                    <span class="description">月饼</span>
+                </div>
+                <div class="emoji-item" data-category="festival" data-emoji="🎃" data-keywords="南瓜灯,万圣节,halloween">
+                    <span class="emoji">🎃</span>
+                    <span class="description">南瓜灯</span>
+                </div>
+
+                <!-- 旅行类补充 -->
+                <div class="emoji-item" data-category="travel" data-emoji="🏰" data-keywords="城堡,欧洲,castle">
+                    <span class="emoji">🏰</span>
+                    <span class="description">城堡</span>
+                </div>
+                <div class="emoji-item" data-category="travel" data-emoji="⛺" data-keywords="帐篷,露营,camping">
+                    <span class="emoji">⛺</span>
+                    <span class="description">露营</span>
+                </div>
+                <div class="emoji-item" data-category="travel" data-emoji="🚂" data-keywords="火车,铁路,train">
+                    <span class="emoji">🚂</span>
+                    <span class="description">火车</span>
+                </div>
+                <div class="emoji-item" data-category="travel" data-emoji="🗿" data-keywords="摩艾,复活节岛,moai">
+                    <span class="emoji">🗿</span>
+                    <span class="description">摩艾石像</span>
+                </div>
+                <div class="emoji-item" data-category="travel" data-emoji="🎢" data-keywords="过山车,游乐园,roller-coaster">
+                    <span class="emoji">🎢</span>
+                    <span class="description">过山车</span>
+                </div>
+
+                <!-- 天气类补充 -->
+                <div class="emoji-item" data-category="weather" data-emoji="🌤️" data-keywords="多云,晴间多云,partly-cloudy">
+                    <span class="emoji">🌤️</span>
+                    <span class="description">晴间多云</span>
+                </div>
+                <div class="emoji-item" data-category="weather" data-emoji="🌪️" data-keywords="龙卷风,飓风,tornado">
+                    <span class="emoji">🌪️</span>
+                    <span class="description">龙卷风</span>
+                </div>
+                <div class="emoji-item" data-category="weather" data-emoji="⚡" data-keywords="闪电,雷电,lightning">
+                    <span class="emoji">⚡</span>
+                    <span class="description">闪电</span>
+                </div>
+                <div class="emoji-item" data-category="weather" data-emoji="🌫️" data-keywords="雾,雾霾,fog">
+                    <span class="emoji">🌫️</span>
+                    <span class="description">雾</span>
+                </div>
+                <div class="emoji-item" data-category="weather" data-emoji="🌅" data-keywords="日出,黎明,sunrise">
+                    <span class="emoji">🌅</span>
+                    <span class="description">日出</span>
+                </div>
+
+                <!-- 爱情类补充 -->
+                <div class="emoji-item" data-category="love" data-emoji="💌" data-keywords="情书,爱心信,love-letter">
+                    <span class="emoji">💌</span>
+                    <span class="description">情书</span>
+                </div>
+                <div class="emoji-item" data-category="love" data-emoji="💍" data-keywords="戒指,求婚,ring">
+                    <span class="emoji">💍</span>
+                    <span class="description">戒指</span>
+                </div>
+                <div class="emoji-item" data-category="love" data-emoji="💞" data-keywords="旋转爱心,爱情,revolving-hearts">
+                    <span class="emoji">💞</span>
+                    <span class="description">旋转爱心</span>
+                </div>
+                <div class="emoji-item" data-category="love" data-emoji="💓" data-keywords="心跳,爱心,heartbeat">
+                    <span class="emoji">💓</span>
+                    <span class="description">心跳</span>
+                </div>
+                <div class="emoji-item" data-category="love" data-emoji="💒" data-keywords="教堂,婚礼,wedding">
+                    <span class="emoji">💒</span>
+                    <span class="description">婚礼</span>
+                </div>
+
+                <!-- 音乐类补充 -->
+                <div class="emoji-item" data-category="music" data-emoji="🎻" data-keywords="小提琴,弦乐器,violin">
+                    <span class="emoji">🎻</span>
+                    <span class="description">小提琴</span>
+                </div>
+                <div class="emoji-item" data-category="music" data-emoji="🎷" data-keywords="萨克斯,管乐器,saxophone">
+                    <span class="emoji">🎷</span>
+                    <span class="description">萨克斯</span>
+                </div>
+                <div class="emoji-item" data-category="music" data-emoji="🪕" data-keywords="班卓琴,弦乐器,banjo">
+                    <span class="emoji">🪕</span>
+                    <span class="description">班卓琴</span>
+                </div>
+                <div class="emoji-item" data-category="music" data-emoji="🎵" data-keywords="音符,音乐,music-note">
+                    <span class="emoji">🎵</span>
+                    <span class="description">音符</span>
+                </div>
+                <div class="emoji-item" data-category="music" data-emoji="🎙️" data-keywords="麦克风,录音,microphone">
+                    <span class="emoji">🎙️</span>
+                    <span class="description">录音麦克风</span>
+                </div>
+                <!-- 表情类扩充 -->
+                <div class="emoji-item" data-category="faces" data-emoji="🥹" data-keywords="感动,含泪,touched">
+                    <span class="emoji">🥹</span>
+                    <span class="description">感动</span>
+                </div>
+                <div class="emoji-item" data-category="faces" data-emoji="🫣" data-keywords="偷看,好奇,peek">
+                    <span class="emoji">🫣</span>
+                    <span class="description">偷看</span>
+                </div>
+                <div class="emoji-item" data-category="faces" data-emoji="🫡" data-keywords="敬礼,尊敬,salute">
+                    <span class="emoji">🫡</span>
+                    <span class="description">敬礼</span>
+                </div>
+                <div class="emoji-item" data-category="faces" data-emoji="🤭" data-keywords="偷笑,捂嘴笑,giggle">
+                    <span class="emoji">🤭</span>
+                    <span class="description">偷笑</span>
+                </div>
+                <div class="emoji-item" data-category="faces" data-emoji="🫢" data-keywords="惊讶,捂嘴,surprise">
+                    <span class="emoji">🫢</span>
+                    <span class="description">惊讶捂嘴</span>
+                </div>
+                <div class="emoji-item" data-category="faces" data-emoji="🥸" data-keywords="伪装,乔装,disguise">
+                    <span class="emoji">🥸</span>
+                    <span class="description">伪装</span>
+                </div>
+                <div class="emoji-item" data-category="faces" data-emoji="🫥" data-keywords="虚线脸,消失,dotted-face">
+                    <span class="emoji">🫥</span>
+                    <span class="description">虚线脸</span>
+                </div>
+                <div class="emoji-item" data-category="faces" data-emoji="🤯" data-keywords="头炸,震惊,mind-blown">
+                    <span class="emoji">🤯</span>
+                    <span class="description">头炸</span>
+                </div>
+                <div class="emoji-item" data-category="faces" data-emoji="🥵" data-keywords="热,发烫,hot">
+                    <span class="emoji">🥵</span>
+                    <span class="description">发热</span>
+                </div>
+                <div class="emoji-item" data-category="faces" data-emoji="🤒" data-keywords="生病,发烧,sick">
+                    <span class="emoji">🤒</span>
+                    <span class="description">生病</span>
+                </div>
+
+                <!-- 自然类扩充 -->
+                <div class="emoji-item" data-category="nature" data-emoji="🦭" data-keywords="海豹,海洋,seal">
+                    <span class="emoji">🦭</span>
+                    <span class="description">海豹</span>
+                </div>
+                <div class="emoji-item" data-category="nature" data-emoji="🦦" data-keywords="水獭,可爱,otter">
+                    <span class="emoji">🦦</span>
+                    <span class="description">水獭</span>
+                </div>
+                <div class="emoji-item" data-category="nature" data-emoji="🦥" data-keywords="树懒,慵懒,sloth">
+                    <span class="emoji">🦥</span>
+                    <span class="description">树懒</span>
+                </div>
+                <div class="emoji-item" data-category="nature" data-emoji="🦘" data-keywords="袋鼠,澳洲,kangaroo">
+                    <span class="emoji">🦘</span>
+                    <span class="description">袋鼠</span>
+                </div>
+                <div class="emoji-item" data-category="nature" data-emoji="🦙" data-keywords="羊驼,草泥马,llama">
+                    <span class="emoji">🦙</span>
+                    <span class="description">羊驼</span>
+                </div>
+                <div class="emoji-item" data-category="nature" data-emoji="🦒" data-keywords="长颈鹿,非洲,giraffe">
+                    <span class="emoji">🦒</span>
+                    <span class="description">长颈鹿</span>
+                </div>
+                <div class="emoji-item" data-category="nature" data-emoji="🐘" data-keywords="大象,非洲,elephant">
+                    <span class="emoji">🐘</span>
+                    <span class="description">大象</span>
+                </div>
+                <div class="emoji-item" data-category="nature" data-emoji="🦣" data-keywords="猛犸象,远古,mammoth">
+                    <span class="emoji">🦣</span>
+                    <span class="description">猛犸象</span>
+                </div>
+                <div class="emoji-item" data-category="nature" data-emoji="🦫" data-keywords="海狸,动物,beaver">
+                    <span class="emoji">🦫</span>
+                    <span class="description">海狸</span>
+                </div>
+                <div class="emoji-item" data-category="nature" data-emoji="🦤" data-keywords="渡渡鸟,灭绝,dodo">
+                    <span class="emoji">🦤</span>
+                    <span class="description">渡渡鸟</span>
+                </div>
+
+                <!-- 食物类扩充 -->
+                <div class="emoji-item" data-category="food" data-emoji="🫕" data-keywords="奶酪火锅,芝士,fondue">
+                    <span class="emoji">🫕</span>
+                    <span class="description">奶酪火锅</span>
+                </div>
+                <div class="emoji-item" data-category="food" data-emoji="🧋" data-keywords="珍珠奶茶,奶茶,bubble-tea">
+                    <span class="emoji">🧋</span>
+                    <span class="description">珍珠奶茶</span>
+                </div>
+                <div class="emoji-item" data-category="food" data-emoji="🫔" data-keywords="玉米卷,墨西哥,tamale">
+                    <span class="emoji">🫔</span>
+                    <span class="description">玉米卷</span>
+                </div>
+                <div class="emoji-item" data-category="food" data-emoji="🥘" data-keywords="煎锅,炒菜,paella">
+                    <span class="emoji">🥘</span>
+                    <span class="description">煎锅</span>
+                </div>
+                <div class="emoji-item" data-category="food" data-emoji="🫗" data-keywords="倒液体,饮料,pour">
+                    <span class="emoji">🫗</span>
+                    <span class="description">倒饮料</span>
+                </div>
+                <div class="emoji-item" data-category="food" data-emoji="🥫" data-keywords="罐头,食品,canned-food">
+                    <span class="emoji">🥫</span>
+                    <span class="description">罐头</span>
+                </div>
+                <div class="emoji-item" data-category="food" data-emoji="🫙" data-keywords="罐子,储存,jar">
+                    <span class="emoji">🫙</span>
+                    <span class="description">储物罐</span>
+                </div>
+                <div class="emoji-item" data-category="food" data-emoji="🥟" data-keywords="饺子,包子,dumpling">
+                    <span class="emoji">🥟</span>
+                    <span class="description">饺子</span>
+                </div>
+                <div class="emoji-item" data-category="food" data-emoji="🥠" data-keywords="幸运饼干,签语,fortune-cookie">
+                    <span class="emoji">🥠</span>
+                    <span class="description">幸运饼干</span>
+                </div>
+                <div class="emoji-item" data-category="food" data-emoji="🥡" data-keywords="外卖盒,打包,takeout-box">
+                    <span class="emoji">🥡</span>
+                    <span class="description">外卖盒</span>
+                </div>
+
+                <!-- 活动类扩充 -->
+                <div class="emoji-item" data-category="activities" data-emoji="🤺" data-keywords="击剑,运动,fencing">
+                    <span class="emoji">🤺</span>
+                    <span class="description">击剑</span>
+                </div>
+                <div class="emoji-item" data-category="activities" data-emoji="🏹" data-keywords="射箭,运动,archery">
+                    <span class="emoji">🏹</span>
+                    <span class="description">射箭</span>
+                </div>
+                <div class="emoji-item" data-category="activities" data-emoji="🎣" data-keywords="钓鱼,休闲,fishing">
+                    <span class="emoji">🎣</span>
+                    <span class="description">钓鱼</span>
+                </div>
+                <div class="emoji-item" data-category="activities" data-emoji="🤿" data-keywords="潜水,水肺,diving">
+                    <span class="emoji">🤿</span>
+                    <span class="description">潜水</span>
+                </div>
+                <div class="emoji-item" data-category="activities" data-emoji="🎪" data-keywords="马戏团,表演,circus">
+                    <span class="emoji">🎪</span>
+                    <span class="description">马戏团</span>
+                </div>
+                <div class="emoji-item" data-category="activities" data-emoji="🎭" data-keywords="戏剧,表演,drama">
+                    <span class="emoji">🎭</span>
+                    <span class="description">戏剧</span>
+                </div>
+                <div class="emoji-item" data-category="activities" data-emoji="🎨" data-keywords="艺术,绘画,art">
+                    <span class="emoji">🎨</span>
+                    <span class="description">艺术</span>
+                </div>
+                <div class="emoji-item" data-category="activities" data-emoji="🎬" data-keywords="电影,拍摄,movie">
+                    <span class="emoji">🎬</span>
+                    <span class="description">电影</span>
+                </div>
+                <div class="emoji-item" data-category="activities" data-emoji="🎤" data-keywords="唱歌,卡拉OK,karaoke">
+                    <span class="emoji">🎤</span>
+                    <span class="description">唱歌</span>
+                </div>
+                <div class="emoji-item" data-category="activities" data-emoji="🎯" data-keywords="飞镖,游戏,darts">
+                    <span class="emoji">🎯</span>
+                    <span class="description">飞镖</span>
+                </div>
+
+                <!-- 物品类扩充 -->
+                <div class="emoji-item" data-category="objects" data-emoji="🪄" data-keywords="魔法棒,魔术,magic-wand">
+                    <span class="emoji">🪄</span>
+                    <span class="description">魔法棒</span>
+                </div>
+                <div class="emoji-item" data-category="objects" data-emoji="🎪" data-keywords="帐篷,露营,tent">
+                    <span class="emoji">🎪</span>
+                    <span class="description">帐篷</span>
+                </div>
+                <div class="emoji-item" data-category="objects" data-emoji="🔭" data-keywords="望远镜,天文,telescope">
+                    <span class="emoji">🔭</span>
+                    <span class="description">望远镜</span>
+                </div>
+                <div class="emoji-item" data-category="objects" data-emoji="🔬" data-keywords="显微镜,科学,microscope">
+                    <span class="emoji">🔬</span>
+                    <span class="description">显微镜</span>
+                </div>
+                <div class="emoji-item" data-category="objects" data-emoji="⚗️" data-keywords="蒸馏器,化学,alembic">
+                    <span class="emoji">⚗️</span>
+                    <span class="description">蒸馏器</span>
+                </div>
+                <div class="emoji-item" data-category="objects" data-emoji="🧲" data-keywords="磁铁,磁力,magnet">
+                    <span class="emoji">🧲</span>
+                    <span class="description">磁铁</span>
+                </div>
+                <div class="emoji-item" data-category="objects" data-emoji="🪜" data-keywords="梯子,工具,ladder">
+                    <span class="emoji">🪜</span>
+                    <span class="description">梯子</span>
+                </div>
+                <div class="emoji-item" data-category="objects" data-emoji="🧰" data-keywords="工具箱,维修,toolbox">
+                    <span class="emoji">🧰</span>
+                    <span class="description">工具箱</span>
+                </div>
+                <div class="emoji-item" data-category="objects" data-emoji="🧲" data-keywords="磁铁,吸引,magnet">
+                    <span class="emoji">🧲</span>
+                    <span class="description">磁铁</span>
+                </div>
+                <div class="emoji-item" data-category="objects" data-emoji="⚖️" data-keywords="天平,公平,balance">
+                    <span class="emoji">⚖️</span>
+                    <span class="description">天平</span>
                 </div>
             </div>
         </div>

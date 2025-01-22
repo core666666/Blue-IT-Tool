@@ -24,6 +24,38 @@ document.addEventListener('DOMContentLoaded', function() {
     const emojiItems = document.querySelectorAll('.emoji-item');
     const copyNotification = document.getElementById('copyNotification');
     const categoryButtons = document.querySelectorAll('.category-btn');
+    const searchInput = document.getElementById('emoji-search');
+
+    // 搜索功能
+    let searchTimeout;
+    searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            const searchTerm = this.value.toLowerCase();
+            const activeCategory = document.querySelector('.category-btn.active').dataset.category;
+
+            emojiItems.forEach(item => {
+                const keywords = item.dataset.keywords || '';
+                const description = item.querySelector('.description').textContent;
+                const emoji = item.dataset.emoji;
+                const category = item.dataset.category;
+                const searchString = `${keywords},${description},${emoji}`.toLowerCase();
+
+                const matchesSearch = searchTerm === '' || searchString.includes(searchTerm);
+                const matchesCategory = activeCategory === 'all' || category === activeCategory;
+
+                if (matchesSearch && matchesCategory) {
+                    item.classList.remove('hidden');
+                    if (searchTerm !== '') {
+                        item.classList.add('highlight');
+                        setTimeout(() => item.classList.remove('highlight'), 500);
+                    }
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        }, 300);
+    });
 
     // 分类功能
     categoryButtons.forEach(button => {
@@ -34,13 +66,20 @@ document.addEventListener('DOMContentLoaded', function() {
             button.classList.add('active');
 
             const category = button.dataset.category;
+            const searchTerm = searchInput.value.toLowerCase();
             
             // 显示/隐藏emoji
             emojiItems.forEach(item => {
-                if (category === 'all' || item.dataset.category === category) {
-                    item.style.display = 'flex';
+                const keywords = item.dataset.keywords || '';
+                const description = item.querySelector('.description').textContent;
+                const emoji = item.dataset.emoji;
+                const searchString = `${keywords},${description},${emoji}`.toLowerCase();
+                const matchesSearch = searchTerm === '' || searchString.includes(searchTerm);
+
+                if ((category === 'all' || item.dataset.category === category) && matchesSearch) {
+                    item.classList.remove('hidden');
                 } else {
-                    item.style.display = 'none';
+                    item.classList.add('hidden');
                 }
             });
         });

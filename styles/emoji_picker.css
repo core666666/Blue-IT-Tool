@@ -18,13 +18,18 @@ body {
     flex: 1; /* 让container占据剩余空间 */
 }
 
-h1 {
-    text-align: center;
-    color: var(--text-color);
+.header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-bottom: 30px;
+    padding: 0 20px;
+}
+
+h1 {
+    color: var(--text-color);
     font-size: 2em;
-    width: 100%;
-    position: relative;
+    margin: 0;
 }
 
 .emoji-categories {
@@ -169,6 +174,20 @@ h1 {
     .emoji-item {
         padding: 10px;
     }
+
+    .header-container {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+
+    h1 {
+        text-align: center;
+    }
+
+    .search-box {
+        width: 100%;
+    }
 }
 
 /* 暗色主题支持 */
@@ -221,4 +240,70 @@ footer a {
 
 footer a:hover {
     text-decoration: underline;
+}
+
+.search-container {
+    flex-shrink: 0;
+}
+
+.search-box {
+    position: relative;
+    width: 300px;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 12px 20px 12px 40px;
+    border: 2px solid var(--secondary-bg-color);
+    border-radius: 25px;
+    font-size: 16px;
+    color: var(--text-color);
+    background-color: var(--bg-color);
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.search-box input::placeholder {
+    color: var(--text-color);
+    opacity: 0.5;
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.2);
+}
+
+.search-box i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-color);
+    opacity: 0.5;
+    pointer-events: none;
+    font-size: 14px;
+    z-index: 0;
+}
+
+/* 搜索结果高亮 */
+.emoji-item.hidden {
+    display: none;
+}
+
+.emoji-item.highlight {
+    animation: highlight 0.5s ease;
+}
+
+@keyframes highlight {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
 } 

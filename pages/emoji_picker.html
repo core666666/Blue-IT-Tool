@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji 选择器 - Blue IT Tool</title>
+    <link rel="stylesheet" href="../styles/base.css">
+    <link rel="stylesheet" href="../styles/emoji_picker.css">
+    <link rel="stylesheet" href="../styles/common.css">
+    <link rel="stylesheet" href="../allmin.css" />
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-logo">
+            <img src="../tools.png" alt="Tools Logo" style="width: 30px;">
+            <a href="../index.html">蔚蓝工具导航</a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="../index.html">返回首页</a></li>
+        </ul>
+        <div class="nav-right">
+            <div class="theme-switch">
+                <input type="checkbox" id="theme-toggle">
+                <label for="theme-toggle">
+                    <i class="fas fa-sun"></i>
+                    <i class="fas fa-moon"></i>
+                </label>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- 左侧分类 -->
+        <div class="emoji-categories">
+            <button class="category-btn active" data-category="all">
+                <i class="fas fa-th-large"></i>全部
+            </button>
+            <button class="category-btn" data-category="faces">
+                <i class="fas fa-smile"></i>表情
+            </button>
+            <button class="category-btn" data-category="nature">
+                <i class="fas fa-leaf"></i>自然
+            </button>
+            <button class="category-btn" data-category="food">
+                <i class="fas fa-utensils"></i>食物
+            </button>
+            <button class="category-btn" data-category="activities">
+                <i class="fas fa-futbol"></i>活动
+            </button>
+            <button class="category-btn" data-category="objects">
+                <i class="fas fa-lightbulb"></i>物品
+            </button>
+        </div>
+
+        <!-- 右侧内容区 -->
+        <div class="emoji-content">
+            <h1>Emoji 选择器</h1>
+            <div class="emoji-grid">
+                <!-- 表情类 -->
+                <div class="emoji-item" data-category="faces" data-emoji="😊">
+                    <span class="emoji">😊</span>
+                    <span class="description">微笑</span>
+                </div>
+                <div class="emoji-item" data-category="faces" data-emoji="🥰">
+                    <span class="emoji">🥰</span>
+                    <span class="description">带爱心的笑脸</span>
+                </div>
+                <div class="emoji-item" data-category="faces" data-emoji="😎">
+                    <span class="emoji">😎</span>
+                    <span class="description">墨镜笑脸</span>
+                </div>
+                <div class="emoji-item" data-category="faces" data-emoji="🤔">
+                    <span class="emoji">🤔</span>
+                    <span class="description">思考</span>
+                </div>
+                <!-- 自然类 -->
+                <div class="emoji-item" data-category="nature" data-emoji="🌈">
+                    <span class="emoji">🌈</span>
+                    <span class="description">彩虹</span>
+                </div>
+                <div class="emoji-item" data-category="nature" data-emoji="🌸">
+                    <span class="emoji">🌸</span>
+                    <span class="description">樱花</span>
+                </div>
+                <div class="emoji-item" data-category="nature" data-emoji="🌺">
+                    <span class="emoji">🌺</span>
+                    <span class="description">花朵</span>
+                </div>
+                <div class="emoji-item" data-category="nature" data-emoji="🍀">
+                    <span class="emoji">🍀</span>
+                    <span class="description">四叶草</span>
+                </div>
+                <!-- 食物类 -->
+                <div class="emoji-item" data-category="food" data-emoji="🍜">
+                    <span class="emoji">🍜</span>
+                    <span class="description">面条</span>
+                </div>
+                <div class="emoji-item" data-category="food" data-emoji="🍣">
+                    <span class="emoji">🍣</span>
+                    <span class="description">寿司</span>
+                </div>
+                <div class="emoji-item" data-category="food" data-emoji="🍦">
+                    <span class="emoji">🍦</span>
+                    <span class="description">冰淇淋</span>
+                </div>
+                <div class="emoji-item" data-category="food" data-emoji="🍰">
+                    <span class="emoji">🍰</span>
+                    <span class="description">蛋糕</span>
+                </div>
+                <!-- 活动类 -->
+                <div class="emoji-item" data-category="activities" data-emoji="⚽">
+                    <span class="emoji">⚽</span>
+                    <span class="description">足球</span>
+                </div>
+                <div class="emoji-item" data-category="activities" data-emoji="🎮">
+                    <span class="emoji">🎮</span>
+                    <span class="description">游戏</span>
+                </div>
+                <div class="emoji-item" data-category="activities" data-emoji="🎨">
+                    <span class="emoji">🎨</span>
+                    <span class="description">艺术</span>
+                </div>
+                <div class="emoji-item" data-category="activities" data-emoji="🎭">
+                    <span class="emoji">🎭</span>
+                    <span class="description">表演</span>
+                </div>
+                <!-- 物品类 -->
+                <div class="emoji-item" data-category="objects" data-emoji="💻">
+                    <span class="emoji">💻</span>
+                    <span class="description">笔记本</span>
+                </div>
+                <div class="emoji-item" data-category="objects" data-emoji="📱">
+                    <span class="emoji">📱</span>
+                    <span class="description">手机</span>
+                </div>
+                <div class="emoji-item" data-category="objects" data-emoji="⌚">
+                    <span class="emoji">⌚</span>
+                    <span class="description">手表</span>
+                </div>
+                <div class="emoji-item" data-category="objects" data-emoji="💡">
+                    <span class="emoji">💡</span>
+                    <span class="description">灯泡</span>
+                </div>
+            </div>
+        </div>
+        <div id="copyNotification" class="copy-notification">已复制到剪贴板！</div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer>
+        <p>
+            &copy; 2025 蔚蓝个人工具导航站
+            <a href="https://github.com/core666666/Blue-IT-Tool" target="_blank">GitHub开源地址</a>
+        </p>
+    </footer>
+
+    <script src="../scripts/emoji_picker.js"></script>
+</body>
+</html> 

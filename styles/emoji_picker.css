@@ -120,16 +120,17 @@ h1 {
 
 .copy-notification {
     position: fixed;
-    bottom: 20px;
-    left: 50%;
+    bottom: 50%;
+    left: 55%;
     transform: translateX(-50%);
-    background-color: var(--primary-color);
-    color: white;
+    background-color: rgb(238 245 250);
+    color: rgb(69, 168, 224);
     padding: 10px 20px;
     border-radius: 20px;
     opacity: 0;
     transition: opacity 0.3s ease;
-    z-index: 1000;
+    z-index: 9999;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* 响应式设计 */

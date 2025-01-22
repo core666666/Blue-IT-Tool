@@ -1,0 +1,14 @@
+# 允许所有搜索引擎爬虫访问
+User-agent: *
+Allow: /
+Allow: /pages/
+Allow: /styles/
+Allow: /scripts/
+
+# 禁止访问某些私密或不需要被索引的目录
+Disallow: /assets/favicon/
+Disallow: /temp/
+Disallow: /test/
+
+# 网站地图位置
+Sitemap: https://your-domain.com/sitemap.xml 

@@ -1,24 +1,45 @@
 document.addEventListener('DOMContentLoaded', function() {
     // 主题切换功能
     const themeToggle = document.getElementById('theme-toggle');
-    const currentTheme = localStorage.getItem('theme');
+    const currentTheme = localStorage.getItem('theme') || 'light-theme';
 
-    if (currentTheme) {
-        document.body.classList.add(currentTheme);
+    // 初始化主题
+    document.body.classList.add(currentTheme);
+    if (themeToggle) {
         themeToggle.checked = currentTheme === 'dark-theme';
     }
 
-    themeToggle.addEventListener('change', function() {
-        if (this.checked) {
-            document.body.classList.remove('light-theme');
-            document.body.classList.add('dark-theme');
-            localStorage.setItem('theme', 'dark-theme');
-        } else {
-            document.body.classList.remove('dark-theme');
-            document.body.classList.add('light-theme');
-            localStorage.setItem('theme', 'light-theme');
-        }
+    // 监听主题变化
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.attributeName === 'class') {
+                const bodyClasses = document.body.classList;
+                const isDark = bodyClasses.contains('dark-theme');
+                if (themeToggle) {
+                    themeToggle.checked = isDark;
+                }
+            }
+        });
     });
+
+    observer.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class']
+    });
+
+    if (themeToggle) {
+        themeToggle.addEventListener('change', function() {
+            if (this.checked) {
+                document.body.classList.remove('light-theme');
+                document.body.classList.add('dark-theme');
+                localStorage.setItem('theme', 'dark-theme');
+            } else {
+                document.body.classList.remove('dark-theme');
+                document.body.classList.add('light-theme');
+                localStorage.setItem('theme', 'light-theme');
+            }
+        });
+    }
 
     // Emoji选择器功能
     const emojiItems = document.querySelectorAll('.emoji-item');
@@ -87,17 +108,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 复制功能
     emojiItems.forEach(item => {
-        item.addEventListener('click', () => {
+        item.addEventListener('click', async () => {
             const emoji = item.dataset.emoji;
-            navigator.clipboard.writeText(emoji).then(() => {
+            try {
+                // 首选方案：使用 Clipboard API
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(emoji);
+                } else {
+                    // 后备方案：使用传统的复制方法
+                    const textArea = document.createElement('textarea');
+                    textArea.value = emoji;
+                    textArea.style.position = 'fixed';
+                    textArea.style.left = '-9999px';
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    try {
+                        document.execCommand('copy');
+                    } catch (err) {
+                        console.error('复制失败:', err);
+                    }
+                    document.body.removeChild(textArea);
+                }
                 // 显示复制成功提示
                 copyNotification.style.opacity = '1';
                 setTimeout(() => {
                     copyNotification.style.opacity = '0';
                 }, 1500);
-            }).catch(err => {
+            } catch (err) {
                 console.error('复制失败:', err);
-            });
+            }
         });
 
         // 添加鼠标悬停效果

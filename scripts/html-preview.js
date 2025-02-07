@@ -188,4 +188,76 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // 初始运行
   runHtml();
+
+  // 添加截图功能
+  document.getElementById('capture-preview-btn').addEventListener('click', async () => {
+    try {
+        // 获取预览iframe中的内容
+        const iframe = document.getElementById('html-output');
+        const iframeContent = iframe.contentDocument || iframe.contentWindow.document;
+        
+        // 创建加载提示
+        const loadingToast = document.createElement('div');
+        loadingToast.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 5px;
+            z-index: 9999;
+        `;
+        loadingToast.textContent = '正在生成截图...';
+        document.body.appendChild(loadingToast);
+
+        // 使用html2canvas截图
+        const canvas = await html2canvas(iframeContent.body, {
+            allowTaint: true,
+            useCORS: true,
+            backgroundColor: '#ffffff',
+            scale: 2, // 提高图片质量
+        });
+
+        // 转换为图片
+        const image = canvas.toDataURL('image/png', 1.0);
+        
+        // 创建下载链接
+        const downloadLink = document.createElement('a');
+        downloadLink.href = image;
+        downloadLink.download = `preview-${new Date().getTime()}.png`;
+        
+        // 触发下载
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+        
+        // 移除加载提示
+        document.body.removeChild(loadingToast);
+        
+        // 显示成功提示
+        const successToast = document.createElement('div');
+        successToast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 5px;
+            z-index: 9999;
+        `;
+        successToast.textContent = '截图已保存';
+        document.body.appendChild(successToast);
+        
+        // 3秒后移除成功提示
+        setTimeout(() => {
+            document.body.removeChild(successToast);
+        }, 3000);
+    } catch (error) {
+        console.error('截图失败:', error);
+        alert('截图生成失败，请重试');
+    }
+  });
 }); 

@@ -157,6 +157,8 @@ body.dark-mode .dragbar:hover {
 
 .buttons button:hover {
     background-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 body.dark-mode .buttons button {
@@ -174,4 +176,12 @@ footer {
     background-color: inherit;
     text-align: center;
     border-top: 1px solid #ddd;
+}
+
+#capture-preview-btn {
+    background-color: #28a745;
+}
+
+#capture-preview-btn:hover {
+    background-color: #218838;
 } 

@@ -16,6 +16,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const MAXIMIZE_STATE_KEY = 'html_preview_maximize_state';
   const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000; // 7天的毫秒数
 
+  // 添加toolbar状态管理
+  const TOOLBAR_STATE_KEY = 'html_preview_toolbar_state';
+  const toolbarToggleBtn = document.getElementById('toolbar-toggle-btn');
+
   // 初始化面板宽度
   function initializePanels() {
     inputPane.style.width = "49.8%";  // 50% - dragbar宽度的一半
@@ -114,6 +118,58 @@ document.addEventListener("DOMContentLoaded", function () {
     return state;
   }
 
+  // 保存toolbar状态
+  function saveToolbarState(isHidden) {
+    const state = {
+      isHidden: isHidden,
+      timestamp: Date.now()
+    };
+    localStorage.setItem(TOOLBAR_STATE_KEY, JSON.stringify(state));
+  }
+
+  // 获取toolbar状态
+  function getToolbarState() {
+    const stateStr = localStorage.getItem(TOOLBAR_STATE_KEY);
+    if (!stateStr) return null;
+
+    const state = JSON.parse(stateStr);
+    const now = Date.now();
+
+    // 检查是否过期（7天）
+    if (now - state.timestamp > SEVEN_DAYS) {
+      localStorage.removeItem(TOOLBAR_STATE_KEY);
+      return null;
+    }
+
+    return state;
+  }
+
+  // 切换toolbar显示状态
+  function toggleToolbar() {
+    const isHidden = document.body.classList.toggle('toolbar-hidden');
+    const icon = toolbarToggleBtn.querySelector('i');
+    
+    if (isHidden) {
+      icon.className = 'fas fa-chevron-down';
+    } else {
+      icon.className = 'fas fa-chevron-up';
+    }
+    
+    saveToolbarState(isHidden);
+  }
+
+  // 初始化toolbar状态
+  function initToolbarState() {
+    const state = getToolbarState();
+    if (state && state.isHidden) {
+      document.body.classList.add('toolbar-hidden');
+      toolbarToggleBtn.querySelector('i').className = 'fas fa-chevron-down';
+    }
+  }
+
+  // 添加toolbar切换事件监听
+  toolbarToggleBtn.addEventListener('click', toggleToolbar);
+
   // 执行最大化
   function maximizeEditor() {
     document.body.classList.add("maximized");
@@ -121,14 +177,19 @@ document.addEventListener("DOMContentLoaded", function () {
     maximizeBtn.style.display = "none";
     restoreBtn.style.display = "inline-block";
     saveMaximizeState(true);
+    // 初始化toolbar状态
+    initToolbarState();
   }
 
   // 执行还原
   function restoreEditor() {
     document.body.classList.remove("maximized");
+    document.body.classList.remove("toolbar-hidden"); // 移除toolbar隐藏状态
     maximizeBtn.style.display = "inline-block";
     restoreBtn.style.display = "none";
     saveMaximizeState(false);
+    // 重置toolbar状态
+    toolbarToggleBtn.querySelector('i').className = 'fas fa-chevron-down';
   }
 
   // 检查并应用最大化状态

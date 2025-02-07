@@ -178,10 +178,17 @@ footer {
     border-top: 1px solid #ddd;
 }
 
-#capture-preview-btn {
+#capture-preview-btn, #copy-preview-btn {
     background-color: #28a745;
 }
 
-#capture-preview-btn:hover {
+#capture-preview-btn:hover, #copy-preview-btn:hover {
     background-color: #218838;
+}
+
+/* 添加复制成功的动画效果 */
+@keyframes copySuccess {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
 } 

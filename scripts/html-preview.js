@@ -189,6 +189,92 @@ document.addEventListener("DOMContentLoaded", function () {
   // 初始运行
   runHtml();
 
+  // 创建Toast提示函数
+  function showToast(message, type = 'success') {
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'success' ? '#4CAF50' : '#f44336'};
+        color: white;
+        padding: 15px 30px;
+        border-radius: 5px;
+        z-index: 9999;
+        animation: copySuccess 0.3s ease;
+    `;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        document.body.removeChild(toast);
+    }, 3000);
+  }
+
+  // 添加复制到剪贴板功能
+  document.getElementById('copy-preview-btn').addEventListener('click', async () => {
+    try {
+        // 获取预览iframe中的内容
+        const iframe = document.getElementById('html-output');
+        const iframeContent = iframe.contentDocument || iframe.contentWindow.document;
+        
+        // 创建加载提示
+        const loadingToast = document.createElement('div');
+        loadingToast.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 5px;
+            z-index: 9999;
+        `;
+        loadingToast.textContent = '正在生成图片...';
+        document.body.appendChild(loadingToast);
+
+        // 使用html2canvas截图
+        const canvas = await html2canvas(iframeContent.body, {
+            allowTaint: true,
+            useCORS: true,
+            backgroundColor: '#ffffff',
+            scale: 2, // 提高图片质量
+        });
+
+        // 将canvas转换为blob
+        canvas.toBlob(async (blob) => {
+            try {
+                // 创建ClipboardItem对象
+                const item = new ClipboardItem({ 'image/png': blob });
+                // 写入剪贴板
+                await navigator.clipboard.write([item]);
+                
+                // 移除加载提示
+                document.body.removeChild(loadingToast);
+                
+                // 显示成功提示
+                showToast('预览图片已复制到剪贴板');
+                
+                // 添加按钮动画效果
+                const copyBtn = document.getElementById('copy-preview-btn');
+                copyBtn.style.animation = 'copySuccess 0.3s ease';
+                setTimeout(() => {
+                    copyBtn.style.animation = '';
+                }, 300);
+                
+            } catch (err) {
+                console.error('复制到剪贴板失败:', err);
+                showToast('复制到剪贴板失败，请重试', 'error');
+            }
+        }, 'image/png', 1.0);
+        
+    } catch (error) {
+        console.error('生成图片失败:', error);
+        showToast('生成图片失败，请重试', 'error');
+    }
+  });
+
   // 添加截图功能
   document.getElementById('capture-preview-btn').addEventListener('click', async () => {
     try {

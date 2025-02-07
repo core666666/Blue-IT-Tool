@@ -12,6 +12,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const inputPane = document.getElementById("input-pane");
   const outputPane = document.getElementById("output-pane");
 
+  // 添加最大化状态管理相关函数
+  const MAXIMIZE_STATE_KEY = 'html_preview_maximize_state';
+  const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000; // 7天的毫秒数
+
   // 初始化面板宽度
   function initializePanels() {
     inputPane.style.width = "49.8%";  // 50% - dragbar宽度的一半
@@ -84,29 +88,76 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // 最大化功能
-  maximizeBtn.addEventListener("click", () => {
+  // 保存最大化状态
+  function saveMaximizeState(isMaximized) {
+    const state = {
+      isMaximized: isMaximized,
+      timestamp: Date.now()
+    };
+    localStorage.setItem(MAXIMIZE_STATE_KEY, JSON.stringify(state));
+  }
+
+  // 获取最大化状态
+  function getMaximizeState() {
+    const stateStr = localStorage.getItem(MAXIMIZE_STATE_KEY);
+    if (!stateStr) return null;
+
+    const state = JSON.parse(stateStr);
+    const now = Date.now();
+
+    // 检查是否过期
+    if (now - state.timestamp > SEVEN_DAYS) {
+      localStorage.removeItem(MAXIMIZE_STATE_KEY);
+      return null;
+    }
+
+    return state;
+  }
+
+  // 执行最大化
+  function maximizeEditor() {
     document.body.classList.add("maximized");
-    // 确保工具栏和按钮可见
     document.querySelector('.toolbar').style.visibility = 'visible';
     maximizeBtn.style.display = "none";
     restoreBtn.style.display = "inline-block";
-  });
+    saveMaximizeState(true);
+  }
 
-  restoreBtn.addEventListener("click", () => {
+  // 执行还原
+  function restoreEditor() {
     document.body.classList.remove("maximized");
     maximizeBtn.style.display = "inline-block";
     restoreBtn.style.display = "none";
+    saveMaximizeState(false);
+  }
+
+  // 检查并应用最大化状态
+  function checkAndApplyMaximizeState() {
+    const state = getMaximizeState();
+    if (state && state.isMaximized) {
+      maximizeEditor();
+    }
+  }
+
+  // 修改最大化按钮事件
+  maximizeBtn.addEventListener("click", () => {
+    maximizeEditor();
   });
 
-  // 监听 Esc 键恢复窗口
+  // 修改还原按钮事件
+  restoreBtn.addEventListener("click", () => {
+    restoreEditor();
+  });
+
+  // 修改ESC键监听
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape" && document.body.classList.contains("maximized")) {
-        document.body.classList.remove("maximized");
-        maximizeBtn.style.display = "inline-block";
-        restoreBtn.style.display = "none";
+      restoreEditor();
     }
   });
+
+  // 页面加载时检查最大化状态
+  checkAndApplyMaximizeState();
 
   // 拖动分割条调整布局
   dragbar.addEventListener("mousedown", (e) => {

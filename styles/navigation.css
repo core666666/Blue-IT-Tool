@@ -1,0 +1,485 @@
+/* 基础样式重置 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--bg-color);
+    transition: background-color 0.3s ease;
+}
+
+/* 明亮主题变量 */
+:root {
+    --bg-color: #f8f9fa;
+    --text-color: #2c3e50;
+    --primary-color: #4a90e2;
+    --secondary-color: #5856D6;
+    --border-color: #E5E5EA;
+    --card-bg: #ffffff;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --hover-bg: #f5f5f5;
+    --category-bg: rgba(255, 255, 255, 0.9);
+    --card-hover-shadow: rgba(74, 144, 226, 0.2);
+    --navbar-bg: linear-gradient(135deg, #4a90e2, #5856D6);
+    --navbar-text: #ffffff;
+}
+
+/* 暗黑主题变量 */
+[data-theme="dark"] {
+    --bg-color: #1a1a1a;
+    --text-color: #ffffff;
+    --primary-color: #4a90e2;
+    --secondary-color: #5E5CE6;
+    --border-color: #38383A;
+    --card-bg: #2c2c2e;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --hover-bg: #3a3a3c;
+    --category-bg: rgba(44, 44, 46, 0.9);
+    --card-hover-shadow: rgba(74, 144, 226, 0.3);
+    --navbar-bg: linear-gradient(135deg, #2c3e50, #3498db);
+    --navbar-text: #ffffff;
+}
+
+/* 左侧固定导航栏 */
+.side-nav {
+    position: fixed;
+    left: -200px; /* 初始状态隐藏 */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 200px;
+    background-color: var(--category-bg);
+    backdrop-filter: blur(10px);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    border-radius: 0 8px 8px 0;
+    transition: left 0.3s ease;
+    z-index: 999;
+}
+
+.side-nav.show {
+    left: 0;
+}
+
+.side-nav .category-link {
+    display: block;
+    padding: 0.8rem 1rem;
+    margin: 0.5rem 0;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, 
+                              rgba(74, 144, 226, 0.1) 0%,
+                              rgba(74, 144, 226, 0.05) 100%);
+}
+
+.side-nav .category-link:hover {
+    background: linear-gradient(135deg, 
+                              var(--primary-color) 0%,
+                              var(--secondary-color) 100%);
+    color: #ffffff;
+    transform: translateX(8px);
+}
+
+/* 顶部导航栏样式优化 */
+.category-nav {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background-color: var(--category-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 70px;
+    z-index: 998;
+    transition: opacity 0.3s ease;
+}
+
+.category-nav.hide {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* 导航栏样式 */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: var(--navbar-bg);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-logo a {
+    color: var(--navbar-text);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.2rem;
+}
+
+.nav-logo a:hover {
+    color: var(--primary-color);
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* 搜索框样式优化 */
+.search-box {
+    position: relative;
+    width: 300px;
+    transition: all 0.3s ease;
+}
+
+.search-box.focused {
+    width: 320px;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 0.8rem 2rem 0.8rem 1rem;
+    border: none;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    color: var(--navbar-text);
+    font-size: 0.9rem;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+}
+
+.search-box input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+    transition: opacity 0.3s ease;
+}
+
+.search-box.focused input::placeholder {
+    opacity: 0.5;
+}
+
+.search-box input:focus {
+    background: rgba(255, 255, 255, 0.25);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+.search-box i {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--navbar-text);
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.search-box.focused i {
+    opacity: 1;
+}
+
+/* 主题切换按钮样式 */
+.theme-switch {
+    position: relative;
+    width: 48px;
+    height: 24px;
+}
+
+.theme-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.theme-switch label {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--border-color);
+    border-radius: 24px;
+    transition: 0.4s;
+}
+
+.theme-switch label i {
+    position: absolute;
+    top: 4px;
+    font-size: 16px;
+    transition: 0.4s;
+}
+
+.theme-switch label .fa-sun {
+    left: 4px;
+    color: #FFD700;
+}
+
+.theme-switch label .fa-moon {
+    right: 4px;
+    color: #C4C4C4;
+}
+
+.theme-switch input:checked + label {
+    background-color: var(--primary-color);
+}
+
+/* 主要内容区域样式 */
+.container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+/* 分类导航样式 */
+.category-link {
+    color: var(--text-color);
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.category-link:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* 导航分类区域样式 */
+.nav-section {
+    margin-bottom: 3rem;
+}
+
+.nav-section h2 {
+    color: var(--text-color);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+/* 网站卡片网格布局 */
+.site-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+}
+
+/* 网站卡片样式 */
+.site-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1),
+                0 1px 3px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.site-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, 
+                              rgba(74, 144, 226, 0.1) 0%,
+                              rgba(74, 144, 226, 0) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.site-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 12px 20px var(--card-hover-shadow),
+                0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.site-card:hover::before {
+    opacity: 1;
+}
+
+.site-card h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+    position: relative;
+}
+
+.site-card p {
+    color: var(--text-color);
+    opacity: 0.8;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+    flex-grow: 1;
+    line-height: 1.4;
+}
+
+/* 链接样式优化 */
+.site-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.85rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 0.4rem 0.6rem;
+    border-radius: 4px;
+    background: linear-gradient(135deg, 
+                              var(--primary-color) 0%,
+                              var(--secondary-color) 100%);
+    letter-spacing: 0.3px;
+    position: relative;
+    overflow: hidden;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: fit-content;
+    margin-top: 0.4rem;
+}
+
+.site-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, 
+                              var(--secondary-color) 0%,
+                              var(--primary-color) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 0;
+}
+
+.site-link i {
+    position: relative;
+    z-index: 1;
+    font-size: 0.9em;
+    transition: transform 0.3s ease;
+}
+
+.site-link span {
+    position: relative;
+    z-index: 1;
+}
+
+.site-link:hover {
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.site-link:hover::before {
+    opacity: 1;
+}
+
+.site-link:hover i {
+    transform: translateX(3px);
+}
+
+.site-link:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 页脚样式 */
+footer {
+    text-align: center;
+    padding: 2rem;
+    background-color: var(--card-bg);
+    border-top: 1px solid var(--border-color);
+}
+
+footer p {
+    color: var(--text-color);
+    font-size: 0.9rem;
+}
+
+footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+    margin-left: 1rem;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* 响应式设计优化 */
+@media (max-width: 1200px) {
+    .site-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .site-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    }
+    
+    .site-card {
+        padding: 0.8rem;
+    }
+    
+    .site-card h3 {
+        font-size: 0.95rem;
+    }
+    
+    .site-card p {
+        font-size: 0.8rem;
+    }
+    
+    .navbar {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .nav-right {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .search-box {
+        width: 100%;
+    }
+
+    .side-nav {
+        display: none; /* 在移动设备上隐藏侧边导航 */
+    }
+    
+    .category-nav {
+        position: static;
+        flex-direction: column;
+        align-items: center;
+    }
+} 

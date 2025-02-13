@@ -108,6 +108,45 @@ body {
     pointer-events: none;
 }
 
+/* 导航链接样式增强 */
+.category-link {
+    color: var(--text-color);
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.category-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s ease;
+}
+
+.category-link:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+}
+
+.category-link.active {
+    background: linear-gradient(135deg, 
+                              rgba(74, 144, 226, 0.1) 0%,
+                              rgba(74, 144, 226, 0.05) 100%);
+}
+
+.category-link.active::after {
+    transform: scaleX(1);
+}
+
 /* 导航栏样式 */
 .navbar {
     display: flex;
@@ -247,20 +286,6 @@ body {
     max-width: 1200px;
     margin: 2rem auto;
     padding: 0 1rem;
-}
-
-/* 分类导航样式 */
-.category-link {
-    color: var(--text-color);
-    text-decoration: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-}
-
-.category-link:hover {
-    background-color: var(--primary-color);
-    color: white;
 }
 
 /* 导航分类区域样式 */

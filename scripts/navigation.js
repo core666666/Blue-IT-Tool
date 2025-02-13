@@ -115,13 +115,26 @@ document.addEventListener('DOMContentLoaded', () => {
         searchInput.parentElement.classList.remove('focused');
     });
 
-    // 平滑滚动
-    document.querySelectorAll('.category-link').forEach(link => {
+    // 平滑滚动和导航交互
+    const categoryLinks = document.querySelectorAll('.category-link');
+    let activeLink = null;
+
+    categoryLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
             const targetId = link.getAttribute('href');
             const targetElement = document.querySelector(targetId);
             
+            // 移除之前的激活状态
+            if (activeLink) {
+                activeLink.classList.remove('active');
+            }
+            
+            // 添加新的激活状态
+            link.classList.add('active');
+            activeLink = link;
+            
+            // 平滑滚动到目标位置
             if (targetElement) {
                 targetElement.scrollIntoView({
                     behavior: 'smooth',
@@ -130,6 +143,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // 初始化导航状态
+    if (categoryLinks.length > 0) {
+        const firstLink = categoryLinks[0];
+        firstLink.classList.add('active');
+        activeLink = firstLink;
+    }
 
     // 导航栏交互控制
     const topNav = document.querySelector('.category-nav');

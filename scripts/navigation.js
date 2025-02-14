@@ -155,11 +155,42 @@ document.addEventListener('DOMContentLoaded', () => {
     const topNav = document.querySelector('.category-nav');
     let lastScrollTop = 0;
     
+    // 获取所有分类区域
+    const sections = document.querySelectorAll('.nav-section');
+    
+    // 更新活动链接的函数
+    function updateActiveLink() {
+        // 获取当前滚动位置
+        const scrollPosition = window.scrollY;
+        
+        // 遍历所有分类区域
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop - 150; // 添加偏移量以提前触发
+            const sectionBottom = sectionTop + section.offsetHeight;
+            
+            // 检查当前滚动位置是否在该区域内
+            if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+                // 获取对应的导航链接
+                const targetId = `#${section.id}`;
+                const correspondingLink = document.querySelector(`.category-link[href="${targetId}"]`);
+                
+                // 更新活动状态
+                if (activeLink) {
+                    activeLink.classList.remove('active');
+                }
+                if (correspondingLink) {
+                    correspondingLink.classList.add('active');
+                    activeLink = correspondingLink;
+                }
+            }
+        });
+    }
+    
     // 监听滚动事件
     window.addEventListener('scroll', function() {
         const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
         
-        // 根据滚动方向控制导航栏的显示
+        // 更新导航栏显示状态
         if (currentScroll > lastScrollTop && currentScroll > 100) {
             // 向下滚动
             topNav.classList.add('hide');
@@ -169,5 +200,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         lastScrollTop = currentScroll;
+        
+        // 更新活动链接
+        updateActiveLink();
     });
+    
+    // 初始化时也要检查一次
+    updateActiveLink();
 }); 

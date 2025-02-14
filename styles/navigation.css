@@ -139,12 +139,19 @@ body {
 
 .category-link.active {
     background: linear-gradient(135deg, 
-                              rgba(74, 144, 226, 0.1) 0%,
-                              rgba(74, 144, 226, 0.05) 100%);
+                              rgba(74, 144, 226, 0.15) 0%,
+                              rgba(74, 144, 226, 0.1) 100%);
+    font-weight: 600;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .category-link.active::after {
     transform: scaleX(1);
+    background: linear-gradient(90deg, 
+                              var(--primary-color) 0%,
+                              var(--secondary-color) 100%);
+    opacity: 1;
 }
 
 /* 导航栏样式 */

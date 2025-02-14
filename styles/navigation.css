@@ -514,4 +514,83 @@ footer a:hover {
         flex-direction: column;
         align-items: center;
     }
+}
+
+/* 网站图标样式 */
+.site-icon {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.site-icon img {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.site-icon img:hover {
+    transform: scale(1.1);
+}
+
+/* 默认图标样式 */
+.default-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 500;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.default-icon:hover {
+    transform: scale(1.1);
+}
+
+/* 多图标容器样式 */
+.multi-icons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.single-icon {
+    position: relative;
+}
+
+.single-icon img,
+.single-icon .default-icon {
+    width: 28px;
+    height: 28px;
+}
+
+.single-icon .default-icon {
+    font-size: 10px;
+}
+
+/* 调整卡片内部布局 */
+.site-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.site-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--card-shadow-hover);
 } 

@@ -2,7 +2,12 @@
 
 #### 一站式前端开发工具集，为开发者提供便捷高效的在线工具服务
 
-<!-- >访问地址：https://blue-it.github.io/ -->
+<div align="center">
+  
+### 🌐 在线访问
+## [点击访问 Blue-IT-Tool](https://core666666.github.io/Blue-IT-Tool)
+
+</div>
 
 >🔗 GitHub：https://github.com/core666666/Blue-IT-Tool
 

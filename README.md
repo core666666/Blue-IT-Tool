@@ -144,4 +144,5 @@
 ## 🙏 鸣谢
 
 感谢自己开发了本项目！
-感谢九宫格代码：[1](https://github.com/DemoJ/gradient-generator)
+
+感谢九宫格代码：[9-gong-ge](https://github.com/DemoJ/gradient-generator)

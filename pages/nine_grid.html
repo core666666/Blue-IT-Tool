@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>九宫格切图工具 - 免费在线朋友圈九宫格制作工具</title>
+    <meta name="description" content="免费在线九宫格切图工具，轻松制作朋友圈九宫格图片。支持透明背景、白色背景，可单独下载或批量打包，让分享更简单。">
+    <meta name="keywords" content="九宫格,切图工具,朋友圈,图片处理,在线工具,免费工具,九宫格制作,图片分割">
+    <meta name="author" content="九宫格切图工具">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="九宫格切图工具 - 免费在线朋友圈九宫格制作工具">
+    <meta property="og:description" content="免费在线九宫格切图工具，轻松制作朋友圈九宫格图片。支持透明背景、白色背景，可单独下载或批量打包。">
+    <meta property="og:type" content="website">
+    <link rel="canonical" href="https://your-domain.com/nine_grid.html">
+    <link rel="stylesheet" href="../styles/nine_grid.css">
+    <script src="../libs/jszip.min.js" defer></script>
+    <!-- JSON-LD 结构化数据 -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "九宫格切图工具",
+        "description": "免费在线九宫格切图工具，轻松制作朋友圈九宫格图片。支持透明背景、白色背景，可单独下载或批量打包。",
+        "applicationCategory": "图片处理工具",
+        "operatingSystem": "全平台",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "CNY"
+        },
+        "featureList": [
+            "支持JPG、PNG格式图片",
+            "透明背景选项",
+            "白色背景选项",
+            "单张图片下载",
+            "批量打包下载",
+            "保持原图比例"
+        ]
+    }
+    </script>
+    <!-- 添加favicon -->
+    <link rel="icon" type="image/png" href="../tools.png">
+    <link rel="apple-touch-icon" href="../tools.png">
+    <link rel="shortcut icon" type="image/png" href="../tools.png">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo"><img src="../tools.png" alt="Tools Logo" style="width: 30px;"><a href="../index.html">蔚蓝工具导航</a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="../index.html#preview">返回</a></li>
+        </ul>
+        <!-- 主题切换按钮 -->
+        <div class="theme-switch">
+            <input type="checkbox" id="theme-toggle">
+            <label for="theme-toggle">
+                <i class="fas fa-sun"></i>
+                <i class="fas fa-moon"></i>
+            </label>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header class="header">
+            <h1>九宫格切图工具</h1>
+            <p class="subtitle">快速生成朋友圈九宫格图片，让分享更出彩</p>
+        </header>
+
+        <main class="main-content">
+            <div class="upload-section">
+                <input type="file" id="imageInput" accept="image/*">
+                <label for="imageInput" class="upload-btn">
+                    <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    <span>选择图片</span>
+                </label>
+                <p class="upload-tip">支持 JPG、PNG 格式图片，推荐尺寸 1080×1080</p>
+            </div>
+
+            <div class="options-section">
+                <div class="option-item">
+                    <label class="radio-label">
+                        <input type="radio" name="background" value="white" checked>
+                        <span>白色背景</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="background" value="transparent">
+                        <span>透明背景</span>
+                    </label>
+                </div>
+                <div class="option-item" style="margin-top: 0.5rem;">
+                    <label class="radio-label shape-option">
+                        <input type="radio" name="shape" value="none" checked>
+                        <div class="shape-icon none"></div>
+                    </label>
+                    <label class="radio-label shape-option">
+                        <input type="radio" name="shape" value="rounded">
+                        <div class="shape-icon rounded"></div>
+                    </label>
+                    <label class="radio-label shape-option">
+                        <input type="radio" name="shape" value="circle">
+                        <div class="shape-icon circle"></div>
+                    </label>
+                    <label class="radio-label shape-option">
+                        <input type="radio" name="shape" value="heart">
+                        <div class="shape-icon heart"></div>
+                    </label>
+                </div>
+                <div class="option-item" style="margin-top: 0.5rem;">
+                    <label class="radio-label grid-option">
+                        <input type="radio" name="grid" value="9" checked>
+                        <div class="grid-icon grid-9"></div>
+                        <span>9宫格</span>
+                    </label>
+                    <label class="radio-label grid-option">
+                        <input type="radio" name="grid" value="4">
+                        <div class="grid-icon grid-4"></div>
+                        <span>4宫格</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="preview-section">
+                <canvas id="originalCanvas" style="display: none;"></canvas>
+                <div id="gridContainer" class="grid-container"></div>
+            </div>
+
+            <div class="button-section">
+                <button id="splitButton" class="btn" disabled>
+                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                    </svg>
+                    切割图片
+                </button>
+                <button id="downloadAllButton" class="btn btn-primary" disabled>
+                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    全部下载
+                </button>
+                <button id="downloadZipButton" class="btn btn-primary" disabled>
+                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                    </svg>
+                    打包下载
+                </button>
+            </div>
+
+            <div class="image-list" id="imageList">
+                <!-- Image list items will be added here -->
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>© 2025 九宫格切图工具 - 让分享更简单</p>
+        </footer>
+    </div>
+    <script src="../scripts/nine_grid.js"></script>
+</body>
+</html> 

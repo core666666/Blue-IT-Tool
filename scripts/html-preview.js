@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const maximizeBtn = document.getElementById("maximize-btn");
   const restoreBtn = document.getElementById("restore-btn");
   const pasteHtmlBtn = document.getElementById("paste-html-btn");
+  const saveHtmlBtn = document.getElementById("save-html-btn");
   const dragbar = document.getElementById("dragbar");
   const inputPane = document.getElementById("input-pane");
   const outputPane = document.getElementById("output-pane");
@@ -407,4 +408,77 @@ document.addEventListener("DOMContentLoaded", function () {
         alert('截图生成失败，请重试');
     }
   });
+
+  // 保存HTML文件功能
+  async function saveHtmlFile() {
+    const htmlContent = htmlInput.value;
+    if (!htmlContent.trim()) {
+      alert("HTML内容为空，请先输入内容！");
+      return;
+    }
+
+    try {
+      // 生成默认文件名
+      const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+      const defaultFileName = `webpage-${timestamp}.html`;
+      
+      // 提示用户输入文件名
+      const customFileName = prompt("请输入文件名（默认值已填写）：", defaultFileName);
+      
+      // 如果用户取消了输入，则终止保存
+      if (customFileName === null) {
+        return;
+      }
+      
+      // 确保文件名不为空且有.html后缀
+      const finalFileName = customFileName.trim() || defaultFileName;
+      const fileName = finalFileName.endsWith('.html') ? finalFileName : `${finalFileName}.html`;
+
+      try {
+        // 尝试使用现代文件系统API
+        const handle = await window.showSaveFilePicker({
+          suggestedName: fileName,
+          types: [{
+            description: 'HTML文件',
+            accept: {'text/html': ['.html']},
+          }],
+        });
+        
+        // 创建写入流
+        const writable = await handle.createWritable();
+        await writable.write(htmlContent);
+        await writable.close();
+        
+        showToast("HTML文件保存成功！");
+      } catch (err) {
+        // 如果不支持现代API或用户取消，使用传统下载方式
+        if (err.name !== 'AbortError') {
+          console.log('使用传统下载方式');
+          // 创建Blob对象
+          const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
+          
+          // 创建下载链接
+          const downloadLink = document.createElement("a");
+          downloadLink.href = URL.createObjectURL(blob);
+          downloadLink.download = fileName;
+          
+          // 触发下载
+          document.body.appendChild(downloadLink);
+          downloadLink.click();
+          
+          // 清理
+          document.body.removeChild(downloadLink);
+          URL.revokeObjectURL(downloadLink.href);
+          
+          showToast("HTML文件保存成功！");
+        }
+      }
+    } catch (error) {
+      console.error("保存文件时出错:", error);
+      alert("保存文件时出错，请重试！");
+    }
+  }
+
+  // 添加保存按钮事件监听
+  saveHtmlBtn.addEventListener("click", saveHtmlFile);
 }); 

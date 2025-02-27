@@ -526,7 +526,7 @@ body.dark-mode .tool-card .category-tag {
 /* 特色卡片指示器 */
 .featured-indicator {
     position: absolute;
-    top: -8px;
+    top: -1px;
     left: 20px;
     background: linear-gradient(135deg, #FF6B6B, #FFE66D);
     color: white;

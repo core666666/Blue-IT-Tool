@@ -67,6 +67,9 @@ body.dark-mode {
     position: relative;
     z-index: 1;
     animation: fadeIn 0.6s ease forwards;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .notice::before {
@@ -94,6 +97,67 @@ body.dark-mode {
         transparent
     );
     animation: shine 3s linear infinite;
+}
+
+/* 添加安全盾牌图标和闪烁微光效果 */
+.notice p {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+}
+
+.notice p::before {
+    content: '\f3ed'; /* FontAwesome 盾牌图标 */
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    margin-right: 10px;
+    font-size: 18px;
+    position: relative;
+    animation: pulse 2s infinite;
+}
+
+/* 添加盾牌闪烁微光效果 */
+@keyframes pulse {
+    0% {
+        text-shadow: 0 0 5px rgba(255,255,255,0.5), 0 0 10px rgba(255,255,255,0.3);
+    }
+    50% {
+        text-shadow: 0 0 10px rgba(255,255,255,0.8), 0 0 20px rgba(255,255,255,0.5);
+    }
+    100% {
+        text-shadow: 0 0 5px rgba(255,255,255,0.5), 0 0 10px rgba(255,255,255,0.3);
+    }
+}
+
+/* 添加盾牌周围的发光圆环 */
+.notice p::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: transparent;
+    border: 2px solid rgba(255,255,255,0.4);
+    left: 9px;
+    z-index: -1;
+    animation: glow 3s infinite;
+}
+
+@keyframes glow {
+    0% {
+        transform: scale(1);
+        opacity: 0.3;
+    }
+    50% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0.3;
+    }
 }
 
 /* 工具卡片容器 */

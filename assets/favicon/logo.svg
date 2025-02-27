@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- 背景圆形 -->
+    <circle cx="16" cy="16" r="16" fill="#1E90FF"/>
+    
+    <!-- 字母B造型 -->
+    <path d="M10 8h8c2.2 0 4 1.8 4 4s-1.8 4-4 4h-8V8z" fill="white"/>
+    <path d="M10 16h9c2.2 0 4 1.8 4 4s-1.8 4-4 4h-9V16z" fill="white"/>
+    <path d="M10 8v16" stroke="#1E90FF" stroke-width="4"/>
+</svg> 

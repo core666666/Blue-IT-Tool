@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>页面构建中 - Blue IT Tool</title>
+    <!-- 引入图标库 -->
+    <link rel="stylesheet" href="../allmin.css" />
+    <!-- 引入自定义CSS -->
+    <link rel="stylesheet" href="../styles/common.css">
+    <style>
+        .construction-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+            text-align: center;
+            padding: 2rem;
+        }
+        .construction-icon {
+            font-size: 5rem;
+            margin-bottom: 2rem;
+            color: #3498db;
+        }
+        .construction-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+        .construction-text {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body class="light-mode">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-logo">
+            <a href="../index.html">
+                <img src="../assets/favicon/favicon-32x32.png" alt="蔚蓝IT">
+                蔚蓝IT工具导航
+            </a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="../index.html"><i class="fas fa-home"></i>首页</a></li>
+            <li><a href="under-construction.html" class="active"><i class="fas fa-info-circle"></i>关于我们</a></li>
+            <li><a href="under-construction.html"><i class="fas fa-rss"></i>博客</a></li>
+            <li><a href="under-construction.html"><i class="fas fa-envelope"></i>联系我们</a></li>
+        </ul>
+        <div class="nav-right">
+            <div class="theme-switch">
+                <input type="checkbox" id="theme-toggle">
+                <label for="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                </label>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <main class="container">
+        <div class="construction-container">
+            <div class="construction-icon">
+                <i class="fas fa-tools"></i>
+            </div>
+            <h1 class="construction-title">页面构建中</h1>
+            <p class="construction-text">
+                我们正在努力为您构建更好的内容。请稍后再来访问，感谢您的理解与支持！
+            </p>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="under-construction.html">关于我们</a>
+                <a href="under-construction.html">隐私政策</a>
+                <a href="under-construction.html">使用条款</a>
+                <a href="under-construction.html">反馈建议</a>
+                <a href="under-construction.html">博客</a>
+                <a href="under-construction.html">联系我们</a>
+                <a href="https://github.com/core666666/Blue-IT-Tool" target="_blank">GitHub</a>
+            </div>
+            <div class="copyright">
+                © 2025 蔚蓝IT工具导航 | 用<span class="love">♥</span>制作 | 所有工具本地运行，保护您的数据安全
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // 主题切换
+        const themeToggle = document.getElementById('theme-toggle');
+        
+        // 检查本地存储中的主题设置
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeToggle.checked = true;
+        }
+        
+        themeToggle.addEventListener('change', function() {
+            if(this.checked) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+    </script>
+</body>
+</html> 

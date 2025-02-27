@@ -63,7 +63,7 @@
 ## 📸 功能预览
 
 ### 1. 工具站主界面
-![工具站主界面](https://image.baidu.com/search/down?url=http://tvax1.sinaimg.cn/large/0061Cjilly1hyz9m9lw27j31hb1a14qp.jpg)
+![工具站主界面](https://image.baidu.com/search/down?url=http://tvax4.sinaimg.cn/large/0061Cjilly1hyz9xj2yl0j31gu19v4qp.jpg)
 
 ### 2. 核心工具展示
 

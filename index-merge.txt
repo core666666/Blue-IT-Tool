@@ -1,0 +1,568 @@
+# HTML 内容
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="蔚蓝IT工具导航是一个免费的在线工具集合，提供JSON格式化、HTML预览、密码生成、UUID生成、Base64转换、Emoji选择器等多种实用工具。所有功能均为纯前端实现，安全可靠。">
+    <meta name="keywords" content="在线工具,IT工具,JSON格式化,HTML预览,密码生成器,UUID生成器,Base64转换,Emoji选择器,前端工具,开发者工具">
+    <meta name="author" content="蔚蓝工具导航站">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon/favicon-16x16.png">
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="蔚蓝IT工具导航 - 免费在线开发工具集">
+    <meta property="og:description" content="提供多种实用的在线开发工具，包括JSON格式化、HTML预览、密码生成、UUID生成、Base64转换等，全部免费使用。">
+    <meta property="og:image" content="tools.png">
+    <meta property="og:url" content="https://your-domain.com">
+    <meta property="og:type" content="website">
+    
+    <!-- Additional SEO Tags -->
+    <meta name="application-name" content="蔚蓝工具导航站">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="canonical" href="https://your-domain.com">
+    
+    <title>蔚蓝IT工具导航 - 免费在线开发工具集</title>
+    
+    <!-- 引入苹果字体 -->
+    <link href="https://fonts.googleapis.com/css?family=SF+Pro+Display:400,600&display=swap" rel="stylesheet">
+    <!-- 引入图标库 -->
+    <link rel="stylesheet" href="allmin.css" />
+    <!-- 引入自定义CSS -->
+    <link rel="stylesheet" href="styles/common.css">
+    <link rel="stylesheet" href="styles/index.css">
+    
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="09c0a9c3-17ec-49e2-8fd0-7064f75f6978"></script>
+</head>
+
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-logo">
+            <img src="tools.png" alt="Tools Logo" style="width: 30px;">
+            <a href="index.html">蔚蓝工具导航</a>
+            <span style="margin: 0 10px;">|</span>
+            <a href="navigation.html">蔚蓝站点导航</a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#all">全部</a></li>
+            <li><a href="#format">格式化工具</a></li>
+            <li><a href="#preview">预览工具</a></li>
+        </ul>
+        <!-- 搜索框和主题切换按钮容器 -->
+        <div class="nav-right">
+            <!-- 搜索框 -->
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="搜索工具...">
+                <i class="fas fa-search"></i>
+            </div>
+            <!-- 主题切换按钮 -->
+            <div class="theme-switch">
+                <input type="checkbox" id="theme-toggle">
+                <label for="theme-toggle">
+                    <i class="fas fa-sun"></i>
+                    <i class="fas fa-moon"></i>
+                </label>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 通知信息 -->
+    <div class="notice">
+        <p>本站所有功能皆为前端实现，请放心使用。</p>
+    </div>
+
+    <!-- 工具列表 -->
+    <main>
+        <section id="tool-list">
+            <!-- JSON格式化工具卡片 -->
+            <a href="pages/json_formatter.html">
+                <div class="tool-card" data-category="format">
+                    <i class="fas fa-code"></i>
+                    <h3>JSON格式化</h3>
+                </div>
+            </a>
+            <!-- HTML在线预览工具卡片 -->
+            <a href="pages/html_preview.html">
+                <div class="tool-card" data-category="preview">
+                    <i class="fas fa-eye"></i>
+                    <h3>HTML在线预览</h3>
+                </div>
+            </a>
+            <!-- 趣味数学大冒险工具卡片 -->
+            <a href="quwei.html">
+                <div class="tool-card" data-category="fun">
+                    <i class="fas fa-graduation-cap"></i>
+                    <h3>趣味数学大冒险</h3>
+                </div>
+            </a>
+            <!-- 封面图制作工具卡片 -->
+            <a href="cover_creator.html">
+                <div class="tool-card" data-category="fun">
+                    <i class="fas fa-palette"></i>
+                    <h3>封面图制作</h3>
+                </div>
+            </a>
+            <!-- 密码生成工具卡片 -->
+            <a href="pages/password_generation.html">
+                <div class="tool-card" data-category="fun">
+                    <i class="fas fa-lock"></i>
+                    <h3>随机密码生成</h3>
+                </div>
+            </a>
+            <!-- UUID生成工具卡片 -->
+            <a href="pages/uuid_generation.html">
+                <div class="tool-card" data-category="fun">
+                    <i class="fas fa-fingerprint"></i>
+                    <h3>UUID生成器</h3>
+                </div>
+            </a>
+            <!-- 九宫格工具卡片 -->
+            <a href="pages/nine_grid.html">
+                <div class="tool-card" data-category="image">
+                    <i class="fas fa-th"></i>
+                    <h3>九宫格切图工具</h3>
+                </div>
+            </a>
+            <!-- base64编码工具卡片 -->
+            <a href="pages/base64convert.html">
+                <div class="tool-card" data-category="fun">
+                    <i class="fas fa-exchange-alt"></i>
+                    <h3>Base64 编码/解码器</h3>
+                </div>
+            </a>
+            <!-- 拼字幕截图生成器 -->
+            <a href="screenshot_generation.html">
+               <div class="tool-card" data-category="fun">
+                   <i class="fas fa-image"></i>
+                   <h3>拼字幕截图生成器</h3>
+               </div>
+           </a>
+           <!-- Emoji选择器 -->
+           <a href="pages/emoji_picker.html">
+               <div class="tool-card" data-category="fun">
+                   <i class="fas fa-smile"></i>
+                   <h3>Emoji 选择器</h3>
+               </div>
+           </a>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer>
+        <p>
+            &copy; 2025 蔚蓝个人工具导航站
+            <a href="https://github.com/core666666/Blue-IT-Tool" target="_blank">GitHub开源地址</a>
+        </p>
+    </footer>
+
+    <!-- 引入自定义JS -->
+    <script src="scripts/index.js"></script>
+</body>
+
+</html>
+```
+
+# CSS 内容
+
+## common.css
+```css
+/* 通用样式 */
+body {
+    margin: 0;
+    font-family: 'SF Pro Display', sans-serif;
+    transition: background-color 0.3s, color 0.3s;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* 全局链接样式 */
+a {
+    text-decoration: none;
+}
+
+main {
+    padding-top: 60px;
+    flex: 1;
+    padding-bottom: 20px;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+/* 主题模式 */
+body.light-mode {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+body.dark-mode {
+    background-color: #1c1c1e;
+    color: #ffffff;
+}
+
+/* 导航栏样式 */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background: rgba(255,255,255,0.98);
+    backdrop-filter: blur(10px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    border-bottom: 1px solid rgba(0,122,255,0.1);
+    box-shadow: 0 2px 10px rgba(0,122,255,0.05);
+    transition: all 0.3s ease;
+    min-height: 60px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.navbar::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: -100%;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        var(--primary-color),
+        transparent
+    );
+    animation: borderAnimation 3s linear infinite;
+}
+
+@keyframes borderAnimation {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+.navbar:hover {
+    border-bottom: 1px solid rgba(0,122,255,0.2);
+    box-shadow: 0 4px 20px rgba(0,122,255,0.1);
+}
+
+body.dark-mode .navbar {
+    background: rgba(28,28,30,0.98);
+    border-bottom: 1px solid rgba(10,132,255,0.2);
+    box-shadow: 0 2px 10px rgba(10,132,255,0.1);
+}
+
+body.dark-mode .navbar:hover {
+    border-bottom: 1px solid rgba(10,132,255,0.3);
+    box-shadow: 0 4px 20px rgba(10,132,255,0.15);
+}
+```
+
+## index.css
+```css
+/* 主题颜色变量 */
+:root {
+    --primary-color: #007AFF;
+    --primary-light: #47a3ff;
+    --primary-dark: #0056b3;
+    --gradient-start: #007AFF;
+    --gradient-end: #47a3ff;
+}
+
+body.dark-mode {
+    --primary-color: #0A84FF;
+    --primary-light: #5eb1ff;
+    --primary-dark: #0056b3;
+    --gradient-start: #0A84FF;
+    --gradient-end: #5eb1ff;
+}
+
+/* 通知信息样式 */
+.notice {
+    text-align: center;
+    background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+    padding: 1px;
+    font-size: 16px;
+    color: white;
+    margin: 73px 0 0 0;
+    width: 100%;
+    box-sizing: border-box;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    position: relative;
+    z-index: 1;
+    transform: translateY(0);
+    opacity: 0;
+    animation: fadeIn 0.6s ease forwards;
+}
+
+.notice::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.1) 100%);
+    z-index: -1;
+}
+
+.notice::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+    );
+    animation: shine 3s linear infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+body.dark-mode .notice {
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+/* 工具卡片容器 */
+#tool-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 30px 20px;
+    gap: 25px;
+    max-width: 1200px;
+    margin: 0 auto;
+    perspective: 1000px;
+}
+
+/* 工具卡片样式 */
+.tool-card {
+    background: rgba(255,255,255,0.95);
+    border-radius: 20px;
+    width: 220px;
+    text-align: center;
+    padding: 25px;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(0,122,255,0.1);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05),
+                0 0 0 rgba(0,122,255,0);
+    transform: translateY(40px) perspective(1000px);
+    opacity: 0;
+    animation: slideUp 0.6s ease forwards;
+    animation-delay: calc(var(--card-index) * 0.1s);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    text-decoration: none;
+    transform-style: preserve-3d;
+}
+
+.tool-card, .tool-card * {
+    text-decoration: none;
+}
+
+.tool-card a {
+    text-decoration: none !important;
+    color: inherit;
+}
+
+.tool-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        45deg,
+        transparent 0%,
+        rgba(0,122,255,0.1) 50%,
+        transparent 100%
+    );
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+    z-index: 1;
+}
+
+.tool-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+                rgba(0,122,255,0.1) 0%,
+                transparent 50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.tool-card:hover {
+    transform: translateY(-15px) perspective(1000px) rotateX(5deg);
+    box-shadow: 0 25px 35px rgba(0,0,0,0.1),
+                0 0 20px rgba(0,122,255,0.2);
+    border-color: rgba(0,122,255,0.5);
+}
+
+.tool-card:hover::before {
+    transform: translateX(100%);
+}
+
+.tool-card:hover::after {
+    opacity: 1;
+}
+```
+
+# JavaScript 内容
+
+## index.js
+```javascript
+// 主题切换功能
+const themeToggle = document.getElementById('theme-toggle');
+const body = document.body;
+
+function setTheme(theme) {
+    if (theme === 'dark') {
+        body.classList.remove('light-mode');
+        body.classList.add('dark-mode');
+        themeToggle.checked = true;
+        localStorage.setItem('theme', 'dark');
+    } else {
+        body.classList.remove('dark-mode');
+        body.classList.add('light-mode');
+        themeToggle.checked = false;
+        localStorage.setItem('theme', 'light');
+    }
+}
+
+themeToggle.addEventListener('change', () => {
+    if (themeToggle.checked) {
+        setTheme('dark');
+    } else {
+        setTheme('light');
+    }
+});
+
+// 检查本地存储中的主题设置
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme) {
+    setTheme(savedTheme);
+} else {
+    // 根据系统偏好设置
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        setTheme('dark');
+    } else {
+        setTheme('light');
+    }
+}
+
+// 搜索功能
+const searchInput = document.getElementById('search-input');
+const toolCards = document.querySelectorAll('.tool-card');
+
+searchInput.addEventListener('keyup', () => {
+    const filter = searchInput.value.toLowerCase();
+    toolCards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        if (text.includes(filter)) {
+            card.style.display = '';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+});
+
+// 添加滚动显示动画
+function handleScrollAnimation() {
+    const cards = document.querySelectorAll('.tool-card');
+    cards.forEach((card, index) => {
+        card.style.setProperty('--card-index', index);
+        card.classList.add('scroll-reveal');
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, {
+        threshold: 0.1
+    });
+
+    document.querySelectorAll('.scroll-reveal').forEach(element => {
+        observer.observe(element);
+    });
+}
+
+// 添加卡片鼠标跟踪效果
+function handleCardMouseEffects() {
+    const cards = document.querySelectorAll('.tool-card');
+    
+    cards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / card.clientWidth) * 100;
+            const y = ((e.clientY - rect.top) / card.clientHeight) * 100;
+            
+            // 更新光效位置
+            card.style.setProperty('--mouse-x', `${x}%`);
+            card.style.setProperty('--mouse-y', `${y}%`);
+            
+            // 添加倾斜效果
+            const rotateY = ((e.clientX - rect.left) / rect.width - 0.5) * 10;
+            const rotateX = ((e.clientY - rect.top) / rect.height - 0.5) * -10;
+            
+            card.style.transform = `
+                perspective(1000px)
+                rotateX(${rotateX}deg)
+                rotateY(${rotateY}deg)
+                translateY(-15px)
+            `;
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translateY(0) perspective(1000px)';
+            setTimeout(() => {
+                card.style.setProperty('--mouse-x', '50%');
+                card.style.setProperty('--mouse-y', '50%');
+            }, 100);
+        });
+    });
+}
+
+// 页面加载完成后初始化动画和效果
+document.addEventListener('DOMContentLoaded', () => {
+    handleScrollAnimation();
+    handleCardMouseEffects();
+});
+``` 

@@ -3,6 +3,9 @@
     --primary-color: #007AFF;
     --primary-light: #47a3ff;
     --primary-dark: #0056b3;
+    --secondary-color: #4CD964;
+    --secondary-light: #67e177;
+    --secondary-dark: #36a84c;
     --gradient-start: #007AFF;
     --gradient-end: #47a3ff;
 }
@@ -10,26 +13,59 @@
 body.dark-mode {
     --primary-color: #0A84FF;
     --primary-light: #5eb1ff;
-    --primary-dark: #0056b3;
+    --primary-dark: #0067c8;
+    --secondary-color: #32D74B;
+    --secondary-light: #4ef063;
+    --secondary-dark: #28a83b;
     --gradient-start: #0A84FF;
     --gradient-end: #5eb1ff;
+}
+
+/* 动画定义 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes shine {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 100%;
+    }
 }
 
 /* 通知信息样式 */
 .notice {
     text-align: center;
     background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
-    padding: 1px;
-    font-size: 16px;
+    padding: 12px 15px;
+    font-size: 15px;
     color: white;
     margin: 73px 0 0 0;
     width: 100%;
     box-sizing: border-box;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     position: relative;
     z-index: 1;
-    transform: translateY(0);
-    opacity: 0;
     animation: fadeIn 0.6s ease forwards;
 }
 
@@ -60,61 +96,50 @@ body.dark-mode {
     animation: shine 3s linear infinite;
 }
 
-@keyframes shine {
-    0% {
-        left: -100%;
-    }
-    100% {
-        left: 100%;
-    }
-}
-
-body.dark-mode .notice {
-    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-}
-
 /* 工具卡片容器 */
 #tool-list {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     padding: 30px 20px;
-    gap: 25px;
+    gap: 20px;
     max-width: 1200px;
     margin: 0 auto;
-    perspective: 1000px;
 }
 
-/* 工具卡片样式 */
+/* 工具卡片基础样式 */
 .tool-card {
     background: rgba(255,255,255,0.95);
-    border-radius: 20px;
-    width: 220px;
+    border-radius: 16px;
+    width: 180px;
+    height: 180px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
     text-align: center;
-    padding: 25px;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid rgba(0,122,255,0.1);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05),
-                0 0 0 rgba(0,122,255,0);
-    transform: translateY(40px) perspective(1000px);
+    padding: 20px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0,122,255,0.12);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
     opacity: 0;
-    animation: slideUp 0.6s ease forwards;
-    animation-delay: calc(var(--card-index) * 0.1s);
+    animation: slideUp 0.5s ease forwards;
+    animation-delay: calc(var(--card-index, 0) * 0.05s);
     cursor: pointer;
     position: relative;
     overflow: hidden;
-    backdrop-filter: blur(10px);
-    text-decoration: none;
-    transform-style: preserve-3d;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body.dark-mode .tool-card {
+    background: rgba(30,35,50,0.85);
+    border: 1px solid rgba(10,132,255,0.15);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
 
 .tool-card, .tool-card * {
-    text-decoration: none;
-}
-
-.tool-card a {
     text-decoration: none !important;
-    color: inherit;
 }
 
 .tool-card::before {
@@ -122,152 +147,203 @@ body.dark-mode .notice {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-        45deg,
-        transparent 0%,
-        rgba(0,122,255,0.1) 50%,
-        transparent 100%
-    );
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, transparent, rgba(255,255,255,0.05), transparent);
     transform: translateX(-100%);
     transition: transform 0.6s ease;
-    z-index: 1;
-}
-
-.tool-card::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
-                rgba(0,122,255,0.1) 0%,
-                transparent 50%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
-    z-index: 1;
-}
-
-.tool-card:hover {
-    transform: translateY(-15px) perspective(1000px) rotateX(5deg);
-    box-shadow: 0 25px 35px rgba(0,0,0,0.1),
-                0 0 20px rgba(0,122,255,0.2);
-    border-color: rgba(0,122,255,0.5);
+    z-index: 0;
 }
 
 .tool-card:hover::before {
     transform: translateX(100%);
 }
 
-.tool-card:hover::after {
-    opacity: 1;
-}
-
-body.dark-mode .tool-card {
-    background: rgba(28,28,30,0.95);
-    border: 1px solid rgba(10,132,255,0.2);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2),
-                0 0 0 rgba(10,132,255,0);
-}
-
-body.dark-mode .tool-card:hover {
-    box-shadow: 0 25px 35px rgba(0,0,0,0.3),
-                0 0 25px rgba(10,132,255,0.3);
-    border-color: rgba(10,132,255,0.6);
-}
-
 .tool-card i {
-    font-size: 50px;
-    margin-bottom: 15px;
-    transition: all 0.4s ease;
-    display: inline-block;
-    background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    opacity: 0.9;
-    transform: translateZ(20px);
+    font-size: 40px;
+    transition: transform 0.3s ease;
     position: relative;
     z-index: 2;
-}
-
-.tool-card:hover i {
-    transform: translateZ(30px) scale(1.1) rotate(5deg);
-    opacity: 1;
-    filter: drop-shadow(0 0 8px rgba(0,122,255,0.3));
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .tool-card h3 {
     margin: 0;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
-    transition: all 0.3s ease;
-    color: var(--primary-color);
-    opacity: 0.9;
-    text-decoration: none;
-    border: none;
-    transform: translateZ(15px);
+    transition: all 0.3s;
     position: relative;
     z-index: 2;
+    color: #1a202c;
+    letter-spacing: 0.2px;
 }
 
-.tool-card:hover h3 {
-    transform: translateZ(25px) scale(1.05);
-    opacity: 1;
-    color: var(--primary-light);
-    text-shadow: 0 0 10px rgba(0,122,255,0.2);
+body.dark-mode .tool-card h3 {
+    color: #e2e8f0;
 }
 
-/* 动画关键帧 */
-@keyframes slideUp {
-    from {
-        transform: translateY(40px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
+/* 卡片悬停效果 */
+.tool-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(0,122,255,0.25);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.08), 0 0 0 2px rgba(0,122,255,0.03);
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+body.dark-mode .tool-card:hover {
+    border-color: rgba(10,132,255,0.3);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.16), 0 0 0 2px rgba(10,132,255,0.05);
 }
 
-/* 滚动显示动画 */
-.scroll-reveal {
-    opacity: 0;
-    transform: translateY(40px);
-    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+.tool-card:hover i {
+    transform: scale(1.1);
 }
 
-/* 响应式设计 */
+/* JSON格式化工具 */
+.tool-card[data-category="format"] i {
+    color: #007AFF;
+}
+
+/* HTML预览工具 */
+.tool-card[data-category="preview"] i {
+    color: #FF3B30;
+}
+
+/* 趣味数学大冒险 */
+.tool-card[data-category="fun"] i.fa-graduation-cap {
+    color: #AF52DE;
+}
+
+/* 封面图制作 */
+.tool-card[data-category="fun"] i.fa-palette {
+    color: #FF2D55;
+}
+
+/* 密码生成工具 */
+.tool-card[data-category="fun"] i.fa-lock {
+    color: #34C759;
+}
+
+/* UUID生成工具 */
+.tool-card[data-category="fun"] i.fa-fingerprint {
+    color: #5856D6;
+}
+
+/* 九宫格工具 */
+.tool-card[data-category="image"] i.fa-th {
+    color: #FF9500;
+}
+
+/* Base64转换工具 */
+.tool-card[data-category="fun"] i.fa-exchange-alt {
+    color: #FFCC00;
+}
+
+/* 拼字幕截图生成器 */
+.tool-card[data-category="fun"] i.fa-image {
+    color: #5AC8FA;
+}
+
+/* Emoji选择器 */
+.tool-card[data-category="fun"] i.fa-smile {
+    background: linear-gradient(45deg, #FF9500, #FF3B30);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* 图标背景效果 */
+.tool-card i::after {
+    content: '';
+    position: absolute;
+    width: 54px;
+    height: 54px;
+    background: rgba(0,122,255,0.05);
+    border-radius: 50%;
+    z-index: -1;
+    transition: all 0.3s ease;
+}
+
+.tool-card:hover i::after {
+    transform: scale(1.2);
+    background: rgba(0,122,255,0.08);
+}
+
+.tool-card[data-category="format"] i::after {
+    background: rgba(0,122,255,0.05);
+}
+
+.tool-card[data-category="preview"] i::after {
+    background: rgba(255,59,48,0.05);
+}
+
+.tool-card[data-category="fun"] i.fa-graduation-cap::after {
+    background: rgba(175,82,222,0.05);
+}
+
+.tool-card[data-category="fun"] i.fa-palette::after {
+    background: rgba(255,45,85,0.05);
+}
+
+.tool-card[data-category="fun"] i.fa-lock::after {
+    background: rgba(52,199,89,0.05);
+}
+
+.tool-card[data-category="fun"] i.fa-fingerprint::after {
+    background: rgba(88,86,214,0.05);
+}
+
+.tool-card[data-category="image"] i.fa-th::after {
+    background: rgba(255,149,0,0.05);
+}
+
+.tool-card[data-category="fun"] i.fa-exchange-alt::after {
+    background: rgba(255,204,0,0.05);
+}
+
+.tool-card[data-category="fun"] i.fa-image::after {
+    background: rgba(90,200,250,0.05);
+}
+
+.tool-card[data-category="fun"] i.fa-smile::after {
+    background: rgba(255,149,0,0.05);
+}
+
+/* 响应式布局 */
 @media (max-width: 768px) {
     .notice {
-        padding: 12px;
+        margin-top: 150px;
+        font-size: 14px;
+        padding: 10px;
+    }
+    
+    #tool-list {
+        gap: 15px;
+        padding: 20px 10px;
+    }
+    
+    .tool-card {
+        width: 140px;
+        height: 140px;
+        padding: 15px;
+        border-radius: 14px;
+        gap: 10px;
+    }
+    
+    .tool-card i {
+        font-size: 32px;
+        width: 50px;
+        height: 50px;
+    }
+    
+    .tool-card i::after {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .tool-card h3 {
         font-size: 14px;
     }
-
-    #tool-list {
-        padding: 20px 10px;
-        gap: 15px;
-    }
-
-    .tool-card {
-        width: calc(50% - 20px);
-        min-width: 160px;
-        padding: 20px;
-    }
-
-    .tool-card i {
-        font-size: 40px;
-    }
-
-    .tool-card h3 {
-        font-size: 16px;
-    }
-} 
+}

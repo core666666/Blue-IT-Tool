@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="免费在线颜色选择与转换工具，支持HEX、RGB、HSL等格式互转，提供调色板、渐变生成、颜色对比度测试，纯前端实现，安全可靠。">
+    <meta name="keywords" content="颜色选择器,颜色转换,HEX转RGB,RGB转HEX,HSL转换,调色板,渐变生成,配色方案,在线工具">
+    <meta name="author" content="蔚蓝工具导航站">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../assets/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon/favicon-16x16.png">
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="颜色选择与转换工具 - 蔚蓝工具导航站">
+    <meta property="og:description" content="专业的在线颜色选择与转换工具，支持多种颜色格式互转，提供调色板和渐变生成功能，帮助设计师和开发者轻松处理颜色。">
+    <meta property="og:image" content="../tools.png">
+    <meta property="og:url" content="https://your-domain.com/pages/color_picker.html">
+    <meta property="og:type" content="website">
+    
+    <!-- Additional SEO Tags -->
+    <meta name="application-name" content="蔚蓝工具导航站">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="canonical" href="https://your-domain.com/pages/color_picker.html">
+    
+    <title>颜色选择与转换工具 - 蔚蓝工具导航站</title>
+    
+    <!-- 引入苹果字体 -->
+    <link href="https://fonts.googleapis.com/css?family=SF+Pro+Display:400,600&display=swap" rel="stylesheet">
+    <!-- 引入图标库 -->
+    <link rel="stylesheet" href="../allmin.css" />
+    <!-- 引入自定义CSS -->
+    <link rel="stylesheet" href="../styles/common.css">
+    <link rel="stylesheet" href="../styles/color-picker.css">
+    
+    <!-- Umami Analytics -->
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="09c0a9c3-17ec-49e2-8fd0-7064f75f6978"></script>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-logo"><img src="../tools.png" alt="Tools Logo" style="width: 30px;"><a href="../index.html">蔚蓝工具导航</a></div>
+        <ul class="nav-links">
+            <li><a href="../index.html#converter">返回</a></li>
+        </ul>
+        <!-- 主题切换按钮 -->
+        <div class="theme-switch">
+            <input type="checkbox" id="theme-toggle">
+            <label for="theme-toggle">
+                <i class="fas fa-sun"></i>
+                <i class="fas fa-moon"></i>
+            </label>
+        </div>
+    </nav>
+
+    <!-- 主内容 -->
+    <main class="color-picker-main">
+        <div class="tool-container">
+            <div class="tool-header">
+                <h1>颜色选择与转换工具</h1>
+                <p class="tool-description">轻松选择颜色并在不同格式之间转换，生成调色板和渐变色</p>
+            </div>
+
+            <div class="color-sections">
+                <!-- 颜色选择器部分 -->
+                <section class="color-section">
+                    <h2>颜色选择</h2>
+                    <div class="color-picker-container">
+                        <div class="color-display" id="selected-color">
+                            <div id="color-preview"></div>
+                            <div id="color-text">#007AFF</div>
+                        </div>
+                        <div class="color-input">
+                            <input type="color" id="color-picker" value="#007AFF">
+                            <button id="copy-color-btn"><i class="fas fa-copy"></i> 复制</button>
+                            <button id="add-to-palette-btn"><i class="fas fa-plus"></i> 添加到调色板</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 颜色转换部分 -->
+                <section class="color-section">
+                    <h2>颜色格式转换</h2>
+                    <div class="color-formats">
+                        <div class="format-item">
+                            <label for="hex-value">HEX</label>
+                            <div class="input-with-copy">
+                                <input type="text" id="hex-value" value="#007AFF">
+                                <button class="copy-btn" data-target="hex-value"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                        <div class="format-item">
+                            <label for="rgb-value">RGB</label>
+                            <div class="input-with-copy">
+                                <input type="text" id="rgb-value" value="rgb(0, 122, 255)">
+                                <button class="copy-btn" data-target="rgb-value"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                        <div class="format-item">
+                            <label for="hsl-value">HSL</label>
+                            <div class="input-with-copy">
+                                <input type="text" id="hsl-value" value="hsl(211, 100%, 50%)">
+                                <button class="copy-btn" data-target="hsl-value"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                        <div class="format-item">
+                            <label for="cmyk-value">CMYK</label>
+                            <div class="input-with-copy">
+                                <input type="text" id="cmyk-value" value="cmyk(100%, 52%, 0%, 0%)">
+                                <button class="copy-btn" data-target="cmyk-value"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 调色板部分 -->
+                <section class="color-section">
+                    <h2>我的调色板</h2>
+                    <div class="color-palette" id="color-palette">
+                        <!-- 调色板中的颜色将在这里动态生成 -->
+                    </div>
+                    <div class="palette-actions">
+                        <button id="clear-palette-btn"><i class="fas fa-trash"></i> 清空调色板</button>
+                        <button id="save-palette-btn"><i class="fas fa-save"></i> 保存为图片</button>
+                    </div>
+                </section>
+                
+                <!-- 颜色方案生成部分 -->
+                <section class="color-section">
+                    <h2>配色方案生成</h2>
+                    <div class="scheme-types">
+                        <button class="scheme-btn active" data-scheme="monochromatic">单色</button>
+                        <button class="scheme-btn" data-scheme="analogous">类似色</button>
+                        <button class="scheme-btn" data-scheme="complementary">互补色</button>
+                        <button class="scheme-btn" data-scheme="triadic">三角色</button>
+                        <button class="scheme-btn" data-scheme="tetradic">四色组</button>
+                    </div>
+                    <div class="color-scheme" id="color-scheme">
+                        <!-- 颜色方案将在这里动态生成 -->
+                    </div>
+                </section>
+
+                <!-- 渐变生成器部分 -->
+                <section class="color-section">
+                    <h2>渐变生成器</h2>
+                    <div class="gradient-controls">
+                        <div class="gradient-type">
+                            <label>渐变类型:</label>
+                            <select id="gradient-type">
+                                <option value="linear">线性渐变</option>
+                                <option value="radial">径向渐变</option>
+                            </select>
+                        </div>
+                        <div class="gradient-direction" id="linear-controls">
+                            <label>方向:</label>
+                            <select id="gradient-direction">
+                                <option value="to right">从左到右</option>
+                                <option value="to bottom">从上到下</option>
+                                <option value="to bottom right">左上到右下</option>
+                                <option value="to bottom left">右上到左下</option>
+                            </select>
+                        </div>
+                        <div class="gradient-position" id="radial-controls" style="display:none;">
+                            <label>形状:</label>
+                            <select id="gradient-shape">
+                                <option value="circle">圆形</option>
+                                <option value="ellipse">椭圆</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="gradient-colors">
+                        <div class="gradient-color">
+                            <label>起始颜色:</label>
+                            <input type="color" id="gradient-color-1" value="#007AFF">
+                        </div>
+                        <div class="gradient-color">
+                            <label>结束颜色:</label>
+                            <input type="color" id="gradient-color-2" value="#FF2D55">
+                        </div>
+                    </div>
+                    <div class="gradient-preview" id="gradient-preview">
+                        <!-- 渐变预览 -->
+                    </div>
+                    <div class="gradient-code">
+                        <label for="gradient-css">CSS 代码:</label>
+                        <div class="input-with-copy">
+                            <input type="text" id="gradient-css" readonly>
+                            <button class="copy-btn" data-target="gradient-css"><i class="fas fa-copy"></i></button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer>
+        <p>
+            &copy; 2025 蔚蓝个人工具导航站
+            <!-- <a href="https://beian.miit.gov.cn/" target="_blank">粤ICP备20230401001号</a> -->
+            <a href="https://github.com/core666666/Blue-IT-Tool" target="_blank">GitHub开源地址</a></p>
+    </footer>
+
+    <!-- 引入自定义JS -->
+    <script src="../scripts/index.js"></script>
+    <script src="../scripts/color-picker.js"></script>
+</body>
+</html> 

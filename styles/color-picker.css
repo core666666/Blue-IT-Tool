@@ -1,0 +1,441 @@
+.color-picker-main {
+    padding-top: 60px;
+    padding-bottom: 40px;
+    min-height: calc(100vh - 150px);
+}
+
+.tool-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.tool-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.tool-header h1 {
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+    color: #007AFF;
+}
+
+.tool-description {
+    font-size: 1.1rem;
+    color: #666;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.color-sections {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.color-section {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.color-section:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.color-section h2 {
+    font-size: 1.4rem;
+    margin-bottom: 15px;
+    color: #333;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 10px;
+}
+
+/* 颜色选择器样式 */
+.color-picker-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.color-display {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+#color-preview {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    background-color: #007AFF;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+#color-text {
+    font-family: monospace;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.color-input {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+#color-picker {
+    width: 60px;
+    height: 40px;
+    border: none;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
+}
+
+.color-input button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 6px;
+    background-color: #007AFF;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.color-input button:hover {
+    background-color: #0062cc;
+}
+
+/* 颜色格式转换样式 */
+.color-formats {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.format-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.format-item label {
+    font-weight: 600;
+    color: #555;
+}
+
+.input-with-copy {
+    display: flex;
+    position: relative;
+}
+
+.input-with-copy input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-family: monospace;
+}
+
+.copy-btn {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #007AFF;
+    cursor: pointer;
+    font-size: 0.9rem;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.copy-btn:hover {
+    opacity: 1;
+}
+
+/* 调色板样式 */
+.color-palette {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+    min-height: 60px;
+}
+
+.palette-color {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    position: relative;
+    transition: transform 0.2s;
+}
+
+.palette-color:hover {
+    transform: scale(1.1);
+}
+
+.palette-color .remove-color {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 16px;
+    height: 16px;
+    background: #ff3b30;
+    color: white;
+    border-radius: 50%;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.palette-color:hover .remove-color {
+    opacity: 1;
+}
+
+.palette-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.palette-actions button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background-color 0.3s;
+}
+
+#clear-palette-btn {
+    background-color: #ff3b30;
+    color: white;
+}
+
+#clear-palette-btn:hover {
+    background-color: #e73229;
+}
+
+#save-palette-btn {
+    background-color: #34c759;
+    color: white;
+}
+
+#save-palette-btn:hover {
+    background-color: #2db84f;
+}
+
+/* 配色方案生成样式 */
+.scheme-types {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.scheme-btn {
+    padding: 6px 12px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    background: #f9f9f9;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.scheme-btn:hover {
+    background: #f0f0f0;
+}
+
+.scheme-btn.active {
+    background-color: #007AFF;
+    color: white;
+    border-color: #007AFF;
+}
+
+.color-scheme {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.scheme-color {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    position: relative;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.scheme-color:hover {
+    transform: scale(1.05);
+}
+
+.scheme-color-text {
+    position: absolute;
+    bottom: -25px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 0.7rem;
+    color: #666;
+    font-family: monospace;
+}
+
+/* 渐变生成器样式 */
+.gradient-controls, .gradient-colors {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.gradient-type, .gradient-direction, .gradient-position, .gradient-color {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.gradient-type label, .gradient-direction label, 
+.gradient-position label, .gradient-color label {
+    font-weight: 600;
+    color: #555;
+    white-space: nowrap;
+}
+
+.gradient-type select, .gradient-direction select, .gradient-position select {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #f9f9f9;
+}
+
+.gradient-color input[type="color"] {
+    width: 40px;
+    height: 30px;
+    border: none;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
+}
+
+.gradient-preview {
+    height: 100px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    background: linear-gradient(to right, #007AFF, #FF2D55);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.gradient-code {
+    margin-top: 15px;
+}
+
+.gradient-code label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #555;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .color-sections {
+        grid-template-columns: 1fr;
+    }
+    
+    .tool-header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .color-section {
+        padding: 15px;
+    }
+}
+
+/* 暗色模式适配 */
+body.dark-mode .color-section {
+    background: #1a1a1a;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-mode .tool-description {
+    color: #aaa;
+}
+
+body.dark-mode .color-section h2 {
+    color: #eee;
+    border-bottom-color: #333;
+}
+
+body.dark-mode #color-text {
+    color: #eee;
+}
+
+body.dark-mode .format-item label,
+body.dark-mode .gradient-type label, 
+body.dark-mode .gradient-direction label, 
+body.dark-mode .gradient-position label, 
+body.dark-mode .gradient-color label,
+body.dark-mode .gradient-code label {
+    color: #bbb;
+}
+
+body.dark-mode .input-with-copy input {
+    background: #2a2a2a;
+    border-color: #444;
+    color: #eee;
+}
+
+body.dark-mode .scheme-btn {
+    background: #2a2a2a;
+    border-color: #444;
+    color: #bbb;
+}
+
+body.dark-mode .scheme-btn:hover {
+    background: #333;
+}
+
+body.dark-mode .scheme-color-text {
+    color: #bbb;
+}
+
+body.dark-mode .gradient-type select, 
+body.dark-mode .gradient-direction select, 
+body.dark-mode .gradient-position select {
+    background: #2a2a2a;
+    border-color: #444;
+    color: #eee;
+}
+
+body.dark-mode .scheme-color, 
+body.dark-mode .palette-color,
+body.dark-mode #color-preview {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .gradient-preview {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+} 

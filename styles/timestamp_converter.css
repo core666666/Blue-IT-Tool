@@ -1,0 +1,448 @@
+/* 时间戳转换工具样式 */
+
+body {
+    font-family: 'SF Pro Display', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+    width: 85%;
+    margin: 50px auto;
+    padding: 0 20px;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.page-header h1 {
+    color: #2c3e50;
+    font-size: 32px;
+    margin-bottom: 10px;
+    position: relative;
+    display: inline-block;
+}
+
+.page-header h1::after {
+    content: '';
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #3498db, transparent);
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.page-header p {
+    color: #7f8c8d;
+    font-size: 16px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.content-wrapper {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.section {
+    flex: 1;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08),
+                0 2px 6px rgba(0, 0, 0, 0.04);
+    min-width: 0;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.section:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1),
+                0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+h2 {
+    color: #2c3e50;
+    font-size: 24px;
+    margin-bottom: 25px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #3498db;
+    position: relative;
+}
+
+h2::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, #3498db, transparent);
+}
+
+.option-group {
+    margin-bottom: 25px;
+}
+
+label {
+    font-size: 15px;
+    margin-bottom: 10px;
+    color: #34495e;
+    font-weight: 500;
+    display: block;
+}
+
+input[type="number"],
+input[type="datetime-local"] {
+    width: 100%;
+    font-size: 16px;
+    padding: 15px;
+    border: 2px solid #edf2f7;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+}
+
+input[type="number"]:focus,
+input[type="datetime-local"]:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    outline: none;
+}
+
+.input-with-button {
+    display: flex;
+    gap: 10px;
+}
+
+.input-with-button input {
+    flex: 1;
+}
+
+.input-with-button button {
+    white-space: nowrap;
+    padding: 0 20px;
+}
+
+.radio-group {
+    margin-top: 15px;
+}
+
+.radio-group p {
+    font-size: 15px;
+    margin-bottom: 10px;
+    color: #34495e;
+    font-weight: 500;
+}
+
+.radio-options {
+    display: flex;
+    gap: 20px;
+}
+
+.radio-options label {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 0;
+}
+
+.radio-options input[type="radio"] {
+    margin-right: 8px;
+}
+
+button {
+    padding: 12px 28px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 120px;
+    background: linear-gradient(145deg, #3498db, #2980b9);
+    color: white;
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.3);
+    background: linear-gradient(145deg, #3498db, #2573a7);
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 25px;
+}
+
+.result-area {
+    background-color: #f8fafc;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #edf2f7;
+}
+
+.result-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #edf2f7;
+}
+
+.result-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.result-label {
+    color: #34495e;
+    font-weight: 500;
+    min-width: 120px;
+}
+
+.result-value {
+    flex: 1;
+    word-break: break-all;
+    color: #3498db;
+    font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    padding: 8px;
+    background-color: #f1f5f9;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.copy-btn {
+    min-width: auto;
+    padding: 8px;
+    margin-left: 10px;
+    background: #f1f5f9;
+    color: #64748b;
+    box-shadow: none;
+}
+
+.copy-btn:hover {
+    background: #e2e8f0;
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+.info-box {
+    background-color: #f8fafc;
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 40px;
+    border-left: 4px solid #3498db;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.info-box h3 {
+    color: #2c3e50;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+}
+
+.info-box h3 i {
+    color: #3498db;
+    margin-right: 10px;
+}
+
+.info-box p {
+    color: #7f8c8d;
+    margin: 10px 0;
+    line-height: 1.6;
+}
+
+/* Toast 通知样式 */
+.toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    padding: 12px 24px;
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 1000;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.toast-success {
+    background-color: #10b981;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.toast-error {
+    background-color: #ef4444;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+}
+
+/* 深色模式 */
+body.dark-mode {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+}
+
+body.dark-mode .section {
+    background-color: #2d2d2d;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-mode .page-header h1 {
+    color: #e0e0e0;
+}
+
+body.dark-mode .page-header p {
+    color: #a0a0a0;
+}
+
+body.dark-mode h2 {
+    color: #e0e0e0;
+    border-bottom-color: #3498db;
+}
+
+body.dark-mode label,
+body.dark-mode .radio-group p {
+    color: #b0b0b0;
+}
+
+body.dark-mode input[type="number"],
+body.dark-mode input[type="datetime-local"] {
+    background-color: #363636;
+    border-color: #404040;
+    color: #e0e0e0;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-mode .result-area {
+    background-color: #363636;
+    border-color: #404040;
+}
+
+body.dark-mode .result-item {
+    border-bottom-color: #404040;
+}
+
+body.dark-mode .result-label {
+    color: #b0b0b0;
+}
+
+body.dark-mode .result-value {
+    background-color: #404040;
+    color: #e0e0e0;
+}
+
+body.dark-mode .copy-btn {
+    background-color: #2d2d2d;
+    color: #909090;
+}
+
+body.dark-mode .copy-btn:hover {
+    background-color: #363636;
+}
+
+body.dark-mode .info-box {
+    background-color: #2d2d2d;
+    border-color: #3498db;
+}
+
+body.dark-mode .info-box h3 {
+    color: #e0e0e0;
+}
+
+body.dark-mode .info-box p {
+    color: #a0a0a0;
+}
+
+/* 响应式优化 */
+@media (max-width: 1200px) {
+    main {
+        width: 90%;
+    }
+}
+
+@media (max-width: 968px) {
+    main {
+        width: 95%;
+        padding: 15px;
+        margin: 10px auto;
+    }
+
+    .content-wrapper {
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .section {
+        width: 100%;
+        padding: 25px;
+    }
+}
+
+@media (max-width: 600px) {
+    main {
+        width: 100%;
+        padding: 10px;
+    }
+
+    .section {
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .input-with-button {
+        flex-direction: column;
+    }
+
+    .input-with-button button {
+        width: 100%;
+    }
+
+    .result-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .result-label {
+        margin-bottom: 8px;
+    }
+
+    .result-value {
+        width: 100%;
+    }
+
+    .copy-btn {
+        margin-left: 0;
+        margin-top: 8px;
+        width: 100%;
+    }
+} 

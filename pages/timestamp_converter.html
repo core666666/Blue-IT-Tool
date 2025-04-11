@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="免费在线时间戳转换工具，支持Unix时间戳与日期时间的互相转换，提供当前时间戳获取、格式化输出等功能。纯前端实现，安全可靠。">
+    <meta name="keywords" content="时间戳转换,Unix时间戳,日期转换,时间格式化,在线工具,开发者工具,Unix timestamp">
+    <meta name="author" content="蔚蓝工具导航站">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../assets/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon/favicon-16x16.png">
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="时间戳转换工具 - 蔚蓝工具导航站">
+    <meta property="og:description" content="免费在线时间戳转换工具，支持Unix时间戳与日期时间的互相转换，提供当前时间戳获取、格式化输出等功能。">
+    <meta property="og:image" content="../tools.png">
+    <meta property="og:url" content="https://your-domain.com/pages/timestamp_converter.html">
+    <meta property="og:type" content="website">
+    
+    <!-- Additional SEO Tags -->
+    <meta name="application-name" content="蔚蓝工具导航站">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="canonical" href="https://your-domain.com/pages/timestamp_converter.html">
+    
+    <title>时间戳转换工具 - 蔚蓝工具导航站</title>
+    
+    <link href="https://fonts.googleapis.com/css?family=SF+Pro+Display:400,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../styles/common.css" />
+    <link rel="stylesheet" href="../styles/timestamp_converter.css">
+    
+    <!-- Analytics -->
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="09c0a9c3-17ec-49e2-8fd0-7064f75f6978"></script>
+</head>
+
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-logo">
+            <a href="../index.html">
+                <img src="../assets/favicon/favicon-32x32.png" alt="蔚蓝IT">
+                蔚蓝IT工具导航
+            </a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="../index.html">返回首页</a></li>
+        </ul>
+        <div class="theme-switch">
+            <input type="checkbox" id="theme-toggle">
+            <label for="theme-toggle">
+                <i class="fas fa-moon"></i>
+            </label>
+        </div>
+    </nav>
+
+    <!-- 主内容 -->
+    <main>
+        <div class="page-header">
+            <h1>时间戳转换工具</h1>
+            <p>Unix时间戳与日期时间互相转换，方便开发者进行时间处理</p>
+        </div>
+        
+        <div class="content-wrapper">
+            <!-- 左侧：时间戳转日期 -->
+            <div class="section">
+                <h2>时间戳转日期时间</h2>
+                <div class="option-group">
+                    <div class="input-group">
+                        <label for="timestamp-input">Unix时间戳（秒）</label>
+                        <div class="input-with-button">
+                            <input type="number" id="timestamp-input" placeholder="输入Unix时间戳...">
+                            <button id="get-current-timestamp">获取当前</button>
+                        </div>
+                    </div>
+                    <div class="radio-group">
+                        <p>时间戳单位</p>
+                        <div class="radio-options">
+                            <input type="radio" id="seconds" name="timestamp-unit" value="seconds" checked>
+                            <label for="seconds">秒（s）</label>
+                            <input type="radio" id="milliseconds" name="timestamp-unit" value="milliseconds">
+                            <label for="milliseconds">毫秒（ms）</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button id="convert-to-date">转换为日期时间</button>
+                </div>
+                <div class="option-group">
+                    <label for="date-result">转换结果</label>
+                    <div class="result-area">
+                        <div class="result-item">
+                            <span class="result-label">本地时间：</span>
+                            <span id="local-date-result" class="result-value">-</span>
+                            <button class="copy-btn" data-target="local-date-result">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">UTC时间：</span>
+                            <span id="utc-date-result" class="result-value">-</span>
+                            <button class="copy-btn" data-target="utc-date-result">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">ISO格式：</span>
+                            <span id="iso-date-result" class="result-value">-</span>
+                            <button class="copy-btn" data-target="iso-date-result">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧：日期转时间戳 -->
+            <div class="section">
+                <h2>日期时间转时间戳</h2>
+                <div class="option-group">
+                    <label for="date-input">选择日期和时间</label>
+                    <input type="datetime-local" id="date-input">
+                </div>
+                <div class="button-group">
+                    <button id="convert-to-timestamp">转换为时间戳</button>
+                </div>
+                <div class="option-group">
+                    <label for="timestamp-result">转换结果</label>
+                    <div class="result-area">
+                        <div class="result-item">
+                            <span class="result-label">秒级时间戳：</span>
+                            <span id="seconds-result" class="result-value">-</span>
+                            <button class="copy-btn" data-target="seconds-result">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">毫秒级时间戳：</span>
+                            <span id="milliseconds-result" class="result-value">-</span>
+                            <button class="copy-btn" data-target="milliseconds-result">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 备注信息 -->
+        <div class="info-box">
+            <h3><i class="fas fa-info-circle"></i> 什么是Unix时间戳？</h3>
+            <p>Unix时间戳是从1970年1月1日（UTC/GMT）午夜开始所经过的秒数，不考虑闰秒。</p>
+            <p>Unix时间戳广泛应用于计算机系统和编程中，是一种表示时间点的标准方式。</p>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer>
+        <p>
+            &copy; 2023 蔚蓝个人工具导航站
+            <a href="https://github.com/core666666/Blue-IT-Tool" target="_blank">GitHub 开源地址</a>
+        </p>
+    </footer>
+
+    <script src="../scripts/index.js"></script>
+    <script src="../scripts/timestamp_converter.js"></script>
+</body>
+</html> 

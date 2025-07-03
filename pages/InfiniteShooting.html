@@ -1,0 +1,2370 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2D 射击生存游戏 - 终极增强版</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #111;
+            color: white;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+        }
+        
+        #gameContainer {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        
+        #gameCanvas {
+            border: 2px solid #333;
+            background: #000;
+        }
+        
+        #ui {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 100;
+            background: rgba(0,0,0,0.7);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            min-width: 180px;
+            width: 180px;
+        }
+        
+        #rightPanel {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 150;
+            background: rgba(0,0,0,0.95);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            min-width: 200px;
+            max-height: 80vh;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        #upgradeToggle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 140;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+        }
+        
+        #upgradeToggle:hover {
+            background: #45a049;
+        }
+        
+        #upgradeToggle.has-points {
+            background: #ff6600;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 102, 0, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 102, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 102, 0, 0); }
+        }
+        
+        .stat-bar {
+            background: #333;
+            height: 20px;
+            border-radius: 10px;
+            margin: 5px 0;
+            overflow: hidden;
+            border: 1px solid #555;
+        }
+        
+        .health-fill { background: linear-gradient(90deg, #ff0000, #ff6666); }
+        .exp-fill { background: linear-gradient(90deg, #0066ff, #66aaff); }
+        .ammo-fill { background: linear-gradient(90deg, #ffaa00, #ffcc66); }
+        
+        .upgrade-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            margin: 2px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            z-index: 160;
+        }
+        
+        .upgrade-btn:hover {
+            background: #45a049;
+        }
+        
+        .upgrade-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        
+        .difficulty-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            font-size: 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            transition: background 0.3s;
+            margin: 3px;
+            min-width: 110px;
+        }
+        
+        .difficulty-btn:hover {
+            background: #45a049;
+        }
+        
+        .shoot-mode-btn {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            margin: 3px;
+            min-width: 90px;
+            transition: all 0.3s;
+        }
+        
+        .shoot-mode-btn:hover {
+            background: #1976D2;
+        }
+        
+        .shoot-mode-btn.active {
+            background: #4CAF50;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        }
+        
+        .shoot-mode-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        #instructions {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            z-index: 100;
+            background: rgba(0,0,0,0.7);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+        
+        #gameOver {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 200;
+            text-align: center;
+            background: rgba(0,0,0,0.9);
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #666;
+            display: none;
+        }
+        
+        .restart-btn {
+            background: #ff6600;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .restart-btn:hover {
+            background: #e55a00;
+        }
+        
+        #pauseOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 130;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-size: 48px;
+            color: white;
+        }
+        
+        #difficultySelect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 300;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        .difficulty-panel {
+            background: #222;
+            border-radius: 15px;
+            border: 2px solid #666;
+            display: flex;
+            gap: 15px;
+            max-width: 95vw;
+            max-height: 95vh;
+            width: 100%;
+            padding: 15px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        
+        .settings-left {
+            flex: 0 0 50%;
+            min-width: 320px;
+            overflow-y: auto;
+        }
+        
+        .settings-right {
+            flex: 1;
+            min-width: 400px;
+            overflow-y: auto;
+            max-height: 100%;
+        }
+        
+        .difficulty-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+            margin: 8px 0;
+        }
+        
+        .shoot-mode-buttons {
+            display: flex;
+            gap: 6px;
+            margin: 6px 0;
+        }
+        
+        .powerup-guide {
+            background: #333;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+        }
+        
+        .powerup-item {
+            display: flex;
+            align-items: center;
+            margin: 6px 0;
+            padding: 6px;
+            background: #444;
+            border-radius: 4px;
+            position: relative;
+        }
+        
+        .powerup-emoji {
+            font-size: 16px;
+            margin-right: 8px;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .powerup-preview {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .invulnerable-preview {
+            background: radial-gradient(circle, gold, #ffaa00);
+            box-shadow: 0 0 10px gold;
+            animation: invulnerable-pulse 1s infinite;
+        }
+        
+        .time-slow-preview {
+            background: radial-gradient(circle, cyan, #0088aa);
+            box-shadow: 0 0 8px cyan;
+            animation: time-slow-pulse 1.5s infinite;
+        }
+        
+        .double-fire-preview {
+            background: radial-gradient(circle, orange, #ff6600);
+            box-shadow: 0 0 8px orange;
+            animation: fire-pulse 0.8s infinite;
+        }
+        
+        .piercing-preview {
+            background: radial-gradient(circle, #9d4edd, #6a1b9a);
+            box-shadow: 0 0 8px #9d4edd;
+            animation: piercing-pulse 1.2s infinite;
+        }
+        
+        .regen-preview {
+            background: radial-gradient(circle, #00ff00, #008800);
+            box-shadow: 0 0 8px #00ff00;
+            animation: regen-pulse 1s infinite;
+        }
+        
+        @keyframes invulnerable-pulse {
+            0%, 100% { transform: translateY(-50%) scale(1); }
+            50% { transform: translateY(-50%) scale(1.2); }
+        }
+        
+        @keyframes time-slow-pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+        
+        @keyframes fire-pulse {
+            0%, 100% { box-shadow: 0 0 8px orange; }
+            50% { box-shadow: 0 0 15px orange, 0 0 25px #ff6600; }
+        }
+        
+        @keyframes piercing-pulse {
+            0%, 100% { transform: translateY(-50%) rotate(0deg); }
+            50% { transform: translateY(-50%) rotate(180deg); }
+        }
+        
+        @keyframes regen-pulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; transform: translateY(-50%) scale(1.1); }
+        }
+        
+        .options-section {
+            background: #333;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+        }
+        
+        .probability-section {
+            background: #333;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+        }
+        
+        .probability-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 4px 0;
+            padding: 3px;
+            background: #444;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+        
+        .probability-rate {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        
+        .upgrade-section {
+            background: #333;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+        }
+        
+        .upgrade-item {
+            display: flex;
+            align-items: center;
+            margin: 6px 0;
+            padding: 6px;
+            background: #444;
+            border-radius: 4px;
+        }
+        
+        .upgrade-icon {
+            font-size: 16px;
+            margin-right: 8px;
+            width: 24px;
+            text-align: center;
+        }
+        
+        #bossWarning {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 180;
+            text-align: center;
+            font-size: 48px;
+            color: #ff0000;
+            text-shadow: 2px 2px 4px #000;
+            animation: bossWarning 2s ease-in-out;
+            display: none;
+        }
+        
+        @keyframes bossWarning {
+            0%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+        }
+        
+        h2 {
+            text-align: center;
+            margin: 0 0 12px 0;
+            color: #4CAF50;
+            font-size: 16px;
+        }
+        
+        h3 {
+            margin: 10px 0 6px 0;
+            color: #FFD700;
+            font-size: 13px;
+        }
+        
+        .game-tips {
+            margin-top: 12px;
+            padding: 10px;
+            background: #444;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #ccc;
+            text-align: center;
+        }
+        
+        .game-tips p {
+            margin: 3px 0;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 1200px) {
+            .difficulty-panel {
+                flex-direction: column;
+                max-height: 90vh;
+            }
+            
+            .settings-left, .settings-right {
+                flex: none;
+                min-width: auto;
+                max-height: none;
+            }
+        }
+        
+        /* 滚动条样式 */
+        .settings-left::-webkit-scrollbar,
+        .settings-right::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .settings-left::-webkit-scrollbar-track,
+        .settings-right::-webkit-scrollbar-track {
+            background: #333;
+            border-radius: 3px;
+        }
+        
+        .settings-left::-webkit-scrollbar-thumb,
+        .settings-right::-webkit-scrollbar-thumb {
+            background: #666;
+            border-radius: 3px;
+        }
+        
+        .settings-left::-webkit-scrollbar-thumb:hover,
+        .settings-right::-webkit-scrollbar-thumb:hover {
+            background: #777;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <!-- 难度选择界面 -->
+        <div id="difficultySelect">
+            <div class="difficulty-panel">
+                <!-- 左侧：游戏设置 -->
+                <div class="settings-left">
+                    <h2>🎮 游戏设置</h2>
+                    
+                    <h3>选择难度：</h3>
+                    <div class="difficulty-buttons">
+                        <button class="difficulty-btn" onclick="selectDifficulty('kindergarten')">🍼 幼儿园</button>
+                        <button class="difficulty-btn" onclick="selectDifficulty('elementary')">📚 小学生</button>
+                        <button class="difficulty-btn" onclick="selectDifficulty('middle')">⭐ 初中生</button>
+                        <button class="difficulty-btn" onclick="selectDifficulty('high')">🔥 高中生</button>
+                        <button class="difficulty-btn" onclick="selectDifficulty('college')">💀 大学生</button>
+                    </div>
+                    
+                    <div class="options-section">
+                        <h3>射击模式：</h3>
+                        <div class="shoot-mode-buttons">
+                            <button id="autoShootBtn" class="shoot-mode-btn active" onclick="setShootMode(true)">🎯 自动射击</button>
+                            <button id="manualShootBtn" class="shoot-mode-btn" onclick="setShootMode(false)">🖱️ 手动射击</button>
+                        </div>
+                    </div>
+                    
+                    <div class="probability-section">
+                        <h3>📦 道具掉落概率：</h3>
+                        <div class="probability-item">
+                            <span>🍼 幼儿园</span>
+                            <span class="probability-rate">12%</span>
+                        </div>
+                        <div class="probability-item">
+                            <span>📚 小学生</span>
+                            <span class="probability-rate">10%</span>
+                        </div>
+                        <div class="probability-item">
+                            <span>⭐ 初中生</span>
+                            <span class="probability-rate">8%</span>
+                        </div>
+                        <div class="probability-item">
+                            <span>🔥 高中生</span>
+                            <span class="probability-rate">6%</span>
+                        </div>
+                        <div class="probability-item">
+                            <span>💀 大学生</span>
+                            <span class="probability-rate">4%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="game-tips">
+                        <p>💡 <strong>游戏提示：</strong></p>
+                        <p>• 道具掉落在地上，走过去拾取</p>
+                        <p>• 每10波会出现超级大Boss</p>
+                        <p>• 升级需要5个技能点</p>
+                        <p>• 使用WASD移动，鼠标瞄准射击</p>
+                    </div>
+                </div>
+                
+                <!-- 右侧：道具说明和升级面板说明 -->
+                <div class="settings-right">
+                    <h2>🎁 道具说明</h2>
+                    
+                    <div class="powerup-guide">
+                        <div class="powerup-item">
+                            <div class="powerup-emoji">💣</div>
+                            <div>
+                                <strong>炸弹</strong><br>
+                                <small>按Q键使用，造成200点范围爆炸伤害</small>
+                            </div>
+                        </div>
+                        <div class="powerup-item">
+                            <div class="powerup-emoji">⭐</div>
+                            <div>
+                                <strong>无敌护盾</strong><br>
+                                <small>拾取后立即生效，3秒完全免疫伤害</small>
+                            </div>
+                            <div class="powerup-preview invulnerable-preview">✨</div>
+                        </div>
+                        <div class="powerup-item">
+                            <div class="powerup-emoji">⏰</div>
+                            <div>
+                                <strong>时间减速</strong><br>
+                                <small>所有敌人速度降至30%，持续5秒</small>
+                            </div>
+                            <div class="powerup-preview time-slow-preview">🕐</div>
+                        </div>
+                        <div class="powerup-item">
+                            <div class="powerup-emoji">🔥</div>
+                            <div>
+                                <strong>双倍射速</strong><br>
+                                <small>射击间隔减半，持续10秒</small>
+                            </div>
+                            <div class="powerup-preview double-fire-preview">🔥</div>
+                        </div>
+                        <div class="powerup-item">
+                            <div class="powerup-emoji">🔫</div>
+                            <div>
+                                <strong>穿透弹</strong><br>
+                                <small>子弹可穿透多个敌人，持续7.5秒</small>
+                            </div>
+                            <div class="powerup-preview piercing-preview">⚡</div>
+                        </div>
+                        <div class="powerup-item">
+                            <div class="powerup-emoji">💚</div>
+                            <div>
+                                <strong>治疗光环</strong><br>
+                                <small>每秒回复2点血量，持续10秒</small>
+                            </div>
+                            <div class="powerup-preview regen-preview">❤️</div>
+                        </div>
+                    </div>
+                    
+                    <div class="upgrade-section">
+                        <h3>⚡ 升级系统说明：</h3>
+                        <div class="upgrade-item">
+                            <div class="upgrade-icon">⚔️</div>
+                            <div>
+                                <strong>攻击力</strong><br>
+                                <small>每级增加5点伤害，最多升级10次</small>
+                            </div>
+                        </div>
+                        <div class="upgrade-item">
+                            <div class="upgrade-icon">❤️</div>
+                            <div>
+                                <strong>生命值</strong><br>
+                                <small>每级增加20点最大生命值，最多升级10次</small>
+                            </div>
+                        </div>
+                        <div class="upgrade-item">
+                            <div class="upgrade-icon">🎯</div>
+                            <div>
+                                <strong>射速</strong><br>
+                                <small>每级减少20毫秒射击间隔，最多升级10次</small>
+                            </div>
+                        </div>
+                        <div class="upgrade-item">
+                            <div class="upgrade-icon">💨</div>
+                            <div>
+                                <strong>移动速度</strong><br>
+                                <small>每级增加0.5移动速度，最多升级10次</small>
+                            </div>
+                        </div>
+                        <div class="upgrade-item">
+                            <div class="upgrade-icon">📦</div>
+                            <div>
+                                <strong>弹药容量</strong><br>
+                                <small>每级增加10发弹药，最多升级10次</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <canvas id="gameCanvas" width="1000" height="700"></canvas>
+        
+        <button id="upgradeToggle" onclick="toggleUpgradePanel()">升级面板</button>
+        
+        <div id="pauseOverlay">
+            <div>游戏已暂停 - 升级属性中</div>
+        </div>
+        
+        <div id="bossWarning">
+            <div>⚡ 超级大Boss来袭! ⚡</div>
+        </div>
+        
+        <div id="ui">
+            <div><strong>等级:</strong> <span id="level">1</span></div>
+            <div><strong>分数:</strong> <span id="score">0</span></div>
+            <div><strong>击杀:</strong> <span id="kills">0</span></div>
+            <div><strong>波数:</strong> <span id="wave">1</span></div>
+            <div><strong>难度:</strong> <span id="currentDifficulty">初中生</span></div>
+            
+            <div style="margin-top: 10px;">
+                <div>生命值</div>
+                <div class="stat-bar">
+                    <div id="healthBar" class="health-fill" style="width: 100%; height: 100%;"></div>
+                </div>
+                <span id="healthText">100/100</span>
+            </div>
+            
+            <div>
+                <div>经验值</div>
+                <div class="stat-bar">
+                    <div id="expBar" class="exp-fill" style="width: 0%; height: 100%;"></div>
+                </div>
+                <span id="expText">0/100</span>
+            </div>
+            
+            <div>
+                <div>弹药 <span id="reloadStatus"></span></div>
+                <div class="stat-bar">
+                    <div id="ammoBar" class="ammo-fill" style="width: 100%; height: 100%;"></div>
+                </div>
+                <span id="ammoText">30/30</span>
+            </div>
+            
+            <div style="margin-top: 10px; font-size: 10px;">
+                <div><strong>道具:</strong></div>
+                <div>💣 炸弹: <span id="bombCount">0</span> (按Q)</div>
+                <div id="shootMode">🎯 射击: 自动模式</div>
+            </div>
+        </div>
+        
+        <div id="rightPanel">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <strong>属性升级</strong>
+                <button onclick="toggleUpgradePanel()" style="background: #666; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; z-index: 160;">关闭</button>
+            </div>
+            
+            <div style="margin-top: 10px;">
+                <div>攻击力: <span id="damageLevel">1</span>/10</div>
+                <button class="upgrade-btn" onclick="upgradeAttribute('damage')">升级 (5点)</button>
+            </div>
+            
+            <div>
+                <div>生命值: <span id="healthLevel">1</span>/10</div>
+                <button class="upgrade-btn" onclick="upgradeAttribute('health')">升级 (5点)</button>
+            </div>
+            
+            <div>
+                <div>射速: <span id="fireRateLevel">1</span>/10</div>
+                <button class="upgrade-btn" onclick="upgradeAttribute('fireRate')">升级 (5点)</button>
+            </div>
+            
+            <div>
+                <div>移动速度: <span id="speedLevel">1</span>/10</div>
+                <button class="upgrade-btn" onclick="upgradeAttribute('speed')">升级 (5点)</button>
+            </div>
+            
+            <div>
+                <div>弹药容量: <span id="ammoLevel">1</span>/10</div>
+                <button class="upgrade-btn" onclick="upgradeAttribute('ammo')">升级 (5点)</button>
+            </div>
+            
+            <div style="margin-top: 15px;">
+                <div><strong>可用点数:</strong> <span id="skillPoints">0</span></div>
+            </div>
+            
+            <div style="margin-top: 15px;">
+                <div><strong>武器类型:</strong></div>
+                <div id="weaponType">标准射击</div>
+            </div>
+        </div>
+        
+        <div id="instructions">
+            <div><strong>操作说明:</strong></div>
+            <div>WASD - 移动</div>
+            <div>鼠标 - 瞄准射击</div>
+            <div>R - 主动装弹</div>
+            <div>Q - 使用炸弹</div>
+            <div>T - 切换射击模式</div>
+            <div>1-3 - 切换武器</div>
+            <div>右上角 - 升级面板</div>
+        </div>
+        
+        <div id="gameOver">
+            <h2>游戏结束!</h2>
+            <div>最终等级: <span id="finalLevel">1</span></div>
+            <div>最终分数: <span id="finalScore">0</span></div>
+            <div>总击杀数: <span id="finalKills">0</span></div>
+            <div>存活波数: <span id="finalWave">1</span></div>
+            <div>游戏难度: <span id="finalDifficulty">初中生</span></div>
+            <button class="restart-btn" onclick="restartGame()">重新开始</button>
+        </div>
+    </div>
+
+    <script>
+        // 游戏核心变量
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 游戏选项
+        let autoShoot = true;
+        
+        // 难度配置
+        const difficultySettings = {
+            kindergarten: {
+                name: '幼儿园',
+                enemyDamageMultiplier: 0.25,
+                enemyHealthMultiplier: 0.4,
+                enemySpeedMultiplier: 0.6,
+                playerHealthMultiplier: 2.5,
+                expMultiplier: 2.0,
+                dashDamageMultiplier: 1.1,
+                powerUpDropRate: 0.12
+            },
+            elementary: {
+                name: '小学生',
+                enemyDamageMultiplier: 0.5,
+                enemyHealthMultiplier: 0.7,
+                enemySpeedMultiplier: 0.8,
+                playerHealthMultiplier: 1.8,
+                expMultiplier: 1.5,
+                dashDamageMultiplier: 1.2,
+                powerUpDropRate: 0.1
+            },
+            middle: {
+                name: '初中生',
+                enemyDamageMultiplier: 1.0,
+                enemyHealthMultiplier: 1.0,
+                enemySpeedMultiplier: 1.0,
+                playerHealthMultiplier: 1.0,
+                expMultiplier: 1.0,
+                dashDamageMultiplier: 1.5,
+                powerUpDropRate: 0.08
+            },
+            high: {
+                name: '高中生',
+                enemyDamageMultiplier: 1.4,
+                enemyHealthMultiplier: 1.3,
+                enemySpeedMultiplier: 1.2,
+                playerHealthMultiplier: 0.7,
+                expMultiplier: 1.3,
+                dashDamageMultiplier: 1.8,
+                powerUpDropRate: 0.06
+            },
+            college: {
+                name: '大学生',
+                enemyDamageMultiplier: 1.8,
+                enemyHealthMultiplier: 1.6,
+                enemySpeedMultiplier: 1.4,
+                playerHealthMultiplier: 0.5,
+                expMultiplier: 1.5,
+                dashDamageMultiplier: 2.2,
+                powerUpDropRate: 0.04
+            }
+        };
+        
+        let currentDifficulty = 'middle';
+        
+        // 游戏状态
+        let gameRunning = false;
+        let gamePaused = false;
+        let gameTime = 0;
+        let upgradeVisible = false;
+        
+        // 玩家对象
+        let player = {
+            x: 500,
+            y: 350,
+            size: 15,
+            health: 100,
+            maxHealth: 100,
+            speed: 3,
+            angle: 0,
+            exp: 0,
+            level: 1,
+            skillPoints: 0,
+            ammo: 30,
+            maxAmmo: 30,
+            reloading: false,
+            reloadTime: 0,
+            autoReloading: false,
+            lastShot: 0,
+            fireRate: 200,
+            damage: 20,
+            weaponType: 0,
+            bombCount: 0,
+            slowedUntil: 0,
+            speedMultiplier: 1.0,
+            attributes: {
+                damage: 1,
+                health: 1,
+                fireRate: 1,
+                speed: 1,
+                ammo: 1
+            },
+            powerUps: {
+                invulnerable: 0,
+                timeSlow: 0,
+                doubleFire: 0,
+                piercing: 0,
+                regen: 0
+            }
+        };
+        
+        // 游戏数据
+        let enemies = [];
+        let enemyBullets = [];
+        let bullets = [];
+        let items = [];
+        let particles = [];
+        let explosions = [];
+        let shockwaves = [];
+        let score = 0;
+        let kills = 0;
+        let wave = 1;
+        let waveProgress = 0;
+        let enemiesInWave = 10;
+        
+        // 控制
+        let keys = {};
+        let mouseX = 0;
+        let mouseY = 0;
+        let mouseDown = false;
+        
+        // 敌人类型
+        const enemyTypes = {
+            basic: { 
+                color: '#ff4444', 
+                size: 12, 
+                health: 40, 
+                speed: 1, 
+                damage: 15, 
+                exp: 10, 
+                score: 10 
+            },
+            fast: { 
+                color: '#44ff44', 
+                size: 8, 
+                health: 20, 
+                speed: 2.5, 
+                damage: 10, 
+                exp: 15, 
+                score: 15 
+            },
+            tank: { 
+                color: '#4444ff', 
+                size: 18, 
+                health: 100, 
+                speed: 0.5, 
+                damage: 30, 
+                exp: 30, 
+                score: 30 
+            },
+            shooter: { 
+                color: '#ff44ff', 
+                size: 10, 
+                health: 30, 
+                speed: 1.2, 
+                damage: 12, 
+                exp: 20, 
+                score: 20,
+                canShoot: true 
+            },
+            boss: {
+                color: '#ff0000',
+                size: 30,
+                health: 300,
+                speed: 0.8,
+                damage: 40,
+                exp: 100,
+                score: 100,
+                canShoot: true,
+                canDash: true,
+                isBoss: true
+            },
+            megaBoss: {
+                color: '#ff0000',
+                size: 50,
+                health: 1000,
+                speed: 0.6,
+                damage: 60,
+                exp: 500,
+                score: 1000,
+                canShoot: true,
+                canDash: true,
+                canShockwave: true,
+                isBoss: true,
+                isMegaBoss: true,
+                specialAbilities: ['summon', 'teleport', 'laser', 'split']
+            }
+        };
+        
+        // 武器类型
+        const weapons = [
+            { name: '标准射击', color: '#ffff00', speed: 8, size: 3 },
+            { name: '散弹枪', color: '#ff8800', speed: 6, size: 2 },
+            { name: '激光枪', color: '#00ffff', speed: 12, size: 4 }
+        ];
+        
+        // 道具类型
+        const powerUpTypes = {
+            bomb: { 
+                name: '炸弹', 
+                emoji: '💣',
+                color: '#ff6600', 
+                effect: 'bomb',
+                description: '范围爆炸伤害'
+            },
+            invulnerable: { 
+                name: '无敌', 
+                emoji: '⭐',
+                color: '#gold', 
+                effect: 'invulnerable',
+                duration: 180, // 3秒
+                description: '短时间无敌'
+            },
+            timeSlow: { 
+                name: '时间减速', 
+                emoji: '⏰',
+                color: '#cyan', 
+                effect: 'timeSlow',
+                duration: 300, // 5秒
+                description: '敌人行动变慢'
+            },
+            doubleFire: { 
+                name: '双倍射速', 
+                emoji: '🔥',
+                color: '#orange', 
+                effect: 'doubleFire',
+                duration: 600, // 10秒
+                description: '射速翻倍'
+            },
+            piercing: { 
+                name: '穿透弹', 
+                emoji: '🔫',
+                color: '#9d4edd', 
+                effect: 'piercing',
+                duration: 450, // 7.5秒
+                description: '子弹穿透敌人'
+            },
+            regen: { 
+                name: '治疗光环', 
+                emoji: '💚',
+                color: '#green', 
+                effect: 'regen',
+                duration: 600, // 10秒
+                description: '持续回血'
+            }
+        };
+        
+        // 射击模式设置
+        function setShootMode(isAuto) {
+            autoShoot = isAuto;
+            
+            const autoBtn = document.getElementById('autoShootBtn');
+            const manualBtn = document.getElementById('manualShootBtn');
+            
+            if (isAuto) {
+                autoBtn.classList.add('active');
+                autoBtn.disabled = true;
+                manualBtn.classList.remove('active');
+                manualBtn.disabled = false;
+            } else {
+                manualBtn.classList.add('active');
+                manualBtn.disabled = true;
+                autoBtn.classList.remove('active');
+                autoBtn.disabled = false;
+            }
+            
+            updateUI();
+        }
+        
+        // 难度选择
+        function selectDifficulty(difficulty) {
+            currentDifficulty = difficulty;
+            document.getElementById('difficultySelect').style.display = 'none';
+            
+            // 根据难度调整玩家初始属性
+            const settings = difficultySettings[difficulty];
+            player.maxHealth = Math.floor(100 * settings.playerHealthMultiplier);
+            player.health = player.maxHealth;
+            
+            gameRunning = true;
+            updateUI();
+        }
+        
+        // 升级面板控制
+        function toggleUpgradePanel() {
+            upgradeVisible = !upgradeVisible;
+            gamePaused = upgradeVisible;
+            
+            document.getElementById('rightPanel').style.display = upgradeVisible ? 'block' : 'none';
+            document.getElementById('pauseOverlay').style.display = upgradeVisible ? 'flex' : 'none';
+        }
+        
+        // 初始化游戏
+        function init() {
+            setupEventListeners();
+            gameLoop();
+            setInterval(spawnEnemies, 3000);
+        }
+        
+        // 事件监听
+        function setupEventListeners() {
+            document.addEventListener('keydown', (e) => {
+                keys[e.code] = true;
+                
+                if (e.code === 'KeyR') {
+                    reload();
+                }
+                
+                if (e.code === 'KeyQ') {
+                    useBomb();
+                }
+                
+                if (e.code === 'KeyT') {
+                    setShootMode(!autoShoot);
+                }
+                
+                if (e.code === 'Digit1') player.weaponType = 0;
+                if (e.code === 'Digit2') player.weaponType = 1;
+                if (e.code === 'Digit3') player.weaponType = 2;
+            });
+            
+            document.addEventListener('keyup', (e) => {
+                keys[e.code] = false;
+            });
+            
+            canvas.addEventListener('mousemove', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                mouseX = e.clientX - rect.left;
+                mouseY = e.clientY - rect.top;
+            });
+            
+            canvas.addEventListener('mousedown', (e) => {
+                mouseDown = true;
+            });
+            
+            canvas.addEventListener('mouseup', (e) => {
+                mouseDown = false;
+            });
+        }
+        
+        // 生成敌人
+        function spawnEnemies() {
+            if (!gameRunning || gamePaused) return;
+            
+            // 每10波生成大Boss
+            if (wave % 10 === 0 && waveProgress === 0) {
+                showBossWarning();
+                setTimeout(() => {
+                    spawnEnemy('megaBoss');
+                }, 2000);
+                waveProgress++;
+                return;
+            }
+            
+            const types = Object.keys(enemyTypes);
+            const spawnCount = Math.min(5 + Math.floor(wave / 2), 10);
+            
+            // 普通Boss生成
+            const bossCount = Math.min(1 + Math.floor(wave / 3), 2);
+            
+            for (let i = 0; i < spawnCount; i++) {
+                const availableTypes = types.filter(t => t !== 'boss' && t !== 'megaBoss');
+                const type = availableTypes[Math.floor(Math.random() * availableTypes.length)];
+                spawnEnemy(type);
+            }
+            
+            // 生成普通Boss (非10波倍数时)
+            if (wave % 10 !== 0) {
+                for (let i = 0; i < bossCount; i++) {
+                    spawnEnemy('boss');
+                }
+            }
+            
+            waveProgress++;
+            if (waveProgress >= 5) {
+                wave++;
+                waveProgress = 0;
+                enemiesInWave += 2;
+            }
+        }
+        
+        function showBossWarning() {
+            const warning = document.getElementById('bossWarning');
+            warning.style.display = 'block';
+            setTimeout(() => {
+                warning.style.display = 'none';
+            }, 2000);
+        }
+        
+        function spawnEnemy(type) {
+            const enemyTemplate = enemyTypes[type];
+            const settings = difficultySettings[currentDifficulty];
+            
+            let x, y;
+            if (Math.random() < 0.5) {
+                x = Math.random() < 0.5 ? -50 : canvas.width + 50;
+                y = Math.random() * canvas.height;
+            } else {
+                x = Math.random() * canvas.width;
+                y = Math.random() < 0.5 ? -50 : canvas.height + 50;
+            }
+            
+            // 大Boss血量递增
+            let healthMultiplier = 1 + wave * 0.2;
+            if (type === 'megaBoss') {
+                healthMultiplier = 1.5 + (Math.floor(wave / 10)) * 0.8; // 每10波大幅增强
+            }
+            
+            const enemy = {
+                x: x,
+                y: y,
+                type: type,
+                ...enemyTemplate,
+                health: enemyTemplate.health * healthMultiplier * settings.enemyHealthMultiplier,
+                maxHealth: enemyTemplate.health * healthMultiplier * settings.enemyHealthMultiplier,
+                damage: enemyTemplate.damage * settings.enemyDamageMultiplier,
+                speed: enemyTemplate.speed * settings.enemySpeedMultiplier,
+                lastShot: 0,
+                lastDash: 0,
+                lastSpecial: 0,
+                dashCooldown: 3000,
+                isDashing: false,
+                dashTime: 0,
+                lastHitTime: 0,
+                isInvulnerable: false,
+                invulnerableUntil: 0,
+                slowedUntil: 0,
+                speedMultiplier: 1.0
+            };
+            
+            enemies.push(enemy);
+        }
+        
+        // 使用炸弹
+        function useBomb() {
+            if (player.bombCount <= 0) return;
+            
+            player.bombCount--;
+            createExplosion(player.x, player.y, 100, 200);
+            updateUI();
+        }
+        
+        // 创建爆炸
+        function createExplosion(x, y, radius, damage) {
+            explosions.push({
+                x: x,
+                y: y,
+                radius: 0,
+                maxRadius: radius,
+                damage: damage,
+                life: 30
+            });
+            
+            createParticles(x, y, '#ff6600', 20);
+        }
+        
+        // 射击
+        function shoot() {
+            const now = Date.now();
+            let fireRate = player.fireRate;
+            
+            // 双倍射速效果
+            if (player.powerUps.doubleFire > 0) {
+                fireRate /= 2;
+            }
+            
+            if (now - player.lastShot < fireRate || player.reloading) {
+                return;
+            }
+            
+            // 自动换弹
+            if (player.ammo <= 0) {
+                if (!player.autoReloading) {
+                    player.autoReloading = true;
+                    reload();
+                }
+                return;
+            }
+            
+            player.lastShot = now;
+            
+            const weapon = weapons[player.weaponType];
+            
+            if (player.weaponType === 1) { // 散弹枪
+                for (let i = 0; i < 5; i++) {
+                    const angle = player.angle + (Math.random() - 0.5) * 0.5;
+                    createBullet(angle, weapon);
+                }
+                player.ammo -= 3;
+            } else {
+                createBullet(player.angle, weapon);
+                player.ammo--;
+            }
+        }
+        
+        function createBullet(angle, weapon) {
+            const bullet = {
+                x: player.x,
+                y: player.y,
+                angle: angle,
+                vx: Math.cos(angle) * weapon.speed,
+                vy: Math.sin(angle) * weapon.speed,
+                speed: weapon.speed,
+                size: weapon.size,
+                color: weapon.color,
+                damage: player.damage * player.attributes.damage,
+                life: 100,
+                piercing: player.powerUps.piercing > 0
+            };
+            bullets.push(bullet);
+        }
+        
+        // 敌人射击
+        function enemyShoot(enemy) {
+            const angle = Math.atan2(player.y - enemy.y, player.x - enemy.x);
+            const bullet = {
+                x: enemy.x,
+                y: enemy.y,
+                angle: angle,
+                vx: Math.cos(angle) * 4,
+                vy: Math.sin(angle) * 4,
+                speed: 4,
+                size: 4,
+                color: '#ff0000',
+                damage: enemy.damage * 0.5,
+                life: 150
+            };
+            enemyBullets.push(bullet);
+        }
+        
+        // 大Boss冲击波
+        function bossShockwave(boss) {
+            shockwaves.push({
+                x: boss.x,
+                y: boss.y,
+                radius: 0,
+                maxRadius: 200,
+                damage: boss.damage * 0.7,
+                slowDuration: wave * 30,
+                life: 60,
+                color: '#ff00ff'
+            });
+        }
+        
+        // 大Boss特殊技能
+        function useBossSpecial(boss) {
+            if (!boss.specialAbilities || Date.now() - boss.lastSpecial < 5000) return;
+            
+            const ability = boss.specialAbilities[Math.floor(Math.random() * boss.specialAbilities.length)];
+            boss.lastSpecial = Date.now();
+            
+            switch(ability) {
+                case 'summon':
+                    // 召唤小怪
+                    for (let i = 0; i < 3; i++) {
+                        spawnEnemy('basic');
+                    }
+                    break;
+                    
+                case 'teleport':
+                    // 瞬移到玩家附近
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = 150;
+                    boss.x = player.x + Math.cos(angle) * distance;
+                    boss.y = player.y + Math.sin(angle) * distance;
+                    boss.x = Math.max(boss.size, Math.min(canvas.width - boss.size, boss.x));
+                    boss.y = Math.max(boss.size, Math.min(canvas.height - boss.size, boss.y));
+                    createParticles(boss.x, boss.y, '#purple', 15);
+                    break;
+                    
+                case 'laser':
+                    // 激光扫射
+                    for (let i = 0; i < 8; i++) {
+                        const laserAngle = (Math.PI * 2 / 8) * i;
+                        const bullet = {
+                            x: boss.x,
+                            y: boss.y,
+                            angle: laserAngle,
+                            vx: Math.cos(laserAngle) * 6,
+                            vy: Math.sin(laserAngle) * 6,
+                            speed: 6,
+                            size: 6,
+                            color: '#00ffff',
+                            damage: boss.damage * 0.8,
+                            life: 120
+                        };
+                        enemyBullets.push(bullet);
+                    }
+                    break;
+                    
+                case 'split':
+                    // 分身攻击
+                    if (boss.health < boss.maxHealth * 0.3) {
+                        for (let i = 0; i < 2; i++) {
+                            spawnEnemy('shooter');
+                        }
+                    }
+                    break;
+            }
+        }
+        
+        // 装弹
+        function reload() {
+            if (!player.reloading && player.ammo < player.maxAmmo) {
+                player.reloading = true;
+                player.reloadTime = 60; // 60帧 = 1秒
+            }
+        }
+        
+        // 掉落物品
+        function dropItem(x, y, isBoss = false) {
+            const settings = difficultySettings[currentDifficulty];
+            const dropRate = isBoss ? 0.6 : settings.powerUpDropRate;
+            
+            if (Math.random() < dropRate) {
+                const powerUpKeys = Object.keys(powerUpTypes);
+                const type = powerUpKeys[Math.floor(Math.random() * powerUpKeys.length)];
+                
+                items.push({
+                    x: x,
+                    y: y,
+                    type: type,
+                    life: 900, // 15秒有效期
+                    size: 15,
+                    isPowerUp: true,
+                    blinkTimer: 0
+                });
+            }
+            
+            // 普通掉落物
+            if (Math.random() < 0.25) {
+                const basicTypes = ['health', 'ammo', 'exp'];
+                const type = basicTypes[Math.floor(Math.random() * basicTypes.length)];
+                
+                items.push({
+                    x: x,
+                    y: y,
+                    type: type,
+                    life: 300,
+                    size: 8,
+                    isPowerUp: false,
+                    blinkTimer: 0
+                });
+            }
+        }
+        
+        // 使用道具
+        function usePowerUp(type) {
+            const powerUp = powerUpTypes[type];
+            
+            switch(powerUp.effect) {
+                case 'bomb':
+                    player.bombCount++;
+                    break;
+                    
+                case 'invulnerable':
+                    player.powerUps.invulnerable = powerUp.duration;
+                    break;
+                    
+                case 'timeSlow':
+                    player.powerUps.timeSlow = powerUp.duration;
+                    break;
+                    
+                case 'doubleFire':
+                    player.powerUps.doubleFire = powerUp.duration;
+                    break;
+                    
+                case 'piercing':
+                    player.powerUps.piercing = powerUp.duration;
+                    break;
+                    
+                case 'regen':
+                    player.powerUps.regen = powerUp.duration;
+                    break;
+            }
+        }
+        
+        // 升级属性
+        function upgradeAttribute(attr) {
+            if (player.skillPoints < 5 || player.attributes[attr] >= 10) return;
+            
+            player.skillPoints -= 5;
+            player.attributes[attr]++;
+            
+            switch(attr) {
+                case 'damage':
+                    player.damage += 5;
+                    break;
+                case 'health':
+                    player.maxHealth += 20;
+                    player.health = Math.min(player.health + 20, player.maxHealth);
+                    break;
+                case 'fireRate':
+                    player.fireRate = Math.max(50, player.fireRate - 20);
+                    break;
+                case 'speed':
+                    player.speed += 0.5;
+                    break;
+                case 'ammo':
+                    player.maxAmmo += 10;
+                    player.ammo += 10;
+                    break;
+            }
+            
+            updateUI();
+        }
+        
+        // 获得经验值
+        function gainExp(amount) {
+            const settings = difficultySettings[currentDifficulty];
+            const adjustedExp = Math.floor(amount * settings.expMultiplier);
+            player.exp += adjustedExp;
+            
+            const expNeeded = player.level * 100;
+            if (player.exp >= expNeeded) {
+                player.exp -= expNeeded;
+                player.level++;
+                player.skillPoints += 5;
+                
+                player.health = Math.min(player.health + 20, player.maxHealth);
+                createParticles(player.x, player.y, '#ffff00', 15);
+            }
+        }
+        
+        // 创建粒子效果
+        function createParticles(x, y, color, count) {
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 8,
+                    vy: (Math.random() - 0.5) * 8,
+                    color: color,
+                    life: 30,
+                    size: Math.random() * 4 + 2
+                });
+            }
+        }
+        
+        // 渲染玩家状态特效
+        function renderPlayerEffects() {
+            const currentTime = Date.now();
+            
+            // 无敌光环效果 - 改为金色光晕
+            if (player.powerUps.invulnerable > 0) {
+                const radius1 = 25 + Math.sin(currentTime * 0.01) * 5;
+                const radius2 = 35 + Math.sin(currentTime * 0.015) * 3;
+                const radius3 = 45 + Math.sin(currentTime * 0.008) * 4;
+                
+                // 内圈金色光环
+                ctx.strokeStyle = '#FFD700';
+                ctx.lineWidth = 4;
+                ctx.globalAlpha = 0.9;
+                ctx.shadowColor = '#FFD700';
+                ctx.shadowBlur = 15;
+                
+                ctx.beginPath();
+                ctx.arc(player.x, player.y, radius1, 0, Math.PI * 2);
+                ctx.stroke();
+                
+                // 中圈光环
+                ctx.strokeStyle = '#FFA500';
+                ctx.lineWidth = 3;
+                ctx.globalAlpha = 0.7;
+                ctx.shadowBlur = 10;
+                
+                ctx.beginPath();
+                ctx.arc(player.x, player.y, radius2, 0, Math.PI * 2);
+                ctx.stroke();
+                
+                // 外圈光环
+                ctx.strokeStyle = '#FFFF00';
+                ctx.lineWidth = 2;
+                ctx.globalAlpha = 0.5;
+                ctx.shadowBlur = 20;
+                
+                ctx.beginPath();
+                ctx.arc(player.x, player.y, radius3, 0, Math.PI * 2);
+                ctx.stroke();
+                
+                ctx.shadowBlur = 0;
+                ctx.globalAlpha = 1;
+            }
+            
+            // 时间减速特效
+            if (player.powerUps.timeSlow > 0) {
+                const radius = 30 + Math.sin(currentTime * 0.008) * 8;
+                ctx.strokeStyle = '#cyan';
+                ctx.lineWidth = 2;
+                ctx.globalAlpha = 0.6;
+                
+                for (let i = 0; i < 3; i++) {
+                    ctx.beginPath();
+                    ctx.arc(player.x, player.y, radius + i * 10, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+                
+                ctx.globalAlpha = 1;
+            }
+            
+            // 双倍射速火焰特效
+            if (player.powerUps.doubleFire > 0) {
+                for (let i = 0; i < 6; i++) {
+                    const angle = (Math.PI * 2 / 6) * i + currentTime * 0.01;
+                    const fireX = player.x + Math.cos(angle) * 20;
+                    const fireY = player.y + Math.sin(angle) * 20;
+                    
+                    ctx.fillStyle = i % 2 === 0 ? '#ff6600' : '#ff3300';
+                    ctx.globalAlpha = 0.7;
+                    ctx.beginPath();
+                    ctx.arc(fireX, fireY, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.globalAlpha = 1;
+            }
+            
+            // 治疗光环绿色脉冲
+            if (player.powerUps.regen > 0) {
+                const radius = 22 + Math.sin(currentTime * 0.012) * 4;
+                ctx.strokeStyle = '#00ff00';
+                ctx.lineWidth = 2;
+                ctx.globalAlpha = 0.5;
+                
+                ctx.beginPath();
+                ctx.arc(player.x, player.y, radius, 0, Math.PI * 2);
+                ctx.stroke();
+                
+                ctx.globalAlpha = 1;
+            }
+            
+            // 穿透弹紫色光晕
+            if (player.powerUps.piercing > 0) {
+                const radius = 18 + Math.sin(currentTime * 0.02) * 3;
+                ctx.strokeStyle = '#9d4edd';
+                ctx.lineWidth = 2;
+                ctx.globalAlpha = 0.6;
+                
+                ctx.beginPath();
+                ctx.arc(player.x, player.y, radius, 0, Math.PI * 2);
+                ctx.stroke();
+                
+                ctx.globalAlpha = 1;
+            }
+        }
+        
+        // 渲染Boss特效
+        function renderBossEffects(enemy) {
+            const currentTime = Date.now();
+            
+            if (enemy.isInvulnerable) {
+                const radius = enemy.size + 15 + Math.sin(currentTime * 0.02) * 5;
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 4;
+                ctx.globalAlpha = 0.8;
+                
+                ctx.beginPath();
+                ctx.arc(enemy.x, enemy.y, radius, 0, Math.PI * 2);
+                ctx.stroke();
+                
+                ctx.globalAlpha = 1;
+            }
+        }
+        
+        // 在玩家头顶显示状态文字
+        function renderPlayerStatusText() {
+            const statusTexts = [];
+            
+            Object.entries(player.powerUps).forEach(([key, duration]) => {
+                if (duration > 0) {
+                    const seconds = Math.ceil(duration / 60);
+                    const powerUp = powerUpTypes[key];
+                    if (powerUp) {
+                        statusTexts.push(`${powerUp.emoji} ${seconds}s`);
+                    }
+                }
+            });
+            
+            if (player.slowedUntil > gameTime) {
+                const seconds = Math.ceil((player.slowedUntil - gameTime) / 60);
+                statusTexts.push(`🐌 ${seconds}s`);
+            }
+            
+            if (statusTexts.length > 0) {
+                ctx.fillStyle = 'white';
+                ctx.strokeStyle = 'black';
+                ctx.lineWidth = 2;
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'center';
+                
+                const text = statusTexts.join(' ');
+                const textY = player.y - player.size - 25;
+                
+                ctx.strokeText(text, player.x, textY);
+                ctx.fillText(text, player.x, textY);
+            }
+        }
+        
+        // 更新游戏逻辑
+        function update() {
+            if (!gameRunning || gamePaused) return;
+            
+            gameTime++;
+            
+            // 更新玩家buff状态
+            Object.keys(player.powerUps).forEach(key => {
+                if (player.powerUps[key] > 0) {
+                    player.powerUps[key]--;
+                }
+            });
+            
+            // 治疗光环效果
+            if (player.powerUps.regen > 0 && gameTime % 30 === 0) {
+                player.health = Math.min(player.health + 2, player.maxHealth);
+            }
+            
+            // 玩家移动
+            let currentSpeed = player.speed;
+            if (player.slowedUntil > gameTime) {
+                currentSpeed *= player.speedMultiplier;
+            }
+            
+            if (keys['KeyW'] || keys['ArrowUp']) player.y -= currentSpeed;
+            if (keys['KeyS'] || keys['ArrowDown']) player.y += currentSpeed;
+            if (keys['KeyA'] || keys['ArrowLeft']) player.x -= currentSpeed;
+            if (keys['KeyD'] || keys['ArrowRight']) player.x += currentSpeed;
+            
+            player.x = Math.max(player.size, Math.min(canvas.width - player.size, player.x));
+            player.y = Math.max(player.size, Math.min(canvas.height - player.size, player.y));
+            
+            player.angle = Math.atan2(mouseY - player.y, mouseX - player.x);
+            
+            // 射击逻辑
+            if (autoShoot || mouseDown) {
+                shoot();
+            }
+            
+            // 装弹逻辑
+            if (player.reloading) {
+                player.reloadTime--;
+                if (player.reloadTime <= 0) {
+                    player.ammo = player.maxAmmo;
+                    player.reloading = false;
+                    player.autoReloading = false;
+                }
+            }
+            
+            // 更新子弹
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                const bullet = bullets[i];
+                bullet.x += bullet.vx;
+                bullet.y += bullet.vy;
+                bullet.life--;
+                
+                if (bullet.life <= 0 || bullet.x < 0 || bullet.x > canvas.width || 
+                    bullet.y < 0 || bullet.y > canvas.height) {
+                    bullets.splice(i, 1);
+                }
+            }
+            
+            // 更新敌人子弹
+            for (let i = enemyBullets.length - 1; i >= 0; i--) {
+                const bullet = enemyBullets[i];
+                bullet.x += bullet.vx;
+                bullet.y += bullet.vy;
+                bullet.life--;
+                
+                if (bullet.life <= 0 || bullet.x < 0 || bullet.x > canvas.width || 
+                    bullet.y < 0 || bullet.y > canvas.height) {
+                    enemyBullets.splice(i, 1);
+                    continue;
+                }
+                
+                // 检查与玩家碰撞
+                const dist = Math.sqrt((bullet.x - player.x) ** 2 + (bullet.y - player.y) ** 2);
+                if (dist < bullet.size + player.size && player.powerUps.invulnerable === 0) {
+                    player.health -= bullet.damage;
+                    createParticles(bullet.x, bullet.y, '#ff0000', 8);
+                    enemyBullets.splice(i, 1);
+                    
+                    if (player.health <= 0) {
+                        gameOver();
+                    }
+                }
+            }
+            
+            // 更新爆炸
+            for (let i = explosions.length - 1; i >= 0; i--) {
+                const explosion = explosions[i];
+                explosion.radius += explosion.maxRadius / 30;
+                explosion.life--;
+                
+                if (explosion.life <= 0) {
+                    explosions.splice(i, 1);
+                    continue;
+                }
+                
+                // 检查爆炸伤害
+                for (let j = enemies.length - 1; j >= 0; j--) {
+                    const enemy = enemies[j];
+                    const dist = Math.sqrt((enemy.x - explosion.x) ** 2 + (enemy.y - explosion.y) ** 2);
+                    
+                    if (dist < explosion.radius + enemy.size) {
+                        enemy.health -= explosion.damage;
+                        createParticles(enemy.x, enemy.y, '#ff6600', 8);
+                        
+                        if (enemy.health <= 0) {
+                            score += enemy.score;
+                            kills++;
+                            gainExp(enemy.exp);
+                            dropItem(enemy.x, enemy.y, enemy.isBoss);
+                            createParticles(enemy.x, enemy.y, '#ffff00', enemy.isBoss ? 20 : 12);
+                            enemies.splice(j, 1);
+                        }
+                    }
+                }
+            }
+            
+            // 更新冲击波
+            for (let i = shockwaves.length - 1; i >= 0; i--) {
+                const shockwave = shockwaves[i];
+                shockwave.radius += shockwave.maxRadius / 60;
+                shockwave.life--;
+                
+                if (shockwave.life <= 0) {
+                    shockwaves.splice(i, 1);
+                    continue;
+                }
+                
+                // 检查冲击波对玩家的影响
+                const dist = Math.sqrt((player.x - shockwave.x) ** 2 + (player.y - shockwave.y) ** 2);
+                if (dist < shockwave.radius + player.size && dist > shockwave.radius - 10) {
+                    if (player.powerUps.invulnerable === 0) {
+                        player.health -= shockwave.damage;
+                        player.slowedUntil = gameTime + shockwave.slowDuration;
+                        player.speedMultiplier = 0.3;
+                        createParticles(player.x, player.y, '#ff00ff', 10);
+                        
+                        if (player.health <= 0) {
+                            gameOver();
+                        }
+                    }
+                }
+            }
+            
+            // 更新敌人
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                const enemy = enemies[i];
+                
+                // 时间减速效果
+                let enemySpeedMultiplier = 1.0;
+                if (player.powerUps.timeSlow > 0) {
+                    enemySpeedMultiplier = 0.3;
+                }
+                
+                // 大Boss无敌判断
+                if (enemy.isMegaBoss && enemy.health < enemy.maxHealth * 0.2 && !enemy.isInvulnerable) {
+                    enemy.isInvulnerable = true;
+                    enemy.invulnerableUntil = gameTime + 180; // 3秒无敌
+                }
+                
+                if (enemy.invulnerableUntil > 0 && gameTime >= enemy.invulnerableUntil) {
+                    enemy.isInvulnerable = false;
+                    enemy.invulnerableUntil = 0;
+                }
+                
+                // Boss特殊技能
+                if (enemy.isMegaBoss && Math.random() < 0.01) {
+                    useBossSpecial(enemy);
+                }
+                
+                // Boss冲击波攻击
+                if (enemy.canShockwave && Math.random() < 0.005) {
+                    bossShockwave(enemy);
+                }
+                
+                // Boss冲刺逻辑
+                if (enemy.canDash && !enemy.isDashing && Date.now() - enemy.lastDash > enemy.dashCooldown) {
+                    const distToPlayer = Math.sqrt((enemy.x - player.x) ** 2 + (enemy.y - player.y) ** 2);
+                    if (distToPlayer < 200 && Math.random() < 0.3) {
+                        enemy.isDashing = true;
+                        enemy.dashTime = 30;
+                        enemy.lastDash = Date.now();
+                    }
+                }
+                
+                // 移动逻辑
+                const angle = Math.atan2(player.y - enemy.y, player.x - enemy.x);
+                let moveSpeed = enemy.speed * enemySpeedMultiplier;
+                
+                if (enemy.isDashing) {
+                    moveSpeed *= 4;
+                    enemy.dashTime--;
+                    if (enemy.dashTime <= 0) {
+                        enemy.isDashing = false;
+                    }
+                }
+                
+                enemy.x += Math.cos(angle) * moveSpeed;
+                enemy.y += Math.sin(angle) * moveSpeed;
+                
+                // 射击逻辑
+                if (enemy.canShoot && Date.now() - enemy.lastShot > (enemy.isBoss ? 1000 : 2000)) {
+                    enemy.lastShot = Date.now();
+                    enemyShoot(enemy);
+                }
+                
+                // 检查与玩家碰撞
+                const dist = Math.sqrt((enemy.x - player.x) ** 2 + (enemy.y - player.y) ** 2);
+                if (dist < enemy.size + player.size && player.powerUps.invulnerable === 0) {
+                    const settings = difficultySettings[currentDifficulty];
+                    let damage = enemy.damage;
+                    
+                    if (enemy.isDashing) {
+                        damage *= settings.dashDamageMultiplier;
+                    }
+                    
+                    if (!enemy.lastHitTime || Date.now() - enemy.lastHitTime > 1000) {
+                        player.health -= damage;
+                        enemy.lastHitTime = Date.now();
+                        createParticles(enemy.x, enemy.y, '#ff0000', 10);
+                    }
+                    
+                    if (!enemy.isBoss) {
+                        enemies.splice(i, 1);
+                    }
+                    
+                    if (player.health <= 0) {
+                        gameOver();
+                    }
+                    continue;
+                }
+                
+                // 检查与子弹碰撞
+                for (let j = bullets.length - 1; j >= 0; j--) {
+                    const bullet = bullets[j];
+                    const bulletDist = Math.sqrt((bullet.x - enemy.x) ** 2 + (bullet.y - enemy.y) ** 2);
+                    
+                    if (bulletDist < bullet.size + enemy.size) {
+                        if (!enemy.isInvulnerable) {
+                            enemy.health -= bullet.damage;
+                            createParticles(enemy.x, enemy.y, enemy.color, 5);
+                        }
+                        
+                        if (!bullet.piercing) {
+                            bullets.splice(j, 1);
+                        }
+                        
+                        if (enemy.health <= 0) {
+                            score += enemy.score;
+                            kills++;
+                            gainExp(enemy.exp);
+                            dropItem(enemy.x, enemy.y, enemy.isBoss);
+                            createParticles(enemy.x, enemy.y, '#ffff00', enemy.isBoss ? 20 : 12);
+                            enemies.splice(i, 1);
+                        }
+                        break;
+                    }
+                }
+            }
+            
+            // 更新物品
+            for (let i = items.length - 1; i >= 0; i--) {
+                const item = items[i];
+                item.life--;
+                item.blinkTimer++;
+                
+                const dist = Math.sqrt((item.x - player.x) ** 2 + (item.y - player.y) ** 2);
+                if (dist < item.size + player.size) {
+                    if (item.isPowerUp) {
+                        usePowerUp(item.type);
+                    } else {
+                        switch(item.type) {
+                            case 'health':
+                                player.health = Math.min(player.health + 30, player.maxHealth);
+                                break;
+                            case 'ammo':
+                                player.ammo = Math.min(player.ammo + 15, player.maxAmmo);
+                                break;
+                            case 'exp':
+                                gainExp(25);
+                                break;
+                        }
+                    }
+                    createParticles(item.x, item.y, '#00ff00', 8);
+                    items.splice(i, 1);
+                } else if (item.life <= 0) {
+                    items.splice(i, 1);
+                }
+            }
+            
+            // 更新粒子
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const particle = particles[i];
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                particle.vx *= 0.98;
+                particle.vy *= 0.98;
+                particle.life--;
+                particle.size *= 0.95;
+                
+                if (particle.life <= 0 || particle.size < 0.5) {
+                    particles.splice(i, 1);
+                }
+            }
+            
+            updateUI();
+        }
+        
+        // 渲染
+        function render() {
+            ctx.fillStyle = '#001122';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制网格
+            ctx.strokeStyle = '#004466';
+            ctx.lineWidth = 1;
+            for (let x = 0; x < canvas.width; x += 50) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += 50) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+            
+            // 绘制冲击波
+            shockwaves.forEach(shockwave => {
+                ctx.strokeStyle = shockwave.color;
+                ctx.lineWidth = 3;
+                ctx.globalAlpha = shockwave.life / 60;
+                ctx.beginPath();
+                ctx.arc(shockwave.x, shockwave.y, shockwave.radius, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.globalAlpha = 1;
+            });
+            
+            // 绘制爆炸
+            explosions.forEach(explosion => {
+                ctx.fillStyle = '#ff6600';
+                ctx.globalAlpha = explosion.life / 30;
+                ctx.beginPath();
+                ctx.arc(explosion.x, explosion.y, explosion.radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            });
+            
+            // 先绘制粒子（在道具下层）
+            particles.forEach(particle => {
+                ctx.globalAlpha = particle.life / 30;
+                ctx.fillStyle = particle.color;
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            });
+            
+            // 绘制物品（在粒子上层）
+            items.forEach(item => {
+                let shouldRender = true;
+                
+                // 即将消失时闪烁效果
+                if (item.life < 180) { // 最后3秒闪烁
+                    shouldRender = Math.floor(item.blinkTimer / 10) % 2 === 0;
+                }
+                
+                if (shouldRender) {
+                    if (item.isPowerUp) {
+                        const powerUp = powerUpTypes[item.type];
+                        
+                        // 绘制背景圆圈
+                        ctx.fillStyle = powerUp.color;
+                        ctx.globalAlpha = 0.8;
+                        ctx.beginPath();
+                        ctx.arc(item.x, item.y, item.size, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.globalAlpha = 1;
+                        
+                        // 绘制边框
+                        ctx.strokeStyle = '#ffffff';
+                        ctx.lineWidth = 3;
+                        ctx.beginPath();
+                        ctx.arc(item.x, item.y, item.size, 0, Math.PI * 2);
+                        ctx.stroke();
+                        
+                        // 绘制emoji图标
+                        ctx.fillStyle = 'black';
+                        ctx.font = 'bold 20px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText(powerUp.emoji, item.x, item.y);
+                        
+                        // 发光效果
+                        if (Math.floor(gameTime / 15) % 2) {
+                            ctx.strokeStyle = powerUp.color;
+                            ctx.lineWidth = 4;
+                            ctx.globalAlpha = 0.6;
+                            ctx.beginPath();
+                            ctx.arc(item.x, item.y, item.size + 5, 0, Math.PI * 2);
+                            ctx.stroke();
+                            ctx.globalAlpha = 1;
+                        }
+                    } else {
+                        // 普通道具
+                        const colors = {
+                            health: '#ff0066',
+                            ammo: '#ffaa00',
+                            exp: '#0066ff'
+                        };
+                        
+                        ctx.fillStyle = colors[item.type];
+                        ctx.beginPath();
+                        ctx.arc(item.x, item.y, item.size, 0, Math.PI * 2);
+                        ctx.fill();
+                        
+                        if (Math.floor(gameTime / 10) % 2) {
+                            ctx.strokeStyle = '#ffffff';
+                            ctx.lineWidth = 2;
+                            ctx.stroke();
+                        }
+                    }
+                }
+            });
+            
+            // 绘制玩家特效
+            renderPlayerEffects();
+            
+            // 绘制玩家
+            ctx.save();
+            ctx.translate(player.x, player.y);
+            ctx.rotate(player.angle);
+            
+            // 修改无敌时的玩家颜色为金色
+            ctx.fillStyle = player.powerUps.invulnerable > 0 ? '#FFD700' : '#00ff00';
+            ctx.beginPath();
+            ctx.arc(0, 0, player.size, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(player.size + 5, 0);
+            ctx.stroke();
+            
+            ctx.restore();
+            
+            // 绘制玩家状态文字
+            renderPlayerStatusText();
+            
+            // 绘制子弹
+            bullets.forEach(bullet => {
+                // 穿透弹使用更明显的颜色
+                if (bullet.piercing) {
+                    ctx.fillStyle = '#ff00ff'; // 明亮的紫红色
+                    ctx.shadowColor = '#ff00ff';
+                    ctx.shadowBlur = 5;
+                } else {
+                    ctx.fillStyle = bullet.color;
+                }
+                
+                ctx.beginPath();
+                ctx.arc(bullet.x, bullet.y, bullet.size, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.shadowBlur = 0;
+            });
+            
+            // 绘制敌人子弹
+            enemyBullets.forEach(bullet => {
+                ctx.fillStyle = bullet.color;
+                ctx.beginPath();
+                ctx.arc(bullet.x, bullet.y, bullet.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            
+            // 绘制敌人
+            enemies.forEach(enemy => {
+                // Boss发光效果
+                if (enemy.isBoss) {
+                    ctx.shadowColor = enemy.isMegaBoss ? '#ff00ff' : '#ff0000';
+                    ctx.shadowBlur = 20;
+                }
+                
+                // 冲刺效果
+                if (enemy.isDashing) {
+                    ctx.fillStyle = '#ffffff';
+                } else {
+                    ctx.fillStyle = enemy.color;
+                }
+                
+                ctx.beginPath();
+                ctx.arc(enemy.x, enemy.y, enemy.size, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.shadowBlur = 0;
+                
+                // 渲染Boss特效
+                if (enemy.isBoss) {
+                    renderBossEffects(enemy);
+                }
+                
+                // Boss标记
+                if (enemy.isBoss) {
+                    ctx.strokeStyle = enemy.isMegaBoss ? '#ff00ff' : '#ffff00';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.arc(enemy.x, enemy.y, enemy.size + 8, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+                
+                // 血条
+                if (enemy.health < enemy.maxHealth) {
+                    const barWidth = enemy.size * 2;
+                    const barHeight = 6;
+                    const healthPercent = enemy.health / enemy.maxHealth;
+                    
+                    ctx.fillStyle = '#ff0000';
+                    ctx.fillRect(enemy.x - barWidth/2, enemy.y - enemy.size - 12, barWidth, barHeight);
+                    
+                    ctx.fillStyle = enemy.isInvulnerable ? '#white' : '#00ff00';
+                    ctx.fillRect(enemy.x - barWidth/2, enemy.y - enemy.size - 12, barWidth * healthPercent, barHeight);
+                }
+            });
+            
+            // 装弹提示
+            if (player.reloading) {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.font = '24px Courier New';
+                ctx.textAlign = 'center';
+                const progress = (60 - player.reloadTime) / 60;
+                ctx.fillText(`装弹中... ${Math.floor(progress * 100)}%`, canvas.width / 2, canvas.height / 2);
+            }
+        }
+        
+        // 更新UI
+        function updateUI() {
+            document.getElementById('level').textContent = player.level;
+            document.getElementById('score').textContent = score;
+            document.getElementById('kills').textContent = kills;
+            document.getElementById('wave').textContent = wave;
+            document.getElementById('currentDifficulty').textContent = difficultySettings[currentDifficulty].name;
+            document.getElementById('bombCount').textContent = player.bombCount;
+            document.getElementById('shootMode').textContent = autoShoot ? '🎯 射击: 自动模式' : '🎯 射击: 手动模式';
+            
+            const healthPercent = (player.health / player.maxHealth) * 100;
+            document.getElementById('healthBar').style.width = healthPercent + '%';
+            document.getElementById('healthText').textContent = Math.floor(player.health) + '/' + player.maxHealth;
+            
+            const expNeeded = player.level * 100;
+            const expPercent = (player.exp / expNeeded) * 100;
+            document.getElementById('expBar').style.width = expPercent + '%';
+            document.getElementById('expText').textContent = player.exp + '/' + expNeeded;
+            
+            const ammoPercent = (player.ammo / player.maxAmmo) * 100;
+            document.getElementById('ammoBar').style.width = ammoPercent + '%';
+            document.getElementById('ammoText').textContent = player.ammo + '/' + player.maxAmmo;
+            
+            // 装弹状态
+            const reloadStatus = document.getElementById('reloadStatus');
+            if (player.reloading) {
+                reloadStatus.textContent = '(装弹中...)';
+                reloadStatus.style.color = '#ffaa00';
+            } else if (player.ammo === 0) {
+                reloadStatus.textContent = '(无弹药!)';
+                reloadStatus.style.color = '#ff0000';
+            } else {
+                reloadStatus.textContent = '';
+            }
+            
+            Object.keys(player.attributes).forEach(attr => {
+                const element = document.getElementById(attr + 'Level');
+                if (element) element.textContent = player.attributes[attr];
+            });
+            
+            document.getElementById('skillPoints').textContent = player.skillPoints;
+            document.getElementById('weaponType').textContent = weapons[player.weaponType].name;
+            
+            // 升级按钮
+            const upgradeToggle = document.getElementById('upgradeToggle');
+            if (player.skillPoints > 0) {
+                upgradeToggle.classList.add('has-points');
+                upgradeToggle.textContent = `升级面板 (${player.skillPoints})`;
+            } else {
+                upgradeToggle.classList.remove('has-points');
+                upgradeToggle.textContent = '升级面板';
+            }
+            
+            document.querySelectorAll('.upgrade-btn').forEach((btn, index) => {
+                const attrs = ['damage', 'health', 'fireRate', 'speed', 'ammo'];
+                const attr = attrs[index];
+                btn.disabled = player.skillPoints < 5 || player.attributes[attr] >= 10;
+            });
+        }
+        
+        function gameOver() {
+            gameRunning = false;
+            document.getElementById('finalLevel').textContent = player.level;
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('finalKills').textContent = kills;
+            document.getElementById('finalWave').textContent = wave;
+            document.getElementById('finalDifficulty').textContent = difficultySettings[currentDifficulty].name;
+            document.getElementById('gameOver').style.display = 'block';
+        }
+        
+        function restartGame() {
+            gameRunning = false;
+            gamePaused = false;
+            gameTime = 0;
+            upgradeVisible = false;
+            
+            player = {
+                x: 500,
+                y: 350,
+                size: 15,
+                health: 100,
+                maxHealth: 100,
+                speed: 3,
+                angle: 0,
+                exp: 0,
+                level: 1,
+                skillPoints: 0,
+                ammo: 30,
+                maxAmmo: 30,
+                reloading: false,
+                reloadTime: 0,
+                autoReloading: false,
+                lastShot: 0,
+                fireRate: 200,
+                damage: 20,
+                weaponType: 0,
+                bombCount: 0,
+                slowedUntil: 0,
+                speedMultiplier: 1.0,
+                attributes: {
+                    damage: 1,
+                    health: 1,
+                    fireRate: 1,
+                    speed: 1,
+                    ammo: 1
+                },
+                powerUps: {
+                    invulnerable: 0,
+                    timeSlow: 0,
+                    doubleFire: 0,
+                    piercing: 0,
+                    regen: 0
+                }
+            };
+            
+            enemies = [];
+            enemyBullets = [];
+            bullets = [];
+            items = [];
+            particles = [];
+            explosions = [];
+            shockwaves = [];
+            
+            score = 0;
+            kills = 0;
+            wave = 1;
+            waveProgress = 0;
+            
+            document.getElementById('gameOver').style.display = 'none';
+            document.getElementById('rightPanel').style.display = 'none';
+            document.getElementById('pauseOverlay').style.display = 'none';
+            document.getElementById('difficultySelect').style.display = 'flex';
+            
+            updateUI();
+        }
+        
+        function gameLoop() {
+            update();
+            render();
+            requestAnimationFrame(gameLoop);
+        }
+        
+        init();
+    </script>
+</body>
+</html>

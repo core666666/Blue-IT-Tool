@@ -779,7 +779,150 @@
         // 游戏核心变量
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        
+
+        // 图片资源
+        let gameImages = {
+            spriteSheet: null,
+            loaded: false
+        };
+
+        // 精灵图坐标定义 (根据您选择的实际坐标)
+        const spriteCoords = {
+            player: { x: 684, y: 530, width: 262, height: 248 },
+            boss: { x: 685, y: 62, width: 265, height: 236 },
+            megaBoss: { x: 47, y: 28, width: 336, height: 321 },
+            basicEnemy: { x: 386, y: 329, width: 244, height: 219 },
+            fastEnemy: { x: 739, y: 346, width: 149, height: 150 },
+            tankEnemy: { x: 680, y: 786, width: 268, height: 225 }
+        };
+
+        // 加载图片资源
+        function loadGameImages() {
+            const img = new Image();
+            img.onload = function() {
+                gameImages.spriteSheet = img;
+                gameImages.loaded = true;
+                console.log('游戏图片资源加载完成，尺寸:', img.width, 'x', img.height);
+                // 在UI中显示加载状态
+                const statusDiv = document.createElement('div');
+                statusDiv.style.position = 'absolute';
+                statusDiv.style.top = '10px';
+                statusDiv.style.right = '250px';
+                statusDiv.style.background = 'rgba(0,255,0,0.8)';
+                statusDiv.style.color = 'white';
+                statusDiv.style.padding = '5px 10px';
+                statusDiv.style.borderRadius = '5px';
+                statusDiv.style.fontSize = '12px';
+                statusDiv.style.zIndex = '1000';
+                statusDiv.innerHTML = `图片已加载 ${img.width}x${img.height}`;
+                document.body.appendChild(statusDiv);
+
+                // 创建一个小的预览窗口显示精灵图
+                const previewDiv = document.createElement('div');
+                previewDiv.style.position = 'absolute';
+                previewDiv.style.top = '50px';
+                previewDiv.style.right = '10px';
+                previewDiv.style.background = 'rgba(0,0,0,0.9)';
+                previewDiv.style.border = '2px solid #666';
+                previewDiv.style.borderRadius = '8px';
+                previewDiv.style.padding = '10px';
+                previewDiv.style.zIndex = '1000';
+                previewDiv.style.maxWidth = '300px';
+
+                const previewCanvas = document.createElement('canvas');
+                previewCanvas.width = Math.min(img.width, 280);
+                previewCanvas.height = Math.min(img.height, 200);
+                const previewCtx = previewCanvas.getContext('2d');
+
+                // 绘制完整的精灵图
+                const scale = Math.min(previewCanvas.width / img.width, previewCanvas.height / img.height);
+                const drawWidth = img.width * scale;
+                const drawHeight = img.height * scale;
+                previewCtx.drawImage(img, 0, 0, drawWidth, drawHeight);
+
+                // 添加网格线帮助识别精灵位置
+                previewCtx.strokeStyle = '#ff0000';
+                previewCtx.lineWidth = 1;
+                for (let x = 0; x < drawWidth; x += 32 * scale) {
+                    previewCtx.beginPath();
+                    previewCtx.moveTo(x, 0);
+                    previewCtx.lineTo(x, drawHeight);
+                    previewCtx.stroke();
+                }
+                for (let y = 0; y < drawHeight; y += 32 * scale) {
+                    previewCtx.beginPath();
+                    previewCtx.moveTo(0, y);
+                    previewCtx.lineTo(drawWidth, y);
+                    previewCtx.stroke();
+                }
+
+                const closeBtn = document.createElement('button');
+                closeBtn.textContent = '关闭预览';
+                closeBtn.style.marginTop = '10px';
+                closeBtn.style.background = '#666';
+                closeBtn.style.color = 'white';
+                closeBtn.style.border = 'none';
+                closeBtn.style.padding = '5px 10px';
+                closeBtn.style.borderRadius = '3px';
+                closeBtn.style.cursor = 'pointer';
+                closeBtn.onclick = () => previewDiv.remove();
+
+                previewDiv.appendChild(previewCanvas);
+                previewDiv.appendChild(document.createElement('br'));
+                previewDiv.appendChild(closeBtn);
+                document.body.appendChild(previewDiv);
+
+                setTimeout(() => statusDiv.remove(), 3000);
+            };
+            img.onerror = function() {
+                console.error('图片加载失败，将使用默认绘制方式');
+                gameImages.loaded = false;
+                // 在UI中显示错误状态
+                const statusDiv = document.createElement('div');
+                statusDiv.style.position = 'absolute';
+                statusDiv.style.top = '10px';
+                statusDiv.style.right = '250px';
+                statusDiv.style.background = 'rgba(255,0,0,0.8)';
+                statusDiv.style.color = 'white';
+                statusDiv.style.padding = '5px 10px';
+                statusDiv.style.borderRadius = '5px';
+                statusDiv.style.fontSize = '12px';
+                statusDiv.style.zIndex = '1000';
+                statusDiv.textContent = '图片加载失败';
+                document.body.appendChild(statusDiv);
+            };
+            console.log('开始加载图片:', '../assets/images/2dgamepic.png');
+            img.src = '../assets/images/2dgamepic.png';
+        }
+
+        // 绘制精灵图片
+        function drawSprite(spriteKey, x, y, angle = 0, scale = 1) {
+            if (!gameImages.loaded || !gameImages.spriteSheet) {
+                return false; // 返回false表示需要使用默认绘制方式
+            }
+
+            const sprite = spriteCoords[spriteKey];
+            if (!sprite) return false;
+
+            ctx.save();
+            ctx.translate(x, y);
+            if (angle !== 0) {
+                ctx.rotate(angle);
+            }
+
+            const drawWidth = sprite.width * scale;
+            const drawHeight = sprite.height * scale;
+
+            ctx.drawImage(
+                gameImages.spriteSheet,
+                sprite.x, sprite.y, sprite.width, sprite.height,
+                -drawWidth/2, -drawHeight/2, drawWidth, drawHeight
+            );
+
+            ctx.restore();
+            return true; // 成功绘制
+        }
+
         // 游戏选项
         let autoShoot = true;
         
@@ -1078,6 +1221,7 @@
         
         // 初始化游戏
         function init() {
+            loadGameImages(); // 加载图片资源
             setupEventListeners();
             gameLoop();
             setInterval(spawnEnemies, 3000);
@@ -2115,24 +2259,39 @@
             renderPlayerEffects();
             
             // 绘制玩家
-            ctx.save();
-            ctx.translate(player.x, player.y);
-            ctx.rotate(player.angle);
-            
-            // 修改无敌时的玩家颜色为金色
-            ctx.fillStyle = player.powerUps.invulnerable > 0 ? '#FFD700' : '#00ff00';
-            ctx.beginPath();
-            ctx.arc(0, 0, player.size, 0, Math.PI * 2);
-            ctx.fill();
-            
-            ctx.strokeStyle = '#ffffff';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(0, 0);
-            ctx.lineTo(player.size + 5, 0);
-            ctx.stroke();
-            
-            ctx.restore();
+            const playerDrawn = drawSprite('player', player.x, player.y, player.angle, 0.12);
+
+            if (!playerDrawn) {
+                // 如果图片未加载，使用原来的绘制方式
+                ctx.save();
+                ctx.translate(player.x, player.y);
+                ctx.rotate(player.angle);
+
+                // 修改无敌时的玩家颜色为金色
+                ctx.fillStyle = player.powerUps.invulnerable > 0 ? '#FFD700' : '#00ff00';
+                ctx.beginPath();
+                ctx.arc(0, 0, player.size, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(player.size + 5, 0);
+                ctx.stroke();
+
+                ctx.restore();
+            } else {
+                // 如果使用图片绘制，在无敌时添加金色光晕效果
+                if (player.powerUps.invulnerable > 0) {
+                    ctx.save();
+                    ctx.shadowColor = '#FFD700';
+                    ctx.shadowBlur = 15;
+                    ctx.globalAlpha = 0.8;
+                    drawSprite('player', player.x, player.y, player.angle, 0.12);
+                    ctx.restore();
+                }
+            }
             
             // 绘制玩家状态文字
             renderPlayerStatusText();
@@ -2165,23 +2324,59 @@
             
             // 绘制敌人
             enemies.forEach(enemy => {
+                let spriteKey = 'basicEnemy'; // 默认精灵
+                let scale = 1.0;
+
+                // 根据敌人类型选择对应的精灵和缩放比例
+                switch(enemy.type) {
+                    case 'boss':
+                        spriteKey = 'boss';
+                        scale = 0.2; // Boss图片较大，缩小到合适尺寸
+                        break;
+                    case 'megaBoss':
+                        spriteKey = 'megaBoss';
+                        scale = 0.3; // 超级Boss稍大一些
+                        break;
+                    case 'fast':
+                        spriteKey = 'fastEnemy';
+                        scale = 0.15; // 快速敌人较小
+                        break;
+                    case 'tank':
+                        spriteKey = 'tankEnemy';
+                        scale = 0.18; // 坦克敌人中等大小
+                        break;
+                    case 'shooter':
+                        spriteKey = 'basicEnemy';
+                        scale = 0.16; // 射击敌人中等大小
+                        break;
+                    default:
+                        spriteKey = 'basicEnemy';
+                        scale = 0.16; // 基础敌人中等大小
+                }
+
                 // Boss发光效果
                 if (enemy.isBoss) {
                     ctx.shadowColor = enemy.isMegaBoss ? '#ff00ff' : '#ff0000';
                     ctx.shadowBlur = 20;
                 }
-                
-                // 冲刺效果
-                if (enemy.isDashing) {
-                    ctx.fillStyle = '#ffffff';
-                } else {
-                    ctx.fillStyle = enemy.color;
+
+                // 尝试绘制精灵图片
+                const enemyDrawn = drawSprite(spriteKey, enemy.x, enemy.y, 0, scale);
+
+                if (!enemyDrawn) {
+                    // 如果图片未加载，使用原来的绘制方式
+                    // 冲刺效果
+                    if (enemy.isDashing) {
+                        ctx.fillStyle = '#ffffff';
+                    } else {
+                        ctx.fillStyle = enemy.color;
+                    }
+
+                    ctx.beginPath();
+                    ctx.arc(enemy.x, enemy.y, enemy.size, 0, Math.PI * 2);
+                    ctx.fill();
                 }
-                
-                ctx.beginPath();
-                ctx.arc(enemy.x, enemy.y, enemy.size, 0, Math.PI * 2);
-                ctx.fill();
-                
+
                 ctx.shadowBlur = 0;
                 
                 // 渲染Boss特效

@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>精灵图坐标选择工具</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #111;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        
+        .container {
+            display: flex;
+            gap: 20px;
+            max-width: 1400px;
+        }
+        
+        .left-panel {
+            flex: 1;
+            min-width: 600px;
+        }
+        
+        .right-panel {
+            width: 350px;
+            background: #222;
+            padding: 15px;
+            border-radius: 8px;
+            height: fit-content;
+        }
+        
+        #imageContainer {
+            position: relative;
+            display: inline-block;
+            border: 2px solid #333;
+            background: #000;
+            margin: 20px 0;
+        }
+        
+        #spriteImage {
+            display: block;
+            max-width: 100%;
+            cursor: crosshair;
+        }
+        
+        #selectionOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .selection-box {
+            position: absolute;
+            border: 2px solid #ff0000;
+            background: rgba(255, 0, 0, 0.2);
+            pointer-events: none;
+        }
+        
+        .info {
+            background: #333;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .sprite-item {
+            background: #444;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 5px 0;
+            font-family: monospace;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .sprite-item:hover {
+            background: #555;
+        }
+        
+        .sprite-item.active {
+            background: #0066cc;
+        }
+        
+        .controls {
+            background: #333;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 2px;
+            font-size: 12px;
+        }
+        
+        .btn:hover {
+            background: #45a049;
+        }
+        
+        .btn.danger {
+            background: #f44336;
+        }
+        
+        .btn.danger:hover {
+            background: #da190b;
+        }
+        
+        #previewCanvas {
+            border: 1px solid #666;
+            background: #000;
+            margin: 10px 0;
+        }
+        
+        .coordinate-display {
+            background: #555;
+            padding: 8px;
+            border-radius: 4px;
+            margin: 5px 0;
+            font-family: monospace;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎮 精灵图坐标选择工具</h1>
+    
+    <div class="info">
+        <h3>图片加载状态：<span id="loadStatus">加载中...</span></h3>
+        <p><strong>使用说明：</strong>在图片上拖拽鼠标选择区域，点击右侧角色名称切换选择目标</p>
+    </div>
+    
+    <div class="container">
+        <div class="left-panel">
+            <div id="imageContainer">
+                <img id="spriteImage" src="../assets/images/2dgamepic.png" alt="精灵图">
+                <canvas id="selectionOverlay"></canvas>
+            </div>
+            
+            <div class="coordinate-display">
+                <strong>当前选择：</strong><span id="currentSelection">player</span><br>
+                <strong>坐标：</strong><span id="currentCoords">x: 0, y: 0, width: 0, height: 0</span>
+            </div>
+        </div>
+        
+        <div class="right-panel">
+            <h3>🎯 选择角色类型</h3>
+            <div id="spriteList">
+                <div class="sprite-item active" data-sprite="player">
+                    <strong>🎮 玩家 (Player)</strong><br>
+                    <span class="coords">x: 0, y: 0, width: 32, height: 32</span>
+                </div>
+                <div class="sprite-item" data-sprite="boss">
+                    <strong>👹 Boss</strong><br>
+                    <span class="coords">x: 32, y: 0, width: 32, height: 32</span>
+                </div>
+                <div class="sprite-item" data-sprite="megaBoss">
+                    <strong>💀 超级Boss</strong><br>
+                    <span class="coords">x: 64, y: 0, width: 32, height: 32</span>
+                </div>
+                <div class="sprite-item" data-sprite="basicEnemy">
+                    <strong>👾 基础敌人</strong><br>
+                    <span class="coords">x: 96, y: 0, width: 32, height: 32</span>
+                </div>
+                <div class="sprite-item" data-sprite="fastEnemy">
+                    <strong>⚡ 快速敌人</strong><br>
+                    <span class="coords">x: 128, y: 0, width: 32, height: 32</span>
+                </div>
+                <div class="sprite-item" data-sprite="tankEnemy">
+                    <strong>🛡️ 坦克敌人</strong><br>
+                    <span class="coords">x: 160, y: 0, width: 32, height: 32</span>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <h4>🔧 操作</h4>
+                <button class="btn" onclick="exportCoordinates()">📋 导出坐标</button>
+                <button class="btn" onclick="resetAll()">🔄 重置所有</button>
+                <button class="btn danger" onclick="clearSelection()">❌清除选择</button>
+            </div>
+            
+            <div class="info">
+                <h4>📋 预览</h4>
+                <canvas id="previewCanvas" width="64" height="64"></canvas>
+                <div id="previewInfo">选择一个区域查看预览</div>
+            </div>
+            
+            <div class="info">
+                <h4>📝 生成的代码</h4>
+                <textarea id="codeOutput" style="width: 100%; height: 200px; background: #333; color: #0f0; border: 1px solid #666; font-family: monospace; font-size: 11px;" readonly></textarea>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let spriteImage = null;
+        let selectionOverlay = null;
+        let overlayCtx = null;
+        let previewCanvas = null;
+        let previewCtx = null;
+        let isSelecting = false;
+        let startX = 0;
+        let startY = 0;
+        let currentSprite = 'player';
+        
+        // 精灵坐标数据
+        let spriteCoords = {
+            player: { x: 0, y: 0, width: 32, height: 32 },
+            boss: { x: 32, y: 0, width: 32, height: 32 },
+            megaBoss: { x: 64, y: 0, width: 32, height: 32 },
+            basicEnemy: { x: 96, y: 0, width: 32, height: 32 },
+            fastEnemy: { x: 128, y: 0, width: 32, height: 32 },
+            tankEnemy: { x: 160, y: 0, width: 32, height: 32 }
+        };
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            spriteImage = document.getElementById('spriteImage');
+            selectionOverlay = document.getElementById('selectionOverlay');
+            overlayCtx = selectionOverlay.getContext('2d');
+            previewCanvas = document.getElementById('previewCanvas');
+            previewCtx = previewCanvas.getContext('2d');
+            
+            setupEventListeners();
+            updateCodeOutput();
+        });
+        
+        // 设置事件监听器
+        function setupEventListeners() {
+            spriteImage.onload = function() {
+                document.getElementById('loadStatus').textContent = '加载成功';
+                document.getElementById('loadStatus').style.color = '#00ff00';
+                
+                // 设置overlay canvas尺寸
+                selectionOverlay.width = this.width;
+                selectionOverlay.height = this.height;
+                selectionOverlay.style.width = this.offsetWidth + 'px';
+                selectionOverlay.style.height = this.offsetHeight + 'px';
+                
+                drawAllSelections();
+            };
+            
+            spriteImage.onerror = function() {
+                document.getElementById('loadStatus').textContent = '加载失败';
+                document.getElementById('loadStatus').style.color = '#ff0000';
+            };
+
+            // 鼠标事件
+            const imageContainer = document.getElementById('imageContainer');
+            imageContainer.addEventListener('mousedown', startSelection);
+            imageContainer.addEventListener('mousemove', updateSelection);
+            imageContainer.addEventListener('mouseup', endSelection);
+
+            // 角色选择事件
+            document.querySelectorAll('.sprite-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    document.querySelectorAll('.sprite-item').forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    currentSprite = this.dataset.sprite;
+                    document.getElementById('currentSelection').textContent = currentSprite;
+                    updateCurrentCoords();
+                });
+            });
+        }
+
+        // 开始选择
+        function startSelection(e) {
+            if (e.target !== spriteImage) return;
+
+            isSelecting = true;
+            const rect = spriteImage.getBoundingClientRect();
+            const scaleX = spriteImage.naturalWidth / spriteImage.offsetWidth;
+            const scaleY = spriteImage.naturalHeight / spriteImage.offsetHeight;
+
+            startX = (e.clientX - rect.left) * scaleX;
+            startY = (e.clientY - rect.top) * scaleY;
+        }
+
+        // 更新选择
+        function updateSelection(e) {
+            if (!isSelecting) return;
+
+            const rect = spriteImage.getBoundingClientRect();
+            const scaleX = spriteImage.naturalWidth / spriteImage.offsetWidth;
+            const scaleY = spriteImage.naturalHeight / spriteImage.offsetHeight;
+
+            const currentX = (e.clientX - rect.left) * scaleX;
+            const currentY = (e.clientY - rect.top) * scaleY;
+
+            const x = Math.min(startX, currentX);
+            const y = Math.min(startY, currentY);
+            const width = Math.abs(currentX - startX);
+            const height = Math.abs(currentY - startY);
+
+            // 更新当前精灵的坐标
+            spriteCoords[currentSprite] = { x: Math.round(x), y: Math.round(y), width: Math.round(width), height: Math.round(height) };
+
+            drawAllSelections();
+            updateCurrentCoords();
+            updatePreview();
+            updateSpriteItemCoords();
+        }
+
+        // 结束选择
+        function endSelection(e) {
+            isSelecting = false;
+            updateCodeOutput();
+        }
+
+        // 绘制所有选择框
+        function drawAllSelections() {
+            overlayCtx.clearRect(0, 0, selectionOverlay.width, selectionOverlay.height);
+
+            const scaleX = spriteImage.offsetWidth / spriteImage.naturalWidth;
+            const scaleY = spriteImage.offsetHeight / spriteImage.naturalHeight;
+
+            Object.entries(spriteCoords).forEach(([name, coords]) => {
+                const x = coords.x * scaleX;
+                const y = coords.y * scaleY;
+                const width = coords.width * scaleX;
+                const height = coords.height * scaleY;
+
+                // 设置颜色
+                if (name === currentSprite) {
+                    overlayCtx.strokeStyle = '#ff0000';
+                    overlayCtx.fillStyle = 'rgba(255, 0, 0, 0.2)';
+                } else {
+                    overlayCtx.strokeStyle = '#00ff00';
+                    overlayCtx.fillStyle = 'rgba(0, 255, 0, 0.1)';
+                }
+
+                overlayCtx.lineWidth = 2;
+                overlayCtx.fillRect(x, y, width, height);
+                overlayCtx.strokeRect(x, y, width, height);
+
+                // 绘制标签
+                overlayCtx.fillStyle = name === currentSprite ? '#ff0000' : '#00ff00';
+                overlayCtx.font = '12px Arial';
+                overlayCtx.fillText(name, x + 2, y - 5);
+            });
+        }
+
+        // 更新当前坐标显示
+        function updateCurrentCoords() {
+            const coords = spriteCoords[currentSprite];
+            document.getElementById('currentCoords').textContent =
+                `x: ${coords.x}, y: ${coords.y}, width: ${coords.width}, height: ${coords.height}`;
+        }
+
+        // 更新预览
+        function updatePreview() {
+            if (!spriteImage.complete) return;
+
+            const coords = spriteCoords[currentSprite];
+            previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+
+            if (coords.width > 0 && coords.height > 0) {
+                previewCtx.drawImage(
+                    spriteImage,
+                    coords.x, coords.y, coords.width, coords.height,
+                    0, 0, previewCanvas.width, previewCanvas.height
+                );
+                document.getElementById('previewInfo').textContent = `${currentSprite} 预览`;
+            }
+        }
+
+        // 更新精灵项目的坐标显示
+        function updateSpriteItemCoords() {
+            document.querySelectorAll('.sprite-item').forEach(item => {
+                const spriteName = item.dataset.sprite;
+                const coords = spriteCoords[spriteName];
+                const coordsSpan = item.querySelector('.coords');
+                coordsSpan.textContent = `x: ${coords.x}, y: ${coords.y}, width: ${coords.width}, height: ${coords.height}`;
+            });
+        }
+
+        // 更新代码输出
+        function updateCodeOutput() {
+            const output = `const spriteCoords = {\n${Object.entries(spriteCoords).map(([name, coords]) =>
+                `    ${name}: { x: ${coords.x}, y: ${coords.y}, width: ${coords.width}, height: ${coords.height} }`
+            ).join(',\n')}\n};`;
+
+            document.getElementById('codeOutput').value = output;
+        }
+
+        // 导出坐标
+        function exportCoordinates() {
+            const output = document.getElementById('codeOutput').value;
+            navigator.clipboard.writeText(output).then(() => {
+                alert('坐标代码已复制到剪贴板！');
+            }).catch(() => {
+                // 创建临时文本区域进行复制
+                const textarea = document.createElement('textarea');
+                textarea.value = output;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('坐标代码已复制到剪贴板！');
+            });
+        }
+
+        // 重置所有
+        function resetAll() {
+            spriteCoords = {
+                player: { x: 0, y: 0, width: 32, height: 32 },
+                boss: { x: 32, y: 0, width: 32, height: 32 },
+                megaBoss: { x: 64, y: 0, width: 32, height: 32 },
+                basicEnemy: { x: 96, y: 0, width: 32, height: 32 },
+                fastEnemy: { x: 128, y: 0, width: 32, height: 32 },
+                tankEnemy: { x: 160, y: 0, width: 32, height: 32 }
+            };
+            drawAllSelections();
+            updateCurrentCoords();
+            updatePreview();
+            updateSpriteItemCoords();
+            updateCodeOutput();
+        }
+
+        // 清除当前选择
+        function clearSelection() {
+            spriteCoords[currentSprite] = { x: 0, y: 0, width: 0, height: 0 };
+            drawAllSelections();
+            updateCurrentCoords();
+            updatePreview();
+            updateSpriteItemCoords();
+            updateCodeOutput();
+        }
+    </script>
+</body>
+</html>

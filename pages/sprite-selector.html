@@ -44,6 +44,12 @@
             display: block;
             max-width: 100%;
             cursor: crosshair;
+            user-select: none;
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
         }
         
         #selectionOverlay {
@@ -257,11 +263,42 @@
                 document.getElementById('loadStatus').style.color = '#ff0000';
             };
 
+            // 防止图片拖拽
+            spriteImage.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            spriteImage.addEventListener('selectstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
             // 鼠标事件
             const imageContainer = document.getElementById('imageContainer');
             imageContainer.addEventListener('mousedown', startSelection);
             imageContainer.addEventListener('mousemove', updateSelection);
             imageContainer.addEventListener('mouseup', endSelection);
+            imageContainer.addEventListener('mouseleave', endSelection);
+
+            // 全局鼠标事件，处理拖拽到容器外的情况
+            document.addEventListener('mousemove', function(e) {
+                if (isSelecting) {
+                    updateSelection(e);
+                }
+            });
+
+            document.addEventListener('mouseup', function(e) {
+                if (isSelecting) {
+                    endSelection(e);
+                }
+            });
+
+            // 防止右键菜单
+            imageContainer.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
 
             // 角色选择事件
             document.querySelectorAll('.sprite-item').forEach(item => {
@@ -277,7 +314,11 @@
 
         // 开始选择
         function startSelection(e) {
-            if (e.target !== spriteImage) return;
+            // 防止默认行为
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (e.target !== spriteImage && e.target !== selectionOverlay) return;
 
             isSelecting = true;
             const rect = spriteImage.getBoundingClientRect();
@@ -291,6 +332,10 @@
         // 更新选择
         function updateSelection(e) {
             if (!isSelecting) return;
+
+            // 防止默认行为
+            e.preventDefault();
+            e.stopPropagation();
 
             const rect = spriteImage.getBoundingClientRect();
             const scaleX = spriteImage.naturalWidth / spriteImage.offsetWidth;
@@ -315,6 +360,10 @@
 
         // 结束选择
         function endSelection(e) {
+            if (isSelecting) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
             isSelecting = false;
             updateCodeOutput();
         }

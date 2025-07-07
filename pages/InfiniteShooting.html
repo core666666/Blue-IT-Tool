@@ -803,93 +803,10 @@
                 gameImages.spriteSheet = img;
                 gameImages.loaded = true;
                 console.log('游戏图片资源加载完成，尺寸:', img.width, 'x', img.height);
-                // 在UI中显示加载状态
-                const statusDiv = document.createElement('div');
-                statusDiv.style.position = 'absolute';
-                statusDiv.style.top = '10px';
-                statusDiv.style.right = '250px';
-                statusDiv.style.background = 'rgba(0,255,0,0.8)';
-                statusDiv.style.color = 'white';
-                statusDiv.style.padding = '5px 10px';
-                statusDiv.style.borderRadius = '5px';
-                statusDiv.style.fontSize = '12px';
-                statusDiv.style.zIndex = '1000';
-                statusDiv.innerHTML = `图片已加载 ${img.width}x${img.height}`;
-                document.body.appendChild(statusDiv);
-
-                // 创建一个小的预览窗口显示精灵图
-                const previewDiv = document.createElement('div');
-                previewDiv.style.position = 'absolute';
-                previewDiv.style.top = '50px';
-                previewDiv.style.right = '10px';
-                previewDiv.style.background = 'rgba(0,0,0,0.9)';
-                previewDiv.style.border = '2px solid #666';
-                previewDiv.style.borderRadius = '8px';
-                previewDiv.style.padding = '10px';
-                previewDiv.style.zIndex = '1000';
-                previewDiv.style.maxWidth = '300px';
-
-                const previewCanvas = document.createElement('canvas');
-                previewCanvas.width = Math.min(img.width, 280);
-                previewCanvas.height = Math.min(img.height, 200);
-                const previewCtx = previewCanvas.getContext('2d');
-
-                // 绘制完整的精灵图
-                const scale = Math.min(previewCanvas.width / img.width, previewCanvas.height / img.height);
-                const drawWidth = img.width * scale;
-                const drawHeight = img.height * scale;
-                previewCtx.drawImage(img, 0, 0, drawWidth, drawHeight);
-
-                // 添加网格线帮助识别精灵位置
-                previewCtx.strokeStyle = '#ff0000';
-                previewCtx.lineWidth = 1;
-                for (let x = 0; x < drawWidth; x += 32 * scale) {
-                    previewCtx.beginPath();
-                    previewCtx.moveTo(x, 0);
-                    previewCtx.lineTo(x, drawHeight);
-                    previewCtx.stroke();
-                }
-                for (let y = 0; y < drawHeight; y += 32 * scale) {
-                    previewCtx.beginPath();
-                    previewCtx.moveTo(0, y);
-                    previewCtx.lineTo(drawWidth, y);
-                    previewCtx.stroke();
-                }
-
-                const closeBtn = document.createElement('button');
-                closeBtn.textContent = '关闭预览';
-                closeBtn.style.marginTop = '10px';
-                closeBtn.style.background = '#666';
-                closeBtn.style.color = 'white';
-                closeBtn.style.border = 'none';
-                closeBtn.style.padding = '5px 10px';
-                closeBtn.style.borderRadius = '3px';
-                closeBtn.style.cursor = 'pointer';
-                closeBtn.onclick = () => previewDiv.remove();
-
-                previewDiv.appendChild(previewCanvas);
-                previewDiv.appendChild(document.createElement('br'));
-                previewDiv.appendChild(closeBtn);
-                document.body.appendChild(previewDiv);
-
-                setTimeout(() => statusDiv.remove(), 3000);
             };
             img.onerror = function() {
                 console.error('图片加载失败，将使用默认绘制方式');
                 gameImages.loaded = false;
-                // 在UI中显示错误状态
-                const statusDiv = document.createElement('div');
-                statusDiv.style.position = 'absolute';
-                statusDiv.style.top = '10px';
-                statusDiv.style.right = '250px';
-                statusDiv.style.background = 'rgba(255,0,0,0.8)';
-                statusDiv.style.color = 'white';
-                statusDiv.style.padding = '5px 10px';
-                statusDiv.style.borderRadius = '5px';
-                statusDiv.style.fontSize = '12px';
-                statusDiv.style.zIndex = '1000';
-                statusDiv.textContent = '图片加载失败';
-                document.body.appendChild(statusDiv);
             };
             console.log('开始加载图片:', '../assets/images/2dgamepic.png');
             img.src = '../assets/images/2dgamepic.png';

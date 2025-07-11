@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2D 防守游戏</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background: #222;
+        }
+        #gameCanvas {
+            display: block;
+            background: #1a1a1a;
+        }
+        #ui {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            border: 2px solid #444;
+            z-index: 10;
+        }
+        #gameOver {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+            border: 2px solid #f00;
+            z-index: 1000;
+        }
+        #gameOver button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        #gameOver button:hover {
+            background: #45a049;
+        }
+        .stat-line {
+            margin: 5px 0;
+        }
+        .stat-value {
+            color: #0f0;
+            font-weight: bold;
+        }
+        #upgradeMenu {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+            border: 2px solid #0f0;
+            z-index: 100;
+        }
+        .upgrade-btn {
+            margin: 5px;
+            padding: 8px 15px;
+            cursor: pointer;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        .upgrade-btn:hover {
+            background: #45a049;
+        }
+        .upgrade-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        #waveNotice {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ff0;
+            font-size: 48px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            display: none;
+            pointer-events: none;
+            z-index: 50;
+        }
+        #controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 600; /* 确保控制按钮在暂停遮罩之上 */
+        }
+        .control-btn {
+            padding: 10px 20px;
+            background: #333;
+            color: white;
+            border: 2px solid #666;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .control-btn:hover {
+            background: #444;
+            border-color: #888;
+        }
+        .control-btn.active {
+            background: #4CAF50;
+            border-color: #45a049;
+        }
+        #difficultyMenu {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            padding: 30px;
+            border-radius: 10px;
+            border: 2px solid #0f0;
+            text-align: center;
+            z-index: 1000;
+        }
+        #difficultyMenu h2 {
+            color: white;
+            margin-bottom: 20px;
+        }
+        .difficulty-btn {
+            display: block;
+            width: 200px;
+            margin: 10px auto;
+            padding: 15px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .difficulty-btn:hover {
+            background: #45a049;
+        }
+        .difficulty-desc {
+            color: #aaa;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        #pauseOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 500; /* 在控制按钮之下 */
+        }
+        #pauseOverlay h2 {
+            color: white;
+            font-size: 48px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+        .ammo-bar {
+            margin-top: 10px;
+            background: #333;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid #666;
+        }
+        .ammo-fill {
+            height: 100%;
+            background: linear-gradient(to right, #00ff00, #00aa00);
+            transition: width 0.3s;
+        }
+        #skillInfo {
+            position: absolute;
+            bottom: 150px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: none;
+            border: 2px solid #ff0;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    
+    <div id="difficultyMenu">
+        <h2>选择难度</h2>
+        <button class="difficulty-btn" onclick="game.selectDifficulty('kindergarten')">
+            幼儿园
+            <div class="difficulty-desc">敌人很弱，资源丰富</div>
+        </button>
+        <button class="difficulty-btn" onclick="game.selectDifficulty('elementary')">
+            小学生
+            <div class="difficulty-desc">适合新手练习</div>
+        </button>
+        <button class="difficulty-btn" onclick="game.selectDifficulty('middle')">
+            初中生
+            <div class="difficulty-desc">标准难度</div>
+        </button>
+        <button class="difficulty-btn" onclick="game.selectDifficulty('high')">
+            高中生
+            <div class="difficulty-desc">需要一定技巧</div>
+        </button>
+        <button class="difficulty-btn" onclick="game.selectDifficulty('university')">
+            大学生
+            <div class="difficulty-desc">极限挑战</div>
+        </button>
+    </div>
+    
+    <div id="pauseOverlay">
+        <h2>游戏暂停</h2>
+    </div>
+    
+    <div id="ui">
+        <div class="stat-line">难度: <span class="stat-value" id="difficulty">-</span></div>
+        <div class="stat-line">波数: <span class="stat-value" id="wave">1</span></div>
+        <div class="stat-line">击杀数: <span class="stat-value" id="kills">0</span></div>
+        <div class="stat-line">金币: <span class="stat-value" id="gold">50</span></div>
+        <div class="stat-line">经验: <span class="stat-value" id="exp">0</span> / <span id="expNeeded">50</span></div>
+        <div class="stat-line">等级: <span class="stat-value" id="level">1</span></div>
+        <hr>
+        <div class="stat-line">生命值: <span class="stat-value" id="hp">100</span> / <span id="maxHp">100</span></div>
+        <div class="stat-line">攻击力: <span class="stat-value" id="damage">25</span></div>
+        <div class="stat-line">攻击速度: <span class="stat-value" id="attackSpeed">2.0</span>/秒</div>
+        <div class="stat-line">攻击范围: <span class="stat-value" id="range">150</span></div>
+        <div class="stat-line">生命回复: <span class="stat-value" id="regen">1</span>/秒</div>
+        <div class="stat-line">子弹数量: <span class="stat-value" id="bulletCount">1</span></div>
+        <div class="stat-line">弹匣容量: <span class="stat-value" id="ammo">30</span> / <span id="maxAmmo">30</span></div>
+        <div class="ammo-bar">
+            <div class="ammo-fill" id="ammoBar" style="width: 100%"></div>
+        </div>
+    </div>
+    
+    <div id="controls">
+        <button class="control-btn" id="pauseBtn" onclick="game.togglePause()">暂停 (P)</button>
+        <button class="control-btn" id="upgradeBtn" onclick="game.toggleUpgradeMenu()">升级面板 (U)</button>
+    </div>
+    
+    <div id="upgradeMenu">
+        <h3 style="color: white; margin: 0 0 10px 0;">升级面板</h3>
+        <button class="upgrade-btn" id="upgradeDamage">攻击力 +10 (30金币)</button>
+        <button class="upgrade-btn" id="upgradeSpeed">攻速 +0.5 (25金币)</button>
+        <button class="upgrade-btn" id="upgradeHp">生命值 +50 (20金币)</button>
+        <button class="upgrade-btn" id="upgradeRange">射程 +20 (35金币)</button>
+        <button class="upgrade-btn" id="upgradeRegen">生命回复 +1 (40金币)</button>
+        <button class="upgrade-btn" id="upgradeBullets">子弹数量 +1 (100金币)</button>
+        <button class="upgrade-btn" id="upgradeAmmo">弹匣容量 +10 (50金币)</button>
+        <button class="upgrade-btn" id="upgradeReload">换弹速度 +20% (60金币)</button>
+    </div>
+    
+    <div id="skillInfo"></div>
+    
+    <div id="waveNotice"></div>
+    
+    <div id="gameOver">
+        <h2>游戏结束！</h2>
+        <p>难度: <span id="finalDifficulty">-</span></p>
+        <p>你坚持到了第 <span id="finalWave">1</span> 波</p>
+        <p>总击杀数: <span id="finalKills">0</span></p>
+        <p>最高等级: <span id="finalLevel">1</span></p>
+        <button onclick="location.reload()">重新开始</button>
+    </div>
+
+    <script>
+        class DefenseGame {
+            constructor() {
+                this.canvas = document.getElementById('gameCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+                
+                // 难度设置
+                this.difficulty = null;
+                this.difficultySettings = {
+                    kindergarten: {
+                        name: '幼儿园',
+                        enemyHpMultiplier: 0.5,
+                        enemyDamageMultiplier: 0.5,
+                        enemySpeedMultiplier: 0.7,
+                        goldMultiplier: 2,
+                        expMultiplier: 1.5,
+                        startGold: 100
+                    },
+                    elementary: {
+                        name: '小学生',
+                        enemyHpMultiplier: 0.75,
+                        enemyDamageMultiplier: 0.75,
+                        enemySpeedMultiplier: 0.85,
+                        goldMultiplier: 1.5,
+                        expMultiplier: 1.25,
+                        startGold: 75
+                    },
+                    middle: {
+                        name: '初中生',
+                        enemyHpMultiplier: 1,
+                        enemyDamageMultiplier: 1,
+                        enemySpeedMultiplier: 1,
+                        goldMultiplier: 1,
+                        expMultiplier: 1,
+                        startGold: 50
+                    },
+                    high: {
+                        name: '高中生',
+                        enemyHpMultiplier: 1.5,
+                        enemyDamageMultiplier: 1.5,
+                        enemySpeedMultiplier: 1.2,
+                        goldMultiplier: 0.8,
+                        expMultiplier: 0.9,
+                        startGold: 30
+                    },
+                    university: {
+                        name: '大学生',
+                        enemyHpMultiplier: 2,
+                        enemyDamageMultiplier: 2,
+                        enemySpeedMultiplier: 1.5,
+                        goldMultiplier: 0.6,
+                        expMultiplier: 0.8,
+                        startGold: 20
+                    }
+                };
+                
+                this.player = {
+                    x: this.canvas.width / 2,
+                    y: this.canvas.height / 2,
+                    radius: 20,
+                    hp: 100,
+                    maxHp: 100,
+                    damage: 25,
+                    attackSpeed: 2.0,
+                    range: 150,
+                    regen: 1,
+                    bulletCount: 1,
+                    ammo: 30,
+                    maxAmmo: 30,
+                    reloadSpeed: 2000, // 2秒换弹
+                    isReloading: false,
+                    reloadStartTime: 0,
+                    color: '#00ff00',
+                    lastAttackTime: 0,
+                    lastRegenTime: 0
+                };
+                
+                this.enemies = [];
+                this.projectiles = [];
+                this.particles = [];
+                this.floatingTexts = [];
+                
+                this.wave = 1;
+                this.enemiesInWave = 0;
+                this.enemiesSpawned = 0;
+                this.kills = 0;
+                this.gold = 50;
+                this.exp = 0;
+                this.level = 1;
+                this.expNeeded = 50;
+                
+                this.isPaused = false;
+                this.isGameStarted = false;
+                this.isWaveComplete = false;
+                this.lastTime = 0;
+                this.spawnTimer = 0;
+                
+                this.upgradeCosts = {
+                    damage: 30,
+                    attackSpeed: 25,
+                    maxHp: 20,
+                    range: 35,
+                    regen: 40,
+                    bulletCount: 100,
+                    maxAmmo: 50,
+                    reloadSpeed: 60
+                };
+                
+                this.init();
+            }
+            
+            init() {
+                // 绑定升级按钮
+                document.getElementById('upgradeDamage').onclick = () => this.upgradePlayer('damage');
+                document.getElementById('upgradeSpeed').onclick = () => this.upgradePlayer('attackSpeed');
+                document.getElementById('upgradeHp').onclick = () => this.upgradePlayer('maxHp');
+                document.getElementById('upgradeRange').onclick = () => this.upgradePlayer('range');
+                document.getElementById('upgradeRegen').onclick = () => this.upgradePlayer('regen');
+                document.getElementById('upgradeBullets').onclick = () => this.upgradePlayer('bulletCount');
+                document.getElementById('upgradeAmmo').onclick = () => this.upgradePlayer('maxAmmo');
+                document.getElementById('upgradeReload').onclick = () => this.upgradePlayer('reloadSpeed');
+                
+                // 键盘事件
+                window.addEventListener('keydown', (e) => {
+                    if (e.key === 'p' || e.key === 'P') {
+                        this.togglePause();
+                    } else if (e.key === 'u' || e.key === 'U') {
+                        this.toggleUpgradeMenu();
+                    } else if (e.key === 'r' || e.key === 'R') {
+                        this.reload();
+                    }
+                });
+                
+                // 监听窗口大小变化
+                window.addEventListener('resize', () => {
+                    this.canvas.width = window.innerWidth;
+                    this.canvas.height = window.innerHeight;
+                    this.player.x = this.canvas.width / 2;
+                    this.player.y = this.canvas.height / 2;
+                });
+                
+                // 开始游戏循环
+                this.gameLoop();
+            }
+            
+            selectDifficulty(difficulty) {
+                this.difficulty = difficulty;
+                const settings = this.difficultySettings[difficulty];
+                this.gold = settings.startGold;
+                this.isGameStarted = true;
+                
+                document.getElementById('difficultyMenu').style.display = 'none';
+                document.getElementById('difficulty').textContent = settings.name;
+                
+                this.startWave();
+                this.updateUI();
+            }
+            
+            togglePause() {
+                if (!this.isGameStarted) return;
+                
+                this.isPaused = !this.isPaused;
+                const pauseOverlay = document.getElementById('pauseOverlay');
+                const pauseBtn = document.getElementById('pauseBtn');
+                
+                if (this.isPaused) {
+                    pauseOverlay.style.display = 'flex';
+                    pauseBtn.textContent = '继续 (P)';
+                    pauseBtn.classList.add('active');
+                } else {
+                    pauseOverlay.style.display = 'none';
+                    pauseBtn.textContent = '暂停 (P)';
+                    pauseBtn.classList.remove('active');
+                }
+            }
+            
+            toggleUpgradeMenu() {
+                if (!this.isGameStarted) return;
+                
+                const menu = document.getElementById('upgradeMenu');
+                const btn = document.getElementById('upgradeBtn');
+                
+                if (menu.style.display === 'block') {
+                    menu.style.display = 'none';
+                    btn.classList.remove('active');
+                } else {
+                    menu.style.display = 'block';
+                    btn.classList.add('active');
+                    this.updateUpgradeButtons();
+                }
+            }
+            
+            reload() {
+                if (this.player.ammo === this.player.maxAmmo || this.player.isReloading) return;
+                
+                this.player.isReloading = true;
+                this.player.reloadStartTime = Date.now();
+                
+                this.showSkillInfo('换弹中...');
+                
+                setTimeout(() => {
+                    this.player.ammo = this.player.maxAmmo;
+                    this.player.isReloading = false;
+                    this.hideSkillInfo();
+                }, this.player.reloadSpeed);
+            }
+            
+            showSkillInfo(text) {
+                const info = document.getElementById('skillInfo');
+                info.textContent = text;
+                info.style.display = 'block';
+            }
+            
+            hideSkillInfo() {
+                document.getElementById('skillInfo').style.display = 'none';
+            }
+            
+            startWave() {
+                this.isWaveComplete = false;
+                const config = this.getWaveConfig(this.wave);
+                this.enemiesInWave = config.enemyCount;
+                this.enemiesSpawned = 0;
+                this.spawnTimer = 0;
+                
+                // 显示波数提示
+                this.showWaveNotice();
+                
+                // 波数奖励（从第2波开始）
+                if (this.wave > 1) {
+                    const settings = this.difficultySettings[this.difficulty];
+                    const bonus = Math.floor((this.wave - 1) * 15 * settings.goldMultiplier);
+                    this.gold += bonus;
+                    this.createFloatingText(this.player.x, this.player.y - 50, `+${bonus}金币`, '#ffff00');
+                }
+            }
+            
+            showWaveNotice() {
+                const notice = document.getElementById('waveNotice');
+                notice.textContent = `第 ${this.wave} 波`;
+                notice.style.display = 'block';
+                
+                if (this.wave % 10 === 0) {
+                    notice.style.color = '#ff0000';
+                    notice.textContent += ' - BOSS来袭！';
+                } else if (this.wave % 5 === 0) {
+                    notice.style.color = '#ff00ff';
+                    notice.textContent += ' - 精英怪出现！';
+                }
+                
+                setTimeout(() => {
+                    notice.style.display = 'none';
+                }, 2000);
+            }
+            
+            getWaveConfig(wave) {
+                return {
+                    enemyCount: 3 + Math.floor(wave * 1.5),
+                    spawnDelay: Math.max(500, 2000 - wave * 50),
+                    enemyHpMultiplier: 1 + (wave - 1) * 0.15,
+                    enemyDamageMultiplier: 1 + (wave - 1) * 0.1,
+                    enemySpeedMultiplier: 1 + Math.min((wave - 1) * 0.05, 1),
+                    specialChance: Math.min(0.3, wave * 0.03)
+                };
+            }
+            
+            spawnEnemy() {
+                const config = this.getWaveConfig(this.wave);
+                let type = 'normal';
+                
+                // 决定敌人类型
+                if (this.wave % 10 === 0 && this.enemiesSpawned === this.enemiesInWave - 1) {
+                    type = 'boss';
+                } else if (this.wave % 5 === 0 && this.enemiesSpawned >= this.enemiesInWave - 2) {
+                    type = 'elite';
+                } else if (Math.random() < config.specialChance) {
+                    type = Math.random() < 0.5 ? 'fast' : 'tank';
+                }
+                
+                const enemyStats = this.getEnemyStats(type, config);
+                
+                // 随机生成位置（在屏幕边缘）
+                const side = Math.floor(Math.random() * 4);
+                let x, y;
+                
+                switch(side) {
+                    case 0: // 上
+                        x = Math.random() * this.canvas.width;
+                        y = -20;
+                        break;
+                    case 1: // 右
+                        x = this.canvas.width + 20;
+                        y = Math.random() * this.canvas.height;
+                        break;
+                    case 2: // 下
+                        x = Math.random() * this.canvas.width;
+                        y = this.canvas.height + 20;
+                        break;
+                    case 3: // 左
+                        x = -20;
+                        y = Math.random() * this.canvas.height;
+                        break;
+                }
+                
+                const enemy = {
+                    x: x,
+                    y: y,
+                    ...enemyStats,
+                    angle: 0
+                };
+                
+                this.enemies.push(enemy);
+                this.enemiesSpawned++;
+            }
+            
+            getEnemyStats(type, config) {
+                const difficultySettings = this.difficultySettings[this.difficulty];
+                
+                const baseStats = {
+                    normal: {
+                        radius: 15,
+                        hp: 30,
+                        maxHp: 30,
+                        damage: 5,
+                        speed: 1,
+                        color: '#ff0000',
+                        goldReward: 10,
+                        expReward: 10
+                    },
+                    fast: {
+                        radius: 10,
+                        hp: 20,
+                        maxHp: 20,
+                        damage: 3,
+                        speed: 2,
+                        color: '#ffff00',
+                        goldReward: 15,
+                        expReward: 15
+                    },
+                    tank: {
+                        radius: 20,
+                        hp: 80,
+                        maxHp: 80,
+                        damage: 8,
+                        speed: 0.5,
+                        color: '#8b4513',
+                        goldReward: 25,
+                        expReward: 20
+                    },
+                    elite: {
+                        radius: 25,
+                        hp: 150,
+                        maxHp: 150,
+                        damage: 12,
+                        speed: 0.8,
+                        color: '#ff00ff',
+                        goldReward: 50,
+                        expReward: 40
+                    },
+                    boss: {
+                        radius: 35,
+                        hp: 500,
+                        maxHp: 500,
+                        damage: 20,
+                        speed: 0.4,
+                        color: '#ff0000',
+                        goldReward: 150,
+                        expReward: 100
+                    }
+                };
+                
+                const stats = { ...baseStats[type], type: type };
+                
+                // 应用波数加成
+                stats.hp = Math.floor(stats.hp * config.enemyHpMultiplier * difficultySettings.enemyHpMultiplier);
+                stats.maxHp = Math.floor(stats.maxHp * config.enemyHpMultiplier * difficultySettings.enemyHpMultiplier);
+                stats.damage = Math.floor(stats.damage * config.enemyDamageMultiplier * difficultySettings.enemyDamageMultiplier);
+                stats.speed = stats.speed * config.enemySpeedMultiplier * difficultySettings.enemySpeedMultiplier;
+                stats.goldReward = Math.floor(stats.goldReward * difficultySettings.goldMultiplier);
+                stats.expReward = Math.floor(stats.expReward * difficultySettings.expMultiplier);
+                
+                return stats;
+            }
+            
+            createProjectile(target) {
+                if (this.player.ammo <= 0 || this.player.isReloading) {
+                    if (!this.player.isReloading) {
+                        this.reload();
+                    }
+                    return;
+                }
+                
+                const baseAngle = Math.atan2(target.y - this.player.y, target.x - this.player.x);
+                
+                // 根据子弹数量创建多个投射物
+                for (let i = 0; i < this.player.bulletCount; i++) {
+                    let angle = baseAngle;
+                    
+                    // 多子弹散射
+                    if (this.player.bulletCount > 1) {
+                        const spread = 0.2; // 散射角度
+                        const offset = (i - (this.player.bulletCount - 1) / 2) * spread;
+                        angle += offset;
+                    }
+                    
+                    this.projectiles.push({
+                        x: this.player.x,
+                        y: this.player.y,
+                        vx: Math.cos(angle) * 10,
+                        vy: Math.sin(angle) * 10,
+                        damage: this.player.damage,
+                        radius: 5,
+                        color: '#00ffff',
+                        target: target,
+                        piercing: this.player.level >= 10 ? 1 : 0
+                    });
+                }
+                
+                this.player.ammo--;
+                
+                // 自动换弹
+                if (this.player.ammo <= 0) {
+                    this.reload();
+                }
+            }
+            
+            createParticle(x, y, color, count = 5) {
+                for (let i = 0; i < count; i++) {
+                    const angle = (Math.PI * 2 / count) * i + Math.random() * 0.5;
+                    const speed = 2 + Math.random() * 3;
+                    
+                    this.particles.push({
+                        x: x,
+                        y: y,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed,
+                        radius: 3,
+                        color: color,
+                        life: 1.0,
+                        decay: 0.02
+                    });
+                }
+            }
+            
+            createFloatingText(x, y, text, color) {
+                this.floatingTexts.push({
+                    x: x,
+                    y: y,
+                    text: text,
+                    color: color,
+                    vy: -2,
+                    life: 1.0
+                });
+            }
+            
+            update(deltaTime) {
+                if (this.isPaused || !this.isGameStarted) return;
+                
+                // 生成敌人
+                if (this.enemiesSpawned < this.enemiesInWave && !this.isWaveComplete) {
+                    this.spawnTimer += deltaTime;
+                    const config = this.getWaveConfig(this.wave);
+                    if (this.spawnTimer >= config.spawnDelay) {
+                        this.spawnEnemy();
+                        this.spawnTimer = 0;
+                    }
+                }
+                
+                // 玩家自动攻击
+                const currentTime = Date.now();
+                const attackInterval = 1000 / this.player.attackSpeed;
+                
+                if (currentTime - this.player.lastAttackTime >= attackInterval && this.enemies.length > 0 && !this.player.isReloading) {
+                    // 找最近的敌人
+                    let closestEnemy = null;
+                    let closestDist = this.player.range;
+                    
+                    for (const enemy of this.enemies) {
+                        const dist = Math.hypot(enemy.x - this.player.x, enemy.y - this.player.y);
+                        if (dist < closestDist) {
+                            closestDist = dist;
+                            closestEnemy = enemy;
+                        }
+                    }
+                    
+                    if (closestEnemy) {
+                        this.createProjectile(closestEnemy);
+                        this.player.lastAttackTime = currentTime;
+                    }
+                }
+                
+                // 玩家生命回复
+                if (currentTime - this.player.lastRegenTime >= 1000) {
+                    if (this.player.hp < this.player.maxHp) {
+                        this.player.hp = Math.min(this.player.hp + this.player.regen, this.player.maxHp);
+                        this.player.lastRegenTime = currentTime;
+                    }
+                }
+                
+                // 更新敌人
+                for (let i = this.enemies.length - 1; i >= 0; i--) {
+                    const enemy = this.enemies[i];
+                    
+                    // 移动向玩家
+                    const dx = this.player.x - enemy.x;
+                    const dy = this.player.y - enemy.y;
+                    const dist = Math.hypot(dx, dy);
+                    
+                    if (dist > 0) {
+                        enemy.x += (dx / dist) * enemy.speed;
+                        enemy.y += (dy / dist) * enemy.speed;
+                        enemy.angle = Math.atan2(dy, dx);
+                    }
+                    
+                    // 检查碰撞
+                    if (dist < this.player.radius + enemy.radius) {
+                        this.damagePlayer(enemy.damage);
+                        this.createParticle(enemy.x, enemy.y, enemy.color);
+                        this.enemies.splice(i, 1);
+                    }
+                }
+                
+                // 更新投射物
+                for (let i = this.projectiles.length - 1; i >= 0; i--) {
+                    const proj = this.projectiles[i];
+                    
+                    proj.x += proj.vx;
+                    proj.y += proj.vy;
+                    
+                    // 检查边界
+                    if (proj.x < 0 || proj.x > this.canvas.width || 
+                        proj.y < 0 || proj.y > this.canvas.height) {
+                        this.projectiles.splice(i, 1);
+                        continue;
+                    }
+                    
+                    // 检查碰撞
+                    let hit = false;
+                    for (let j = this.enemies.length - 1; j >= 0; j--) {
+                        const enemy = this.enemies[j];
+                        const dist = Math.hypot(enemy.x - proj.x, enemy.y - proj.y);
+                        
+                        if (dist < enemy.radius + proj.radius) {
+                            this.damageEnemy(enemy, j, proj.damage);
+                            hit = true;
+                            
+                            if (proj.piercing > 0) {
+                                proj.piercing--;
+                            } else {
+                                this.projectiles.splice(i, 1);
+                            }
+                            break;
+                        }
+                    }
+                }
+                
+                // 更新粒子
+                for (let i = this.particles.length - 1; i >= 0; i--) {
+                    const particle = this.particles[i];
+                    
+                    particle.x += particle.vx;
+                    particle.y += particle.vy;
+                    particle.vy += 0.2;
+                    particle.life -= particle.decay;
+                    
+                    if (particle.life <= 0) {
+                        this.particles.splice(i, 1);
+                    }
+                }
+                
+                // 更新浮动文字
+                for (let i = this.floatingTexts.length - 1; i >= 0; i--) {
+                    const text = this.floatingTexts[i];
+                    
+                    text.y += text.vy;
+                    text.life -= 0.02;
+                    
+                    if (text.life <= 0) {
+                        this.floatingTexts.splice(i, 1);
+                    }
+                }
+                
+                // 检查波次完成
+                if (this.enemies.length === 0 && this.enemiesSpawned >= this.enemiesInWave && !this.isWaveComplete) {
+                    this.isWaveComplete = true;
+                    this.showUpgradeMenu();
+                    
+                    setTimeout(() => {
+                        this.hideUpgradeMenu();
+                        this.wave++;
+                        this.startWave();
+                    }, 3000);
+                }
+                
+                this.updateUI();
+            }
+            
+            damageEnemy(enemy, index, damage) {
+                enemy.hp -= damage;
+                
+                // 显示伤害数字
+                this.createFloatingText(enemy.x, enemy.y - enemy.radius, `-${damage}`, '#ffff00');
+                
+                if (enemy.hp <= 0) {
+                    // 死亡效果
+                    this.createParticle(enemy.x, enemy.y, enemy.color, 10);
+                    
+                    // 奖励
+                    this.kills++;
+                    this.gold += enemy.goldReward;
+                    this.addExp(enemy.expReward);
+                    
+                    // 显示奖励
+                    this.createFloatingText(enemy.x, enemy.y, `+${enemy.goldReward}G`, '#ffff00');
+                    
+                    this.enemies.splice(index, 1);
+                }
+            }
+            
+            damagePlayer(damage) {
+                this.player.hp -= damage;
+                
+                // 显示伤害
+                this.createFloatingText(this.player.x, this.player.y - 30, `-${damage}`, '#ff0000');
+                
+                if (this.player.hp <= 0) {
+                    this.gameOver();
+                }
+            }
+            
+            addExp(amount) {
+                this.exp += amount;
+                
+                while (this.exp >= this.expNeeded) {
+                    this.exp -= this.expNeeded;
+                    this.level++;
+                    this.expNeeded = Math.floor(this.expNeeded * 1.2);
+                    
+                    // 升级奖励
+                    this.player.maxHp += 20;
+                    this.player.hp = this.player.maxHp;
+                    this.player.damage += 5;
+                    this.player.attackSpeed += 0.1;
+                    
+                    // 升级特效
+                    this.createParticle(this.player.x, this.player.y, '#00ff00', 20);
+                    this.createFloatingText(this.player.x, this.player.y - 50, 'LEVEL UP!', '#00ff00');
+                }
+            }
+            
+            upgradePlayer(stat) {
+                const cost = this.upgradeCosts[stat];
+                
+                if (this.gold >= cost) {
+                    this.gold -= cost;
+                    
+                    switch(stat) {
+                        case 'damage':
+                            this.player.damage += 10;
+                            this.upgradeCosts.damage = Math.floor(this.upgradeCosts.damage * 1.3);
+                            break;
+                        case 'attackSpeed':
+                            this.player.attackSpeed += 0.5;
+                            this.upgradeCosts.attackSpeed = Math.floor(this.upgradeCosts.attackSpeed * 1.3);
+                            break;
+                        case 'maxHp':
+                            this.player.maxHp += 50;
+                            this.player.hp += 50;
+                            this.upgradeCosts.maxHp = Math.floor(this.upgradeCosts.maxHp * 1.3);
+                            break;
+                        case 'range':
+                            this.player.range += 20;
+                            this.upgradeCosts.range = Math.floor(this.upgradeCosts.range * 1.3);
+                            break;
+                        case 'regen':
+                            this.player.regen += 1;
+                            this.upgradeCosts.regen = Math.floor(this.upgradeCosts.regen * 1.3);
+                            break;
+                        case 'bulletCount':
+                            this.player.bulletCount += 1;
+                            this.upgradeCosts.bulletCount = Math.floor(this.upgradeCosts.bulletCount * 1.5);
+                            break;
+                        case 'maxAmmo':
+                            this.player.maxAmmo += 10;
+                            this.player.ammo += 10;
+                            this.upgradeCosts.maxAmmo = Math.floor(this.upgradeCosts.maxAmmo * 1.3);
+                            break;
+                        case 'reloadSpeed':
+                            this.player.reloadSpeed = Math.floor(this.player.reloadSpeed * 0.8);
+                            this.upgradeCosts.reloadSpeed = Math.floor(this.upgradeCosts.reloadSpeed * 1.4);
+                            break;
+                    }
+                    
+                    this.updateUpgradeButtons();
+                    this.updateUI();
+                }
+            }
+            
+            showUpgradeMenu() {
+                document.getElementById('upgradeMenu').style.display = 'block';
+                document.getElementById('upgradeBtn').classList.add('active');
+                this.updateUpgradeButtons();
+            }
+            
+            hideUpgradeMenu() {
+                document.getElementById('upgradeMenu').style.display = 'none';
+                document.getElementById('upgradeBtn').classList.remove('active');
+            }
+            
+            updateUpgradeButtons() {
+                document.getElementById('upgradeDamage').textContent = `攻击力 +10 (${this.upgradeCosts.damage}金币)`;
+                document.getElementById('upgradeSpeed').textContent = `攻速 +0.5 (${this.upgradeCosts.attackSpeed}金币)`;
+                document.getElementById('upgradeHp').textContent = `生命值 +50 (${this.upgradeCosts.maxHp}金币)`;
+                document.getElementById('upgradeRange').textContent = `射程 +20 (${this.upgradeCosts.range}金币)`;
+                document.getElementById('upgradeRegen').textContent = `生命回复 +1 (${this.upgradeCosts.regen}金币)`;
+                document.getElementById('upgradeBullets').textContent = `子弹数量 +1 (${this.upgradeCosts.bulletCount}金币)`;
+                document.getElementById('upgradeAmmo').textContent = `弹匣容量 +10 (${this.upgradeCosts.maxAmmo}金币)`;
+                document.getElementById('upgradeReload').textContent = `换弹速度 +20% (${this.upgradeCosts.reloadSpeed}金币)`;
+                
+                // 更新按钮状态
+                document.getElementById('upgradeDamage').disabled = this.gold < this.upgradeCosts.damage;
+                document.getElementById('upgradeSpeed').disabled = this.gold < this.upgradeCosts.attackSpeed;
+                document.getElementById('upgradeHp').disabled = this.gold < this.upgradeCosts.maxHp;
+                document.getElementById('upgradeRange').disabled = this.gold < this.upgradeCosts.range;
+                document.getElementById('upgradeRegen').disabled = this.gold < this.upgradeCosts.regen;
+                document.getElementById('upgradeBullets').disabled = this.gold < this.upgradeCosts.bulletCount;
+                document.getElementById('upgradeAmmo').disabled = this.gold < this.upgradeCosts.maxAmmo;
+                document.getElementById('upgradeReload').disabled = this.gold < this.upgradeCosts.reloadSpeed;
+            }
+            
+            updateUI() {
+                document.getElementById('wave').textContent = this.wave;
+                document.getElementById('kills').textContent = this.kills;
+                document.getElementById('gold').textContent = this.gold;
+                document.getElementById('exp').textContent = this.exp;
+                document.getElementById('expNeeded').textContent = this.expNeeded;
+                document.getElementById('level').textContent = this.level;
+                document.getElementById('hp').textContent = Math.max(0, Math.floor(this.player.hp));
+                document.getElementById('maxHp').textContent = this.player.maxHp;
+                document.getElementById('damage').textContent = this.player.damage;
+                document.getElementById('attackSpeed').textContent = this.player.attackSpeed.toFixed(1);
+                document.getElementById('range').textContent = Math.floor(this.player.range);
+                document.getElementById('regen').textContent = this.player.regen;
+                document.getElementById('bulletCount').textContent = this.player.bulletCount;
+                document.getElementById('ammo').textContent = this.player.ammo;
+                document.getElementById('maxAmmo').textContent = this.player.maxAmmo;
+                
+                // 更新弹药条
+                const ammoPercent = this.player.ammo / this.player.maxAmmo;
+                document.getElementById('ammoBar').style.width = `${ammoPercent * 100}%`;
+            }
+            
+            gameOver() {
+                this.isPaused = true;
+                document.getElementById('finalDifficulty').textContent = this.difficultySettings[this.difficulty].name;
+                document.getElementById('finalWave').textContent = this.wave;
+                document.getElementById('finalKills').textContent = this.kills;
+                document.getElementById('finalLevel').textContent = this.level;
+                document.getElementById('gameOver').style.display = 'block';
+            }
+            
+            render() {
+                // 清空画布
+                this.ctx.fillStyle = '#1a1a1a';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                if (!this.isGameStarted) return;
+                
+                // 绘制网格
+                this.drawGrid();
+                
+                // 绘制攻击范围
+                this.ctx.strokeStyle = 'rgba(0, 255, 0, 0.2)';
+                this.ctx.lineWidth = 2;
+                this.ctx.beginPath();
+                this.ctx.arc(this.player.x, this.player.y, this.player.range, 0, Math.PI * 2);
+                this.ctx.stroke();
+                
+                // 绘制玩家
+                this.ctx.fillStyle = this.player.isReloading ? '#888888' : this.player.color;
+                this.ctx.beginPath();
+                this.ctx.arc(this.player.x, this.player.y, this.player.radius, 0, Math.PI * 2);
+                this.ctx.fill();
+                
+                // 绘制玩家血条
+                const hpPercent = this.player.hp / this.player.maxHp;
+                this.ctx.fillStyle = '#000';
+                this.ctx.fillRect(this.player.x - 25, this.player.y - 35, 50, 5);
+                this.ctx.fillStyle = hpPercent > 0.5 ? '#0f0' : hpPercent > 0.25 ? '#ff0' : '#f00';
+                this.ctx.fillRect(this.player.x - 25, this.player.y - 35, 50 * hpPercent, 5);
+                
+                // 绘制换弹进度
+                if (this.player.isReloading) {
+                    const reloadProgress = (Date.now() - this.player.reloadStartTime) / this.player.reloadSpeed;
+                    this.ctx.fillStyle = '#000';
+                    this.ctx.fillRect(this.player.x - 25, this.player.y + 30, 50, 3);
+                    this.ctx.fillStyle = '#00ffff';
+                    this.ctx.fillRect(this.player.x - 25, this.player.y + 30, 50 * reloadProgress, 3);
+                }
+                
+                // 绘制敌人
+                for (const enemy of this.enemies) {
+                    // 敌人身体
+                    this.ctx.fillStyle = enemy.color;
+                    this.ctx.beginPath();
+                    
+                    if (enemy.type === 'boss') {
+                        // Boss用星形
+                        this.drawStar(enemy.x, enemy.y, enemy.radius, enemy.radius * 0.5, 8);
+                    } else if (enemy.type === 'elite') {
+                        // 精英用六边形
+                        this.drawPolygon(enemy.x, enemy.y, enemy.radius, 6);
+                    } else if (enemy.type === 'tank') {
+                        // 坦克用方形
+                        this.ctx.fillRect(enemy.x - enemy.radius, enemy.y - enemy.radius, enemy.radius * 2, enemy.radius * 2);
+                    } else {
+                        // 普通敌人用圆形
+                        this.ctx.arc(enemy.x, enemy.y, enemy.radius, 0, Math.PI * 2);
+                    }
+                    this.ctx.fill();
+                    
+                    // 敌人血条
+                    const enemyHpPercent = enemy.hp / enemy.maxHp;
+                    this.ctx.fillStyle = '#000';
+                    this.ctx.fillRect(enemy.x - enemy.radius, enemy.y - enemy.radius - 10, enemy.radius * 2, 4);
+                    this.ctx.fillStyle = enemyHpPercent > 0.5 ? '#0f0' : enemyHpPercent > 0.25 ? '#ff0' : '#f00';
+                    this.ctx.fillRect(enemy.x - enemy.radius, enemy.y - enemy.radius - 10, enemy.radius * 2 * enemyHpPercent, 4);
+                }
+                
+                // 绘制投射物
+                for (const proj of this.projectiles) {
+                    this.ctx.fillStyle = proj.color;
+                    this.ctx.beginPath();
+                    this.ctx.arc(proj.x, proj.y, proj.radius, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
+                
+                // 绘制粒子
+                for (const particle of this.particles) {
+                    this.ctx.fillStyle = particle.color;
+                    this.ctx.globalAlpha = particle.life;
+                    this.ctx.beginPath();
+                    this.ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
+                this.ctx.globalAlpha = 1;
+                
+                // 绘制浮动文字
+                for (const text of this.floatingTexts) {
+                    this.ctx.fillStyle = text.color;
+                    this.ctx.globalAlpha = text.life;
+                    this.ctx.font = 'bold 16px Arial';
+                    this.ctx.textAlign = 'center';
+                    this.ctx.fillText(text.text, text.x, text.y);
+                }
+                this.ctx.globalAlpha = 1;
+            }
+            
+            drawGrid() {
+                this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+                this.ctx.lineWidth = 1;
+                
+                const gridSize = 50;
+                
+                for (let x = 0; x < this.canvas.width; x += gridSize) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(x, 0);
+                    this.ctx.lineTo(x, this.canvas.height);
+                    this.ctx.stroke();
+                }
+                
+                for (let y = 0; y < this.canvas.height; y += gridSize) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, y);
+                    this.ctx.lineTo(this.canvas.width, y);
+                    this.ctx.stroke();
+                }
+            }
+            
+            drawPolygon(x, y, radius, sides) {
+                this.ctx.beginPath();
+                for (let i = 0; i < sides; i++) {
+                    const angle = (i / sides) * Math.PI * 2 - Math.PI / 2;
+                    const px = x + Math.cos(angle) * radius;
+                    const py = y + Math.sin(angle) * radius;
+                    if (i === 0) {
+                        this.ctx.moveTo(px, py);
+                    } else {
+                        this.ctx.lineTo(px, py);
+                    }
+                }
+                this.ctx.closePath();
+            }
+            
+            drawStar(x, y, outerRadius, innerRadius, points) {
+                this.ctx.beginPath();
+                for (let i = 0; i < points * 2; i++) {
+                    const angle = (i / (points * 2)) * Math.PI * 2 - Math.PI / 2;
+                    const radius = i % 2 === 0 ? outerRadius : innerRadius;
+                    const px = x + Math.cos(angle) * radius;
+                    const py = y + Math.sin(angle) * radius;
+                    if (i === 0) {
+                        this.ctx.moveTo(px, py);
+                    } else {
+                        this.ctx.lineTo(px, py);
+                    }
+                }
+                this.ctx.closePath();
+            }
+            
+            gameLoop() {
+                const currentTime = Date.now();
+                const deltaTime = currentTime - this.lastTime;
+                this.lastTime = currentTime;
+                
+                this.update(deltaTime);
+                this.render();
+                
+                requestAnimationFrame(() => this.gameLoop());
+            }
+        }
+        
+        // 启动游戏
+        const game = new DefenseGame();
+    </script>
+</body>
+</html>

@@ -162,8 +162,8 @@
             background: #45a049;
         }
         .difficulty-desc {
-            color: #aaa;
-            font-size: 12px;
+            color: #fcfafa;
+            font-size: 13px;
             margin-top: 5px;
         }
         #pauseOverlay {
@@ -214,28 +214,96 @@
 <body>
     <canvas id="gameCanvas"></canvas>
     
-    <div id="difficultyMenu">
-        <h2>选择难度</h2>
-        <button class="difficulty-btn" onclick="game.selectDifficulty('kindergarten')">
-            幼儿园
-            <div class="difficulty-desc">敌人很弱，资源丰富</div>
-        </button>
-        <button class="difficulty-btn" onclick="game.selectDifficulty('elementary')">
-            小学生
-            <div class="difficulty-desc">适合新手练习</div>
-        </button>
-        <button class="difficulty-btn" onclick="game.selectDifficulty('middle')">
-            初中生
-            <div class="difficulty-desc">标准难度</div>
-        </button>
-        <button class="difficulty-btn" onclick="game.selectDifficulty('high')">
-            高中生
-            <div class="difficulty-desc">需要一定技巧</div>
-        </button>
-        <button class="difficulty-btn" onclick="game.selectDifficulty('university')">
-            大学生
-            <div class="difficulty-desc">极限挑战</div>
-        </button>
+    <div id="difficultyMenu" style="height: 80vh; overflow: hidden; display: flex; flex-direction: column;">
+        <!-- 顶部标题区域 -->
+        <div style="text-align: center; padding: 20px 0; background: rgba(0,0,0,0.9); color: white;">
+            <h1 style="color: #ffff00; margin: 0; font-size: 28px;">🎮 无限防守</h1>
+            <p style="margin: 10px 0 0 0; font-size: 18px;"><strong>目标：</strong>在无尽的怪物波次中生存下去！</p>
+        </div>
+
+        <!-- 主要内容区域 -->
+        <div style="display: flex; flex: 1; overflow: hidden;">
+            <!-- 左侧：游戏说明 -->
+            <div style="flex: 1; background: rgba(0,0,0,0.8); padding: 15px; color: white; text-align: left; overflow: hidden; border-right: 2px solid #333;">
+                <!-- 双列布局容器 -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; height: 100%;">
+                    <!-- 左列 -->
+                    <div>
+                        <h3 style="color: #00ff00; font-size: 16px; margin: 0 0 8px 0;">⚔️ 战斗系统</h3>
+                        <ul style="font-size: 14px; margin: 0 0 15px 0; padding-left: 15px;">
+                            <li>自动攻击范围内最近的敌人</li>
+                            <li>弹药有限，及时换弹（R键）</li>
+                            <li>每波结束后升级属性</li>
+                        </ul>
+
+                        <h3 style="color: #ff00ff; font-size: 16px; margin: 0 0 8px 0;">🎯 操作说明</h3>
+                        <ul style="font-size: 14px; margin: 0 0 15px 0; padding-left: 15px;">
+                            <li><strong>P键</strong> - 暂停/继续</li>
+                            <li><strong>U键</strong> - 升级面板</li>
+                            <li><strong>R键</strong> - 手动换弹</li>
+                            <li><strong>倍速按钮</strong> - 1x/2x/3x速度</li>
+                        </ul>
+
+                        <h3 style="color: #ffff00; font-size: 16px; margin: 0 0 8px 0;">� 升级限制</h3>
+                        <ul style="font-size: 14px; margin: 0; padding-left: 15px;">
+                            <li><strong>攻速</strong> - 最多15级</li>
+                            <li><strong>子弹数量</strong> - 最多2级</li>
+                            <li><strong>射程</strong> - 最多10级</li>
+                            <li><strong>换弹速度</strong> - 最多8级</li>
+                        </ul>
+                    </div>
+
+                    <!-- 右列 -->
+                    <div>
+                        <h3 style="color: #ff8800; font-size: 16px; margin: 0 0 8px 0;">👹 敌人类型</h3>
+                        <ul style="font-size: 14px; margin: 0 0 15px 0; padding-left: 15px;">
+                            <li><strong>普通怪</strong> - 基础敌人</li>
+                            <li><strong>快速怪</strong> - 速度快血量少</li>
+                            <li><strong>坦克怪</strong> - 血厚移动慢</li>
+                            <li><strong>精英怪</strong> - 每5波，有特技</li>
+                            <li><strong>Boss</strong> - 每10波，多种技能</li>
+                        </ul>
+
+                        <h3 style="color: #00ffff; font-size: 16px; margin: 0 0 8px 0;">⚡ Boss特技</h3>
+                        <ul style="font-size: 14px; margin: 0; padding-left: 15px;">
+                            <li><strong>冲刺</strong> - 快速冲击</li>
+                            <li><strong>召唤</strong> - 召唤小怪</li>
+                            <li><strong>狂暴</strong> - 速度伤害增加</li>
+                            <li><strong>激光</strong> - 高伤害射线</li>
+                            <li><strong>传送</strong> - 瞬移攻击</li>
+                            <li><strong>护盾</strong> - 吸收伤害</li>
+                            <li><strong>地震</strong> - 范围攻击</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧：难度选择 -->
+            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(0,0,0,0.7); padding: 30px;">
+                <h2 style="color: white; margin-bottom: 30px; text-align: center; font-size: 24px;">选择难度</h2>
+
+                <button class="difficulty-btn" onclick="game.selectDifficulty('kindergarten')" style="margin: 8px 0; width: 280px;">
+                    幼儿园
+                    <div class="difficulty-desc">敌人很弱，资源丰富</div>
+                </button>
+                <button class="difficulty-btn" onclick="game.selectDifficulty('elementary')" style="margin: 8px 0; width: 280px;">
+                    小学生
+                    <div class="difficulty-desc">适合新手练习</div>
+                </button>
+                <button class="difficulty-btn" onclick="game.selectDifficulty('middle')" style="margin: 8px 0; width: 280px;">
+                    初中生
+                    <div class="difficulty-desc">标准难度</div>
+                </button>
+                <button class="difficulty-btn" onclick="game.selectDifficulty('high')" style="margin: 8px 0; width: 280px;">
+                    高中生
+                    <div class="difficulty-desc">需要一定技巧</div>
+                </button>
+                <button class="difficulty-btn" onclick="game.selectDifficulty('university')" style="margin: 8px 0; width: 280px;">
+                    大学生
+                    <div class="difficulty-desc">极限挑战</div>
+                </button>
+            </div>
+        </div>
     </div>
     
     <div id="pauseOverlay">
@@ -265,6 +333,7 @@
     <div id="controls">
         <button class="control-btn" id="pauseBtn" onclick="game.togglePause()">暂停 (P)</button>
         <button class="control-btn" id="upgradeBtn" onclick="game.toggleUpgradeMenu()">升级面板 (U)</button>
+        <button class="control-btn" id="speedBtn" onclick="game.toggleSpeed()">倍速: 1x</button>
     </div>
     
     <div id="upgradeMenu">
@@ -391,6 +460,9 @@
                 this.isWaveComplete = false;
                 this.lastTime = 0;
                 this.spawnTimer = 0;
+                this.gameSpeed = 1; // 游戏倍速
+                this.speedOptions = [1, 2, 3]; // 可选倍速
+                this.currentSpeedIndex = 0;
                 
                 this.upgradeCosts = {
                     damage: 30,
@@ -401,6 +473,30 @@
                     bulletCount: 100,
                     maxAmmo: 50,
                     reloadSpeed: 60
+                };
+
+                // 升级等级跟踪
+                this.upgradeLevels = {
+                    damage: 0,
+                    attackSpeed: 0,
+                    maxHp: 0,
+                    range: 0,
+                    regen: 0,
+                    bulletCount: 0,
+                    maxAmmo: 0,
+                    reloadSpeed: 0
+                };
+
+                // 升级上限设置
+                this.upgradeMaxLevels = {
+                    damage: 999, // 攻击力可以无限升级
+                    attackSpeed: 15, // 攻速最多升级15次
+                    maxHp: 999, // 生命值可以无限升级
+                    range: 10, // 射程最多升级10次
+                    regen: 999, // 生命回复可以无限升级
+                    bulletCount: 2, // 子弹数量最多升级2次
+                    maxAmmo: 999, // 弹匣容量可以无限升级
+                    reloadSpeed: 8 // 换弹速度最多升级8次
                 };
                 
                 this.init();
@@ -455,11 +551,11 @@
             
             togglePause() {
                 if (!this.isGameStarted) return;
-                
+
                 this.isPaused = !this.isPaused;
                 const pauseOverlay = document.getElementById('pauseOverlay');
                 const pauseBtn = document.getElementById('pauseBtn');
-                
+
                 if (this.isPaused) {
                     pauseOverlay.style.display = 'flex';
                     pauseBtn.textContent = '继续 (P)';
@@ -469,6 +565,14 @@
                     pauseBtn.textContent = '暂停 (P)';
                     pauseBtn.classList.remove('active');
                 }
+            }
+
+            toggleSpeed() {
+                if (!this.isGameStarted) return;
+
+                this.currentSpeedIndex = (this.currentSpeedIndex + 1) % this.speedOptions.length;
+                this.gameSpeed = this.speedOptions[this.currentSpeedIndex];
+                document.getElementById('speedBtn').textContent = `倍速: ${this.gameSpeed}x`;
             }
             
             toggleUpgradeMenu() {
@@ -550,13 +654,19 @@
             }
             
             getWaveConfig(wave) {
+                // 指数级难度递增，前10波相对简单，之后快速增长
+                const baseCount = wave <= 10 ? 3 + Math.floor(wave * 1.5) : 8 + Math.floor(wave * 3.0);
+                const exponentialMultiplier = wave > 10 ? Math.pow(1.15, wave - 10) : 1;
+
                 return {
-                    enemyCount: 3 + Math.floor(wave * 1.5),
-                    spawnDelay: Math.max(500, 2000 - wave * 50),
-                    enemyHpMultiplier: 1 + (wave - 1) * 0.15,
-                    enemyDamageMultiplier: 1 + (wave - 1) * 0.1,
-                    enemySpeedMultiplier: 1 + Math.min((wave - 1) * 0.05, 1),
-                    specialChance: Math.min(0.3, wave * 0.03)
+                    enemyCount: Math.floor(baseCount * exponentialMultiplier * 1.5), // 提高50%怪物数量
+                    spawnDelay: Math.max(200, 1500 - wave * 50), // 更快的生成速度
+                    enemyHpMultiplier: 1 + (wave - 1) * 0.2 * exponentialMultiplier, // 指数级血量增长
+                    enemyDamageMultiplier: 1 + (wave - 1) * 0.15 * exponentialMultiplier, // 指数级伤害增长
+                    enemySpeedMultiplier: 1 + Math.min((wave - 1) * 0.08, 1.5), // 更高的速度上限
+                    specialChance: Math.min(0.5, wave * 0.05), // 更高的特殊怪物概率
+                    goldMultiplier: Math.max(0.3, 1 - wave * 0.02), // 金币获取递减
+                    expMultiplier: Math.max(0.4, 1 - wave * 0.015) // 经验获取递减
                 };
             }
             
@@ -651,7 +761,11 @@
                         speed: 0.8,
                         color: '#ff00ff',
                         goldReward: 50,
-                        expReward: 40
+                        expReward: 40,
+                        hasSpecialAbility: true,
+                        specialAbilities: ['dash', 'split'],
+                        lastSpecialTime: 0,
+                        specialCooldown: 3000 // 3秒冷却
                     },
                     boss: {
                         radius: 35,
@@ -661,7 +775,19 @@
                         speed: 0.4,
                         color: '#ff0000',
                         goldReward: 150,
-                        expReward: 100
+                        expReward: 100,
+                        hasSpecialAbility: true,
+                        specialAbilities: ['dash', 'summon', 'rage', 'laser', 'teleport', 'shield', 'earthquake'],
+                        lastSpecialTime: 0,
+                        specialCooldown: 3000, // 3秒冷却
+                        isRaging: false,
+                        rageEndTime: 0,
+                        hasShield: false,
+                        shieldEndTime: 0,
+                        shieldHp: 0,
+                        lastTeleportTime: 0,
+                        earthquakeCharging: false,
+                        earthquakeStartTime: 0
                     }
                 };
                 
@@ -672,8 +798,9 @@
                 stats.maxHp = Math.floor(stats.maxHp * config.enemyHpMultiplier * difficultySettings.enemyHpMultiplier);
                 stats.damage = Math.floor(stats.damage * config.enemyDamageMultiplier * difficultySettings.enemyDamageMultiplier);
                 stats.speed = stats.speed * config.enemySpeedMultiplier * difficultySettings.enemySpeedMultiplier;
-                stats.goldReward = Math.floor(stats.goldReward * difficultySettings.goldMultiplier);
-                stats.expReward = Math.floor(stats.expReward * difficultySettings.expMultiplier);
+                // 应用波次递减的金币和经验奖励
+                stats.goldReward = Math.floor(stats.goldReward * difficultySettings.goldMultiplier * config.goldMultiplier);
+                stats.expReward = Math.floor(stats.expReward * difficultySettings.expMultiplier * config.expMultiplier);
                 
                 return stats;
             }
@@ -751,6 +878,9 @@
             
             update(deltaTime) {
                 if (this.isPaused || !this.isGameStarted) return;
+
+                // 应用倍速
+                deltaTime *= this.gameSpeed;
                 
                 // 生成敌人
                 if (this.enemiesSpawned < this.enemiesInWave && !this.isWaveComplete) {
@@ -796,18 +926,34 @@
                 // 更新敌人
                 for (let i = this.enemies.length - 1; i >= 0; i--) {
                     const enemy = this.enemies[i];
-                    
+
+                    // 处理特殊能力
+                    if (enemy.hasSpecialAbility) {
+                        this.updateEnemySpecialAbilities(enemy, currentTime);
+                    }
+
                     // 移动向玩家
                     const dx = this.player.x - enemy.x;
                     const dy = this.player.y - enemy.y;
                     const dist = Math.hypot(dx, dy);
-                    
+
+                    let moveSpeed = enemy.speed;
+
+                    // Boss狂暴状态下速度翻倍
+                    if (enemy.isRaging && currentTime < enemy.rageEndTime) {
+                        moveSpeed *= 2;
+                        enemy.color = '#ff4444'; // 狂暴时颜色变化
+                    } else if (enemy.type === 'boss') {
+                        enemy.color = '#ff0000'; // 恢复原色
+                        enemy.isRaging = false;
+                    }
+
                     if (dist > 0) {
-                        enemy.x += (dx / dist) * enemy.speed;
-                        enemy.y += (dy / dist) * enemy.speed;
+                        enemy.x += (dx / dist) * moveSpeed;
+                        enemy.y += (dy / dist) * moveSpeed;
                         enemy.angle = Math.atan2(dy, dx);
                     }
-                    
+
                     // 检查碰撞
                     if (dist < this.player.radius + enemy.radius) {
                         this.damagePlayer(enemy.damage);
@@ -891,24 +1037,285 @@
                 this.updateUI();
             }
             
+            updateEnemySpecialAbilities(enemy, currentTime) {
+                if (currentTime - enemy.lastSpecialTime < enemy.specialCooldown) {
+                    return;
+                }
+
+                const playerDist = Math.hypot(enemy.x - this.player.x, enemy.y - this.player.y);
+
+                // 随机选择一个特技
+                const ability = enemy.specialAbilities[Math.floor(Math.random() * enemy.specialAbilities.length)];
+
+                switch(ability) {
+                    case 'dash':
+                        if (playerDist < 200) {
+                            this.enemyDash(enemy);
+                            enemy.lastSpecialTime = currentTime;
+                        }
+                        break;
+                    case 'split':
+                        if (enemy.hp < enemy.maxHp * 0.5) { // 血量低于50%时分裂
+                            this.enemySplit(enemy);
+                            enemy.lastSpecialTime = currentTime;
+                        }
+                        break;
+                    case 'summon':
+                        if (playerDist < 300) {
+                            this.enemySummon(enemy);
+                            enemy.lastSpecialTime = currentTime;
+                        }
+                        break;
+                    case 'rage':
+                        if (enemy.hp < enemy.maxHp * 0.3) { // 血量低于30%时狂暴
+                            this.enemyRage(enemy, currentTime);
+                            enemy.lastSpecialTime = currentTime;
+                        }
+                        break;
+                    case 'laser':
+                        if (playerDist < 400) {
+                            this.enemyLaser(enemy);
+                            enemy.lastSpecialTime = currentTime;
+                        }
+                        break;
+                    case 'teleport':
+                        if (playerDist < 100 && currentTime - enemy.lastTeleportTime > 8000) {
+                            this.enemyTeleport(enemy, currentTime);
+                            enemy.lastSpecialTime = currentTime;
+                        }
+                        break;
+                    case 'shield':
+                        if (enemy.hp < enemy.maxHp * 0.6 && !enemy.hasShield) {
+                            this.enemyShield(enemy, currentTime);
+                            enemy.lastSpecialTime = currentTime;
+                        }
+                        break;
+                    case 'earthquake':
+                        if (playerDist < 250 && !enemy.earthquakeCharging) {
+                            this.enemyEarthquake(enemy, currentTime);
+                            enemy.lastSpecialTime = currentTime;
+                        }
+                        break;
+                }
+            }
+
+            enemyDash(enemy) {
+                // 冲刺向玩家
+                const dx = this.player.x - enemy.x;
+                const dy = this.player.y - enemy.y;
+                const dist = Math.hypot(dx, dy);
+
+                if (dist > 0) {
+                    const dashDistance = 100;
+                    enemy.x += (dx / dist) * dashDistance;
+                    enemy.y += (dy / dist) * dashDistance;
+
+                    // 冲刺特效
+                    this.createParticle(enemy.x, enemy.y, enemy.color, 15);
+                    this.createFloatingText(enemy.x, enemy.y - 30, '冲刺!', '#ff0000');
+                }
+            }
+
+            enemySplit(enemy) {
+                // 分裂成两个小怪
+                const splitEnemy1 = {
+                    x: enemy.x + 30,
+                    y: enemy.y,
+                    radius: enemy.radius * 0.7,
+                    hp: enemy.hp * 0.6,
+                    maxHp: enemy.maxHp * 0.6,
+                    damage: enemy.damage * 0.8,
+                    speed: enemy.speed * 1.3,
+                    color: enemy.color,
+                    goldReward: Math.floor(enemy.goldReward * 0.4),
+                    expReward: Math.floor(enemy.expReward * 0.4),
+                    type: 'split',
+                    angle: 0
+                };
+
+                const splitEnemy2 = {
+                    x: enemy.x - 30,
+                    y: enemy.y,
+                    radius: enemy.radius * 0.7,
+                    hp: enemy.hp * 0.6,
+                    maxHp: enemy.maxHp * 0.6,
+                    damage: enemy.damage * 0.8,
+                    speed: enemy.speed * 1.3,
+                    color: enemy.color,
+                    goldReward: Math.floor(enemy.goldReward * 0.4),
+                    expReward: Math.floor(enemy.expReward * 0.4),
+                    type: 'split',
+                    angle: 0
+                };
+
+                this.enemies.push(splitEnemy1, splitEnemy2);
+                this.createFloatingText(enemy.x, enemy.y - 30, '分裂!', '#ff00ff');
+
+                // 移除原敌人
+                const index = this.enemies.indexOf(enemy);
+                if (index > -1) {
+                    this.enemies.splice(index, 1);
+                }
+            }
+
+            enemySummon(enemy) {
+                // 召唤小怪
+                for (let i = 0; i < 2; i++) {
+                    const angle = (Math.PI * 2 / 2) * i;
+                    const distance = 50;
+
+                    const summonedEnemy = {
+                        x: enemy.x + Math.cos(angle) * distance,
+                        y: enemy.y + Math.sin(angle) * distance,
+                        radius: 10,
+                        hp: 20,
+                        maxHp: 20,
+                        damage: 3,
+                        speed: 1.5,
+                        color: '#ffaa00',
+                        goldReward: 5,
+                        expReward: 5,
+                        type: 'summoned',
+                        angle: 0
+                    };
+
+                    this.enemies.push(summonedEnemy);
+                }
+
+                this.createFloatingText(enemy.x, enemy.y - 30, '召唤!', '#ffaa00');
+                this.createParticle(enemy.x, enemy.y, '#ffaa00', 20);
+            }
+
+            enemyRage(enemy, currentTime) {
+                // 狂暴状态
+                enemy.isRaging = true;
+                enemy.rageEndTime = currentTime + 5000; // 持续5秒
+                enemy.damage *= 1.5; // 伤害增加50%
+
+                this.createFloatingText(enemy.x, enemy.y - 30, '狂暴!', '#ff0000');
+                this.createParticle(enemy.x, enemy.y, '#ff0000', 25);
+            }
+
+            enemyLaser(enemy) {
+                // 激光攻击 - 向玩家发射激光
+                const dx = this.player.x - enemy.x;
+                const dy = this.player.y - enemy.y;
+                const dist = Math.hypot(dx, dy);
+
+                if (dist > 0) {
+                    // 创建激光投射物
+                    const laser = {
+                        x: enemy.x,
+                        y: enemy.y,
+                        vx: (dx / dist) * 12, // 激光速度很快
+                        vy: (dy / dist) * 12,
+                        radius: 8,
+                        damage: enemy.damage * 2, // 激光伤害是普通攻击的2倍
+                        color: '#00ffff',
+                        piercing: 0,
+                        isLaser: true
+                    };
+
+                    this.projectiles.push(laser);
+                    this.createFloatingText(enemy.x, enemy.y - 30, '激光!', '#00ffff');
+                    this.createParticle(enemy.x, enemy.y, '#00ffff', 15);
+                }
+            }
+
+            enemyTeleport(enemy, currentTime) {
+                // 传送到玩家附近的随机位置
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 80 + Math.random() * 40; // 距离玩家80-120像素
+
+                enemy.x = this.player.x + Math.cos(angle) * distance;
+                enemy.y = this.player.y + Math.sin(angle) * distance;
+
+                // 确保不传送到画布外
+                enemy.x = Math.max(enemy.radius, Math.min(this.canvas.width - enemy.radius, enemy.x));
+                enemy.y = Math.max(enemy.radius, Math.min(this.canvas.height - enemy.radius, enemy.y));
+
+                enemy.lastTeleportTime = currentTime;
+
+                this.createFloatingText(enemy.x, enemy.y - 30, '传送!', '#ff00ff');
+                this.createParticle(enemy.x, enemy.y, '#ff00ff', 20);
+            }
+
+            enemyShield(enemy, currentTime) {
+                // 护盾技能 - 吸收伤害
+                enemy.hasShield = true;
+                enemy.shieldEndTime = currentTime + 8000; // 护盾持续8秒
+                enemy.shieldHp = enemy.maxHp * 0.3; // 护盾血量为最大血量的30%
+                enemy.color = '#00ff00'; // 护盾状态下变绿色
+
+                this.createFloatingText(enemy.x, enemy.y - 30, '护盾!', '#00ff00');
+                this.createParticle(enemy.x, enemy.y, '#00ff00', 30);
+            }
+
+            enemyEarthquake(enemy, currentTime) {
+                // 地震技能 - 范围伤害
+                enemy.earthquakeCharging = true;
+                enemy.earthquakeStartTime = currentTime;
+
+                this.createFloatingText(enemy.x, enemy.y - 30, '蓄力中...', '#ffaa00');
+
+                // 2秒后释放地震
+                setTimeout(() => {
+                    if (enemy.earthquakeCharging) {
+                        const playerDist = Math.hypot(enemy.x - this.player.x, enemy.y - this.player.y);
+                        if (playerDist < 150) { // 地震范围150像素
+                            this.damagePlayer(enemy.damage * 1.5);
+                            this.createFloatingText(this.player.x, this.player.y - 30, '地震伤害!', '#ff0000');
+                        }
+
+                        // 地震特效
+                        for (let i = 0; i < 20; i++) {
+                            const angle = (Math.PI * 2 / 20) * i;
+                            const x = enemy.x + Math.cos(angle) * 100;
+                            const y = enemy.y + Math.sin(angle) * 100;
+                            this.createParticle(x, y, '#8b4513', 8);
+                        }
+
+                        this.createFloatingText(enemy.x, enemy.y - 30, '地震!', '#8b4513');
+                        enemy.earthquakeCharging = false;
+                    }
+                }, 2000);
+            }
+
             damageEnemy(enemy, index, damage) {
-                enemy.hp -= damage;
-                
-                // 显示伤害数字
-                this.createFloatingText(enemy.x, enemy.y - enemy.radius, `-${damage}`, '#ffff00');
-                
+                let actualDamage = damage;
+
+                // 检查护盾
+                if (enemy.hasShield && enemy.shieldHp > 0) {
+                    if (enemy.shieldHp >= damage) {
+                        enemy.shieldHp -= damage;
+                        actualDamage = 0;
+                        this.createFloatingText(enemy.x, enemy.y - enemy.radius, `护盾-${damage}`, '#00ff00');
+                    } else {
+                        actualDamage = damage - enemy.shieldHp;
+                        this.createFloatingText(enemy.x, enemy.y - enemy.radius, `护盾-${enemy.shieldHp}`, '#00ff00');
+                        enemy.shieldHp = 0;
+                        enemy.hasShield = false;
+                        enemy.color = '#ff0000'; // 恢复原色
+                    }
+                }
+
+                if (actualDamage > 0) {
+                    enemy.hp -= actualDamage;
+                    this.createFloatingText(enemy.x, enemy.y - enemy.radius, `-${actualDamage}`, '#ffff00');
+                }
+
                 if (enemy.hp <= 0) {
                     // 死亡效果
                     this.createParticle(enemy.x, enemy.y, enemy.color, 10);
-                    
+
                     // 奖励
                     this.kills++;
                     this.gold += enemy.goldReward;
                     this.addExp(enemy.expReward);
-                    
+
                     // 显示奖励
                     this.createFloatingText(enemy.x, enemy.y, `+${enemy.goldReward}G`, '#ffff00');
-                    
+
                     this.enemies.splice(index, 1);
                 }
             }
@@ -946,10 +1353,18 @@
             
             upgradePlayer(stat) {
                 const cost = this.upgradeCosts[stat];
-                
+                const currentLevel = this.upgradeLevels[stat];
+                const maxLevel = this.upgradeMaxLevels[stat];
+
+                // 检查是否达到升级上限
+                if (currentLevel >= maxLevel) {
+                    return;
+                }
+
                 if (this.gold >= cost) {
                     this.gold -= cost;
-                    
+                    this.upgradeLevels[stat]++;
+
                     switch(stat) {
                         case 'damage':
                             this.player.damage += 10;
@@ -986,7 +1401,7 @@
                             this.upgradeCosts.reloadSpeed = Math.floor(this.upgradeCosts.reloadSpeed * 1.4);
                             break;
                     }
-                    
+
                     this.updateUpgradeButtons();
                     this.updateUI();
                 }
@@ -1004,24 +1419,47 @@
             }
             
             updateUpgradeButtons() {
-                document.getElementById('upgradeDamage').textContent = `攻击力 +10 (${this.upgradeCosts.damage}金币)`;
-                document.getElementById('upgradeSpeed').textContent = `攻速 +0.5 (${this.upgradeCosts.attackSpeed}金币)`;
-                document.getElementById('upgradeHp').textContent = `生命值 +50 (${this.upgradeCosts.maxHp}金币)`;
-                document.getElementById('upgradeRange').textContent = `射程 +20 (${this.upgradeCosts.range}金币)`;
-                document.getElementById('upgradeRegen').textContent = `生命回复 +1 (${this.upgradeCosts.regen}金币)`;
-                document.getElementById('upgradeBullets').textContent = `子弹数量 +1 (${this.upgradeCosts.bulletCount}金币)`;
-                document.getElementById('upgradeAmmo').textContent = `弹匣容量 +10 (${this.upgradeCosts.maxAmmo}金币)`;
-                document.getElementById('upgradeReload').textContent = `换弹速度 +20% (${this.upgradeCosts.reloadSpeed}金币)`;
-                
-                // 更新按钮状态
-                document.getElementById('upgradeDamage').disabled = this.gold < this.upgradeCosts.damage;
-                document.getElementById('upgradeSpeed').disabled = this.gold < this.upgradeCosts.attackSpeed;
-                document.getElementById('upgradeHp').disabled = this.gold < this.upgradeCosts.maxHp;
-                document.getElementById('upgradeRange').disabled = this.gold < this.upgradeCosts.range;
-                document.getElementById('upgradeRegen').disabled = this.gold < this.upgradeCosts.regen;
-                document.getElementById('upgradeBullets').disabled = this.gold < this.upgradeCosts.bulletCount;
-                document.getElementById('upgradeAmmo').disabled = this.gold < this.upgradeCosts.maxAmmo;
-                document.getElementById('upgradeReload').disabled = this.gold < this.upgradeCosts.reloadSpeed;
+                // 更新按钮文本，显示等级信息
+                const damageMaxText = this.upgradeMaxLevels.damage === 999 ? '∞' : this.upgradeMaxLevels.damage;
+                const hpMaxText = this.upgradeMaxLevels.maxHp === 999 ? '∞' : this.upgradeMaxLevels.maxHp;
+                const regenMaxText = this.upgradeMaxLevels.regen === 999 ? '∞' : this.upgradeMaxLevels.regen;
+                const ammoMaxText = this.upgradeMaxLevels.maxAmmo === 999 ? '∞' : this.upgradeMaxLevels.maxAmmo;
+
+                document.getElementById('upgradeDamage').textContent = `攻击力 +10 [${this.upgradeLevels.damage}/${damageMaxText}] (${this.upgradeCosts.damage}金币)`;
+                document.getElementById('upgradeSpeed').textContent = `攻速 +0.5 [${this.upgradeLevels.attackSpeed}/${this.upgradeMaxLevels.attackSpeed}] (${this.upgradeCosts.attackSpeed}金币)`;
+                document.getElementById('upgradeHp').textContent = `生命值 +50 [${this.upgradeLevels.maxHp}/${hpMaxText}] (${this.upgradeCosts.maxHp}金币)`;
+                document.getElementById('upgradeRange').textContent = `射程 +20 [${this.upgradeLevels.range}/${this.upgradeMaxLevels.range}] (${this.upgradeCosts.range}金币)`;
+                document.getElementById('upgradeRegen').textContent = `生命回复 +1 [${this.upgradeLevels.regen}/${regenMaxText}] (${this.upgradeCosts.regen}金币)`;
+                document.getElementById('upgradeBullets').textContent = `子弹数量 +1 [${this.upgradeLevels.bulletCount}/${this.upgradeMaxLevels.bulletCount}] (${this.upgradeCosts.bulletCount}金币)`;
+                document.getElementById('upgradeAmmo').textContent = `弹匣容量 +10 [${this.upgradeLevels.maxAmmo}/${ammoMaxText}] (${this.upgradeCosts.maxAmmo}金币)`;
+                document.getElementById('upgradeReload').textContent = `换弹速度 +20% [${this.upgradeLevels.reloadSpeed}/${this.upgradeMaxLevels.reloadSpeed}] (${this.upgradeCosts.reloadSpeed}金币)`;
+
+                // 更新按钮状态 - 检查金币和等级上限
+                document.getElementById('upgradeDamage').disabled = this.gold < this.upgradeCosts.damage || this.upgradeLevels.damage >= this.upgradeMaxLevels.damage;
+                document.getElementById('upgradeSpeed').disabled = this.gold < this.upgradeCosts.attackSpeed || this.upgradeLevels.attackSpeed >= this.upgradeMaxLevels.attackSpeed;
+                document.getElementById('upgradeHp').disabled = this.gold < this.upgradeCosts.maxHp || this.upgradeLevels.maxHp >= this.upgradeMaxLevels.maxHp;
+                document.getElementById('upgradeRange').disabled = this.gold < this.upgradeCosts.range || this.upgradeLevels.range >= this.upgradeMaxLevels.range;
+                document.getElementById('upgradeRegen').disabled = this.gold < this.upgradeCosts.regen || this.upgradeLevels.regen >= this.upgradeMaxLevels.regen;
+                document.getElementById('upgradeBullets').disabled = this.gold < this.upgradeCosts.bulletCount || this.upgradeLevels.bulletCount >= this.upgradeMaxLevels.bulletCount;
+                document.getElementById('upgradeAmmo').disabled = this.gold < this.upgradeCosts.maxAmmo || this.upgradeLevels.maxAmmo >= this.upgradeMaxLevels.maxAmmo;
+                document.getElementById('upgradeReload').disabled = this.gold < this.upgradeCosts.reloadSpeed || this.upgradeLevels.reloadSpeed >= this.upgradeMaxLevels.reloadSpeed;
+
+                // 为达到上限的按钮添加特殊样式
+                const buttons = ['upgradeDamage', 'upgradeSpeed', 'upgradeHp', 'upgradeRange', 'upgradeRegen', 'upgradeBullets', 'upgradeAmmo', 'upgradeReload'];
+                const stats = ['damage', 'attackSpeed', 'maxHp', 'range', 'regen', 'bulletCount', 'maxAmmo', 'reloadSpeed'];
+
+                buttons.forEach((buttonId, index) => {
+                    const button = document.getElementById(buttonId);
+                    const stat = stats[index];
+                    if (this.upgradeLevels[stat] >= this.upgradeMaxLevels[stat]) {
+                        button.style.backgroundColor = '#666';
+                        button.style.color = '#999';
+                        button.textContent = button.textContent.replace(/\(.*?\)/, '(已满级)');
+                    } else {
+                        button.style.backgroundColor = '';
+                        button.style.color = '';
+                    }
+                });
             }
             
             updateUI() {

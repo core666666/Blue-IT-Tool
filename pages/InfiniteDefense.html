@@ -403,6 +403,11 @@
                 this.enemySprite.src = '../assets/images/InfiniteDefense/image1.png';
                 this.enemySpriteLoaded = false;
 
+                // 加载子弹精灵图片
+                this.bulletSprite = new Image();
+                this.bulletSprite.src = '../assets/images/InfiniteDefense/zidan.png';
+                this.bulletSpriteLoaded = false;
+
                 // 精灵坐标定义
                 this.sprites = {
                     player: { x: 149, y: 344, width: 255, height: 369 },
@@ -435,7 +440,12 @@
                     enemy9: { x: 54, y: 588, width: 203, height: 218 },
                     enemy10: { x: 276, y: 584, width: 214, height: 229 },
                     enemy11: { x: 519, y: 581, width: 196, height: 230 },
-                    enemy12: { x: 769, y: 587, width: 190, height: 220 }
+                    enemy12: { x: 769, y: 587, width: 190, height: 220 },
+                    // zidan.png 中的子弹精灵
+                    bullet1: { x: 412, y: 137, width: 262, height: 163 },
+                    bullet2: { x: 714, y: 132, width: 250, height: 166 },
+                    bullet3: { x: 108, y: 389, width: 264, height: 138 },
+                    bullet4: { x: 716, y: 365, width: 240, height: 171 }
                 };
 
                 this.playerSprite.onload = () => {
@@ -465,6 +475,14 @@
                 this.enemySprite.onload = () => {
                     this.enemySpriteLoaded = true;
                 };
+
+                this.bulletSprite.onload = () => {
+                    this.bulletSpriteLoaded = true;
+                };
+
+                // 为本局游戏随机选择一种子弹类型
+                const bulletVariants = ['bullet1', 'bullet2', 'bullet3', 'bullet4'];
+                this.gameBulletVariant = bulletVariants[Math.floor(Math.random() * bulletVariants.length)];
 
                 // 人物形象切换特效系统
                 this.currentPlayerForm = 'player'; // 当前人物形态
@@ -1013,6 +1031,7 @@
                         angle += offset;
                     }
                     
+                    // 使用本局游戏固定的子弹类型
                     this.projectiles.push({
                         x: this.player.x,
                         y: this.player.y,
@@ -1022,7 +1041,9 @@
                         radius: 5,
                         color: '#00ffff',
                         target: target,
-                        piercing: this.player.level >= 10 ? 1 : 0
+                        piercing: this.player.level >= 10 ? 1 : 0,
+                        bulletVariant: this.gameBulletVariant, // 使用固定的子弹类型
+                        angle: angle // 保存角度用于精灵旋转
                     });
                 }
                 
@@ -1760,10 +1781,7 @@
                 
                 // 绘制投射物
                 for (const proj of this.projectiles) {
-                    this.ctx.fillStyle = proj.color;
-                    this.ctx.beginPath();
-                    this.ctx.arc(proj.x, proj.y, proj.radius, 0, Math.PI * 2);
-                    this.ctx.fill();
+                    this.drawBullet(proj);
                 }
                 
                 // 绘制粒子
@@ -1921,6 +1939,36 @@
 
                 // 限制最大大小，避免过大
                 return Math.min(totalSize, 80);
+            }
+
+            // 计算boss的动态大小
+            getBossSize(enemy) {
+                // boss基础大小比玩家大
+                let baseSize = enemy.radius * 2; // 使用boss的基础半径
+
+                // 根据波次增加大小
+                const waveBonus = (this.wave - 1) * 1.5; // 每波增加1.5像素
+
+                // 根据boss类型调整大小
+                let typeMultiplier = 1;
+                if (enemy.bossVariant === 'bigboss') {
+                    typeMultiplier = 1.8; // 大boss更大
+                } else if (enemy.bossVariant && enemy.bossVariant.startsWith('xiaoboss')) {
+                    typeMultiplier = 1.4; // 小boss系列中等大小
+                } else if (enemy.bossVariant && enemy.bossVariant.startsWith('boss')) {
+                    typeMultiplier = 1.2; // 普通boss系列稍大
+                }
+
+                // 分裂boss应该比原boss小
+                if (enemy.type === 'split') {
+                    typeMultiplier *= 0.7;
+                }
+
+                // 计算最终大小
+                const finalSize = (baseSize + waveBonus) * typeMultiplier;
+
+                // 限制最大大小
+                return Math.min(finalSize, 150);
             }
 
             // 绘制玩家精灵
@@ -2102,8 +2150,9 @@
                     return;
                 }
 
-                // 计算绘制尺寸
-                const scale = (enemy.radius * 2) / Math.max(spriteData.width, spriteData.height);
+                // 计算boss的动态大小（类似玩家系统）
+                const bossSize = this.getBossSize(enemy);
+                const scale = bossSize / Math.max(spriteData.width, spriteData.height);
                 const drawWidth = spriteData.width * scale;
                 const drawHeight = spriteData.height * scale;
 
@@ -2213,8 +2262,9 @@
                     return;
                 }
 
-                // 计算绘制尺寸
-                const scale = (enemy.radius * 2) / Math.max(spriteData.width, spriteData.height);
+                // 计算绘制尺寸（精英敌人使用boss精灵但保持敌人大小）
+                const enemySize = enemy.radius * 2.2; // 精英敌人稍大一些
+                const scale = enemySize / Math.max(spriteData.width, spriteData.height);
                 const drawWidth = spriteData.width * scale;
                 const drawHeight = spriteData.height * scale;
 
@@ -2265,6 +2315,56 @@
                         // 普通敌人：无特效
                         break;
                 }
+            }
+
+            // 绘制子弹精灵
+            drawBullet(projectile) {
+                if (!projectile.bulletVariant || !this.bulletSpriteLoaded) {
+                    // 如果没有精灵信息或图片未加载，使用圆形作为后备
+                    this.ctx.fillStyle = projectile.color;
+                    this.ctx.beginPath();
+                    this.ctx.arc(projectile.x, projectile.y, projectile.radius, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    return;
+                }
+
+                const spriteData = this.sprites[projectile.bulletVariant];
+                if (!spriteData) {
+                    // 如果精灵数据不存在，使用圆形作为后备
+                    this.ctx.fillStyle = projectile.color;
+                    this.ctx.beginPath();
+                    this.ctx.arc(projectile.x, projectile.y, projectile.radius, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    return;
+                }
+
+                // 计算绘制尺寸（子弹比较小）
+                const scale = (projectile.radius * 3) / Math.max(spriteData.width, spriteData.height);
+                const drawWidth = spriteData.width * scale;
+                const drawHeight = spriteData.height * scale;
+
+                // 保存当前变换状态
+                this.ctx.save();
+
+                // 移动到子弹位置并旋转（调整方向）
+                this.ctx.translate(projectile.x, projectile.y);
+                this.ctx.rotate(projectile.angle + Math.PI); // 加180度调转方向
+
+                // 添加子弹光晕效果
+                this.ctx.shadowColor = '#00ffff';
+                this.ctx.shadowBlur = 5;
+
+                // 绘制子弹精灵
+                this.ctx.drawImage(
+                    this.bulletSprite,
+                    spriteData.x, spriteData.y, spriteData.width, spriteData.height,
+                    -drawWidth / 2, -drawHeight / 2,
+                    drawWidth, drawHeight
+                );
+
+                // 重置阴影和变换
+                this.ctx.shadowBlur = 0;
+                this.ctx.restore();
             }
 
             gameLoop() {

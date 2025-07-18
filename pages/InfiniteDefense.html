@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2D 防守游戏</title>
+    <!-- 引入Font Awesome图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body {
             margin: 0;
@@ -12,7 +14,7 @@
             font-family: Arial, sans-serif;
             background: #222;
         }
-        #gameCanvas {
+        #gameCanvas {   
             display: block;
             background: #1a1a1a;
         }
@@ -209,6 +211,24 @@
             border: 2px solid #ff0;
             z-index: 100;
         }
+
+        .nav-button {
+            background: rgba(0, 100, 200, 0.8);
+            padding: 8px 12px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            transition: background 0.3s;
+            border: 1px solid #0066cc;
+        }
+
+        .nav-button:hover {
+            background: rgba(0, 120, 220, 0.9);
+            border-color: #0088ff;
+        }
+
+        .nav-button a:hover {
+            color: #fff !important;
+        }
     </style>
 </head>
 <body>
@@ -311,6 +331,12 @@
     </div>
     
     <div id="ui">
+        <div class="nav-button">
+            <a href="../index.html" style="color: #fff; text-decoration: none; display: flex; align-items: center; gap: 5px;">
+                <i class="fas fa-home"></i> 返回主页
+            </a>
+        </div>
+        <hr style="margin: 10px 0; border-color: #444;">
         <div class="stat-line">难度: <span class="stat-value" id="difficulty">-</span></div>
         <div class="stat-line">地图: <span class="stat-value" id="currentMap">-</span></div>
         <div class="stat-line">波数: <span class="stat-value" id="wave">1</span></div>

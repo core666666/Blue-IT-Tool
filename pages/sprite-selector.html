@@ -141,16 +141,34 @@
 </head>
 <body>
     <h1>🎮 精灵图坐标选择工具</h1>
-    
+
     <div class="info">
-        <h3>图片加载状态：<span id="loadStatus">加载中...</span></h3>
-        <p><strong>使用说明：</strong>在图片上拖拽鼠标选择区域，点击右侧角色名称切换选择目标</p>
+        <h3>图片选择</h3>
+        <select id="imageSelector" style="background: #333; color: white; border: 1px solid #666; padding: 8px; border-radius: 4px; margin-right: 10px;">
+            <option value="../assets/images/InfiniteDefense/player.png">player.png</option>
+            <option value="../assets/images/InfiniteDefense/boss.png">boss.png</option>
+            <option value="../assets/images/InfiniteDefense/bigboss.png">bigboss.png</option>
+            <option value="../assets/images/InfiniteDefense/xiaoboss.png">xiaoboss.png</option>
+            <option value="../assets/images/InfiniteDefense/xiaoboss1.png">xiaoboss1.png</option>
+            <option value="../assets/images/InfiniteDefense/xiaoboss2.png">xiaoboss2.png</option>
+            <option value="../assets/images/InfiniteDefense/renwu.png">renwu.png</option>
+            <option value="../assets/images/InfiniteDefense/renwu1.png">renwu1.png</option>
+            <option value="../assets/images/InfiniteDefense/image.png">image.png</option>
+            <option value="../assets/images/InfiniteDefense/image1.png">image1.png</option>
+            <option value="../assets/images/InfiniteDefense/image (4).png">image (4).png</option>
+            <option value="../assets/images/InfiniteShooting/2dgamepic.png">2dgamepic.png</option>
+            <option value="../assets/images/InfiniteDefense/zidan.png">zidan.png</option>
+            <option value="../assets/images/InfiniteDefense/zidan1.png">zidan1.png</option>
+        </select>
+        <button class="btn" onclick="loadSelectedImage()">🔄 加载图片</button>
+        <h3>图片加载状态：<span id="loadStatus">请选择图片</span></h3>
+        <p><strong>使用说明：</strong>选择图片后点击加载，然后在图片上拖拽鼠标选择区域，点击右侧角色名称切换选择目标</p>
     </div>
     
     <div class="container">
         <div class="left-panel">
             <div id="imageContainer">
-                <img id="spriteImage" src="../assets/images/2dgamepic.png" alt="精灵图">
+                <img id="spriteImage" src="" alt="精灵图" style="display: none;">
                 <canvas id="selectionOverlay"></canvas>
             </div>
             
@@ -238,28 +256,62 @@
             overlayCtx = selectionOverlay.getContext('2d');
             previewCanvas = document.getElementById('previewCanvas');
             previewCtx = previewCanvas.getContext('2d');
-            
+
             setupEventListeners();
             updateCodeOutput();
+
+            // 设置图片选择器事件
+            document.getElementById('imageSelector').addEventListener('change', function() {
+                document.getElementById('loadStatus').textContent = '请点击加载图片按钮';
+                document.getElementById('loadStatus').style.color = '#ffaa00';
+            });
         });
+
+        // 加载选中的图片
+        function loadSelectedImage() {
+            const selector = document.getElementById('imageSelector');
+            const selectedPath = selector.value;
+            const selectedName = selector.options[selector.selectedIndex].text;
+
+            if (!selectedPath) {
+                alert('请先选择一张图片');
+                return;
+            }
+
+            document.getElementById('loadStatus').textContent = '加载中...';
+            document.getElementById('loadStatus').style.color = '#ffaa00';
+
+            // 重置所有坐标
+            resetAll();
+
+            // 加载新图片
+            spriteImage.src = selectedPath;
+            spriteImage.style.display = 'block';
+
+            // 更新当前图片信息
+            document.querySelector('h1').textContent = `🎮 精灵图坐标选择工具 - ${selectedName}`;
+        }
         
         // 设置事件监听器
         function setupEventListeners() {
             spriteImage.onload = function() {
+                if (!this.src || this.src.endsWith('')) return;
+
                 document.getElementById('loadStatus').textContent = '加载成功';
                 document.getElementById('loadStatus').style.color = '#00ff00';
-                
+
                 // 设置overlay canvas尺寸
-                selectionOverlay.width = this.width;
-                selectionOverlay.height = this.height;
+                selectionOverlay.width = this.naturalWidth;
+                selectionOverlay.height = this.naturalHeight;
                 selectionOverlay.style.width = this.offsetWidth + 'px';
                 selectionOverlay.style.height = this.offsetHeight + 'px';
-                
+
                 drawAllSelections();
+                updatePreview();
             };
-            
+
             spriteImage.onerror = function() {
-                document.getElementById('loadStatus').textContent = '加载失败';
+                document.getElementById('loadStatus').textContent = '加载失败 - 请检查图片路径';
                 document.getElementById('loadStatus').style.color = '#ff0000';
             };
 
@@ -370,6 +422,8 @@
 
         // 绘制所有选择框
         function drawAllSelections() {
+            if (!spriteImage.complete || !spriteImage.naturalWidth) return;
+
             overlayCtx.clearRect(0, 0, selectionOverlay.width, selectionOverlay.height);
 
             const scaleX = spriteImage.offsetWidth / spriteImage.naturalWidth;
@@ -410,7 +464,7 @@
 
         // 更新预览
         function updatePreview() {
-            if (!spriteImage.complete) return;
+            if (!spriteImage.complete || !spriteImage.naturalWidth) return;
 
             const coords = spriteCoords[currentSprite];
             previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
@@ -422,6 +476,8 @@
                     0, 0, previewCanvas.width, previewCanvas.height
                 );
                 document.getElementById('previewInfo').textContent = `${currentSprite} 预览`;
+            } else {
+                document.getElementById('previewInfo').textContent = '选择一个区域查看预览';
             }
         }
 

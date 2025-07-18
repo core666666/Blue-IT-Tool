@@ -366,9 +366,114 @@
             constructor() {
                 this.canvas = document.getElementById('gameCanvas');
                 this.ctx = this.canvas.getContext('2d');
-                
+
                 this.canvas.width = window.innerWidth;
                 this.canvas.height = window.innerHeight;
+
+                // 加载精灵图片
+                this.playerSprite = new Image();
+                this.playerSprite.src = '../assets/images/InfiniteDefense/renwu.png';
+                this.spriteLoaded = false;
+
+                // 加载boss精灵图片
+                this.bossSprites = {
+                    boss: new Image(),
+                    bigboss: new Image(),
+                    xiaoboss: new Image(),
+                    xiaoboss1: new Image(),
+                    xiaoboss2: new Image()
+                };
+
+                this.bossSprites.boss.src = '../assets/images/InfiniteDefense/boss.png';
+                this.bossSprites.bigboss.src = '../assets/images/InfiniteDefense/bigboss.png';
+                this.bossSprites.xiaoboss.src = '../assets/images/InfiniteDefense/xiaoboss.png';
+                this.bossSprites.xiaoboss1.src = '../assets/images/InfiniteDefense/xiaoboss1.png';
+                this.bossSprites.xiaoboss2.src = '../assets/images/InfiniteDefense/xiaoboss2.png';
+
+                this.bossSpritesLoaded = {
+                    boss: false,
+                    bigboss: false,
+                    xiaoboss: false,
+                    xiaoboss1: false,
+                    xiaoboss2: false
+                };
+
+                // 加载基础敌人精灵图片
+                this.enemySprite = new Image();
+                this.enemySprite.src = '../assets/images/InfiniteDefense/image1.png';
+                this.enemySpriteLoaded = false;
+
+                // 精灵坐标定义
+                this.sprites = {
+                    player: { x: 149, y: 344, width: 255, height: 369 },
+                    player1: { x: 407, y: 233, width: 342, height: 556 },
+                    // boss.png 中的boss精灵
+                    boss1: { x: 40, y: 44, width: 446, height: 445 },
+                    boss2: { x: 516, y: 57, width: 472, height: 426 },
+                    boss3: { x: 20, y: 522, width: 482, height: 437 },
+                    boss4: { x: 506, y: 519, width: 455, height: 475 },
+                    // bigboss.png 是单张图片，整个图片就是boss
+                    bigboss: { x: 0, y: 0, width: 0, height: 0 }, // 将在图片加载后设置
+                    // xiaoboss.png 中的boss
+                    xiaoboss: { x: 277, y: 223, width: 464, height: 577 },
+                    // xiaoboss1.png 中的boss
+                    xiaoboss1: { x: 309, y: 246, width: 408, height: 508 },
+                    // xiaoboss2.png 中的boss精灵
+                    xiaoboss2_1: { x: 24, y: 45, width: 447, height: 449 },
+                    xiaoboss2_2: { x: 502, y: 34, width: 490, height: 482 },
+                    xiaoboss2_3: { x: 25, y: 530, width: 479, height: 476 },
+                    xiaoboss2_4: { x: 522, y: 520, width: 484, height: 489 },
+                    // image1.png 中的基础敌人精灵
+                    enemy1: { x: 287, y: 325, width: 194, height: 228 },
+                    enemy2: { x: 53, y: 329, width: 198, height: 224 },
+                    enemy3: { x: 771, y: 57, width: 185, height: 221 },
+                    enemy4: { x: 51, y: 63, width: 214, height: 227 },
+                    enemy5: { x: 281, y: 65, width: 220, height: 220 },
+                    enemy6: { x: 527, y: 62, width: 186, height: 228 },
+                    enemy7: { x: 522, y: 325, width: 187, height: 218 },
+                    enemy8: { x: 780, y: 329, width: 175, height: 218 },
+                    enemy9: { x: 54, y: 588, width: 203, height: 218 },
+                    enemy10: { x: 276, y: 584, width: 214, height: 229 },
+                    enemy11: { x: 519, y: 581, width: 196, height: 230 },
+                    enemy12: { x: 769, y: 587, width: 190, height: 220 }
+                };
+
+                this.playerSprite.onload = () => {
+                    this.spriteLoaded = true;
+                };
+
+                // 设置boss图片加载回调
+                this.bossSprites.boss.onload = () => {
+                    this.bossSpritesLoaded.boss = true;
+                };
+                this.bossSprites.bigboss.onload = () => {
+                    this.bossSpritesLoaded.bigboss = true;
+                    // bigboss是单张图片，设置其完整尺寸
+                    this.sprites.bigboss.width = this.bossSprites.bigboss.width;
+                    this.sprites.bigboss.height = this.bossSprites.bigboss.height;
+                };
+                this.bossSprites.xiaoboss.onload = () => {
+                    this.bossSpritesLoaded.xiaoboss = true;
+                };
+                this.bossSprites.xiaoboss1.onload = () => {
+                    this.bossSpritesLoaded.xiaoboss1 = true;
+                };
+                this.bossSprites.xiaoboss2.onload = () => {
+                    this.bossSpritesLoaded.xiaoboss2 = true;
+                };
+
+                this.enemySprite.onload = () => {
+                    this.enemySpriteLoaded = true;
+                };
+
+                // 人物形象切换特效系统
+                this.currentPlayerForm = 'player'; // 当前人物形态
+                this.transformEffect = {
+                    active: false,
+                    startTime: 0,
+                    duration: 2000, // 特效持续2秒
+                    particles: []
+                };
                 
                 // 难度设置
                 this.difficulty = null;
@@ -673,17 +778,20 @@
             spawnEnemy() {
                 const config = this.getWaveConfig(this.wave);
                 let type = 'normal';
-                
+                let bossVariant = null;
+
                 // 决定敌人类型
                 if (this.wave % 10 === 0 && this.enemiesSpawned === this.enemiesInWave - 1) {
                     type = 'boss';
+                    // 根据波次决定boss类型
+                    bossVariant = this.getBossVariant(this.wave);
                 } else if (this.wave % 5 === 0 && this.enemiesSpawned >= this.enemiesInWave - 2) {
                     type = 'elite';
                 } else if (Math.random() < config.specialChance) {
                     type = Math.random() < 0.5 ? 'fast' : 'tank';
                 }
-                
-                const enemyStats = this.getEnemyStats(type, config);
+
+                const enemyStats = this.getEnemyStats(type, config, bossVariant);
                 
                 // 随机生成位置（在屏幕边缘）
                 const side = Math.floor(Math.random() * 4);
@@ -718,8 +826,28 @@
                 this.enemies.push(enemy);
                 this.enemiesSpawned++;
             }
+
+            // 根据波次决定boss变体
+            getBossVariant(wave) {
+                if (wave >= 100) {
+                    // 超高波次：大boss
+                    return 'bigboss';
+                } else if (wave >= 50) {
+                    // 高波次：xiaoboss系列
+                    const variants = ['xiaoboss', 'xiaoboss1', 'xiaoboss2_1', 'xiaoboss2_2', 'xiaoboss2_3', 'xiaoboss2_4'];
+                    return variants[Math.floor(Math.random() * variants.length)];
+                } else if (wave >= 20) {
+                    // 中波次：boss系列
+                    const variants = ['boss1', 'boss2', 'boss3', 'boss4'];
+                    return variants[Math.floor(Math.random() * variants.length)];
+                } else {
+                    // 低波次：基础boss
+                    const variants = ['boss1', 'boss2'];
+                    return variants[Math.floor(Math.random() * variants.length)];
+                }
+            }
             
-            getEnemyStats(type, config) {
+            getEnemyStats(type, config, bossVariant = null) {
                 const difficultySettings = this.difficultySettings[this.difficulty];
                 
                 const baseStats = {
@@ -792,7 +920,66 @@
                 };
                 
                 const stats = { ...baseStats[type], type: type };
-                
+
+                // 为所有非boss敌人分配精灵变体
+                if (type !== 'boss') {
+                    let enemyVariants = [];
+
+                    if (type === 'normal') {
+                        // 普通敌人：使用前6个精灵（较小较弱的外观）
+                        enemyVariants = ['enemy1', 'enemy2', 'enemy3', 'enemy4', 'enemy5', 'enemy6'];
+                    } else if (type === 'fast') {
+                        // 快速敌人：使用中间4个精灵（看起来更敏捷）
+                        enemyVariants = ['enemy3', 'enemy4', 'enemy7', 'enemy8'];
+                    } else if (type === 'tank') {
+                        // 坦克敌人：使用后4个精灵（看起来更强壮）
+                        enemyVariants = ['enemy9', 'enemy10', 'enemy11', 'enemy12'];
+                    } else if (type === 'elite') {
+                        // 精英敌人：可以使用boss精灵作为强化版本
+                        const bossVariants = ['boss1', 'boss2', 'boss3', 'boss4'];
+                        enemyVariants = bossVariants;
+                        stats.usesBossSprite = true; // 标记使用boss精灵
+                    } else {
+                        // 其他类型：随机选择
+                        enemyVariants = ['enemy1', 'enemy2', 'enemy3', 'enemy4', 'enemy5', 'enemy6',
+                                        'enemy7', 'enemy8', 'enemy9', 'enemy10', 'enemy11', 'enemy12'];
+                    }
+
+                    stats.enemyVariant = enemyVariants[Math.floor(Math.random() * enemyVariants.length)];
+                }
+
+                // 如果是boss，添加变体信息和调整属性
+                if (type === 'boss' && bossVariant) {
+                    stats.bossVariant = bossVariant;
+
+                    // 根据boss变体调整属性
+                    if (bossVariant === 'bigboss') {
+                        // 大boss：超强属性
+                        stats.radius = 60;
+                        stats.hp *= 3;
+                        stats.maxHp *= 3;
+                        stats.damage *= 2;
+                        stats.goldReward *= 3;
+                        stats.expReward *= 3;
+                    } else if (bossVariant.startsWith('xiaoboss')) {
+                        // 小boss系列：中等强化
+                        stats.radius = 45;
+                        stats.hp *= 2;
+                        stats.maxHp *= 2;
+                        stats.damage *= 1.5;
+                        stats.goldReward *= 2;
+                        stats.expReward *= 2;
+                    } else if (bossVariant.startsWith('boss')) {
+                        // 普通boss系列：基础强化
+                        stats.radius = 40;
+                        stats.hp *= 1.5;
+                        stats.maxHp *= 1.5;
+                        stats.damage *= 1.2;
+                        stats.goldReward *= 1.5;
+                        stats.expReward *= 1.5;
+                    }
+                }
+
                 // 应用波数加成
                 stats.hp = Math.floor(stats.hp * config.enemyHpMultiplier * difficultySettings.enemyHpMultiplier);
                 stats.maxHp = Math.floor(stats.maxHp * config.enemyHpMultiplier * difficultySettings.enemyHpMultiplier);
@@ -954,8 +1141,9 @@
                         enemy.angle = Math.atan2(dy, dx);
                     }
 
-                    // 检查碰撞
-                    if (dist < this.player.radius + enemy.radius) {
+                    // 检查碰撞（使用动态半径）
+                    const playerRadius = this.getPlayerSize() / 2;
+                    if (dist < playerRadius + enemy.radius) {
                         this.damagePlayer(enemy.damage);
                         this.createParticle(enemy.x, enemy.y, enemy.color);
                         this.enemies.splice(i, 1);
@@ -1117,7 +1305,7 @@
             }
 
             enemySplit(enemy) {
-                // 分裂成两个小怪
+                // 分裂成两个小怪，继承原boss的精灵信息
                 const splitEnemy1 = {
                     x: enemy.x + 30,
                     y: enemy.y,
@@ -1130,7 +1318,11 @@
                     goldReward: Math.floor(enemy.goldReward * 0.4),
                     expReward: Math.floor(enemy.expReward * 0.4),
                     type: 'split',
-                    angle: 0
+                    angle: 0,
+                    // 继承原boss的精灵信息
+                    bossVariant: enemy.bossVariant,
+                    enemyVariant: enemy.enemyVariant,
+                    usesBossSprite: enemy.usesBossSprite
                 };
 
                 const splitEnemy2 = {
@@ -1145,7 +1337,11 @@
                     goldReward: Math.floor(enemy.goldReward * 0.4),
                     expReward: Math.floor(enemy.expReward * 0.4),
                     type: 'split',
-                    angle: 0
+                    angle: 0,
+                    // 继承原boss的精灵信息
+                    bossVariant: enemy.bossVariant,
+                    enemyVariant: enemy.enemyVariant,
+                    usesBossSprite: enemy.usesBossSprite
                 };
 
                 this.enemies.push(splitEnemy1, splitEnemy2);
@@ -1159,10 +1355,14 @@
             }
 
             enemySummon(enemy) {
-                // 召唤小怪
+                // 召唤小怪，使用小型精灵
                 for (let i = 0; i < 2; i++) {
                     const angle = (Math.PI * 2 / 2) * i;
                     const distance = 50;
+
+                    // 为召唤的小怪随机分配小型精灵
+                    const smallEnemyVariants = ['enemy1', 'enemy2', 'enemy3', 'enemy4'];
+                    const randomVariant = smallEnemyVariants[Math.floor(Math.random() * smallEnemyVariants.length)];
 
                     const summonedEnemy = {
                         x: enemy.x + Math.cos(angle) * distance,
@@ -1176,7 +1376,9 @@
                         goldReward: 5,
                         expReward: 5,
                         type: 'summoned',
-                        angle: 0
+                        angle: 0,
+                        // 添加精灵变体
+                        enemyVariant: randomVariant
                     };
 
                     this.enemies.push(summonedEnemy);
@@ -1511,25 +1713,27 @@
                 this.ctx.stroke();
                 
                 // 绘制玩家
-                this.ctx.fillStyle = this.player.isReloading ? '#888888' : this.player.color;
-                this.ctx.beginPath();
-                this.ctx.arc(this.player.x, this.player.y, this.player.radius, 0, Math.PI * 2);
-                this.ctx.fill();
+                this.drawPlayer();
                 
-                // 绘制玩家血条
+                // 绘制玩家血条（根据动态大小调整位置）
+                const playerSize = this.getPlayerSize();
+                const playerRadius = playerSize / 2;
+                const hpBarY = this.player.y - playerRadius - 15; // 血条在人物上方15像素
                 const hpPercent = this.player.hp / this.player.maxHp;
+
                 this.ctx.fillStyle = '#000';
-                this.ctx.fillRect(this.player.x - 25, this.player.y - 35, 50, 5);
+                this.ctx.fillRect(this.player.x - 25, hpBarY, 50, 5);
                 this.ctx.fillStyle = hpPercent > 0.5 ? '#0f0' : hpPercent > 0.25 ? '#ff0' : '#f00';
-                this.ctx.fillRect(this.player.x - 25, this.player.y - 35, 50 * hpPercent, 5);
+                this.ctx.fillRect(this.player.x - 25, hpBarY, 50 * hpPercent, 5);
                 
-                // 绘制换弹进度
+                // 绘制换弹进度（根据动态大小调整位置）
                 if (this.player.isReloading) {
+                    const reloadBarY = this.player.y + playerRadius + 10; // 换弹条在人物下方10像素
                     const reloadProgress = (Date.now() - this.player.reloadStartTime) / this.player.reloadSpeed;
                     this.ctx.fillStyle = '#000';
-                    this.ctx.fillRect(this.player.x - 25, this.player.y + 30, 50, 3);
+                    this.ctx.fillRect(this.player.x - 25, reloadBarY, 50, 3);
                     this.ctx.fillStyle = '#00ffff';
-                    this.ctx.fillRect(this.player.x - 25, this.player.y + 30, 50 * reloadProgress, 3);
+                    this.ctx.fillRect(this.player.x - 25, reloadBarY, 50 * reloadProgress, 3);
                 }
                 
                 // 绘制敌人
@@ -1539,19 +1743,12 @@
                     this.ctx.beginPath();
                     
                     if (enemy.type === 'boss') {
-                        // Boss用星形
-                        this.drawStar(enemy.x, enemy.y, enemy.radius, enemy.radius * 0.5, 8);
-                    } else if (enemy.type === 'elite') {
-                        // 精英用六边形
-                        this.drawPolygon(enemy.x, enemy.y, enemy.radius, 6);
-                    } else if (enemy.type === 'tank') {
-                        // 坦克用方形
-                        this.ctx.fillRect(enemy.x - enemy.radius, enemy.y - enemy.radius, enemy.radius * 2, enemy.radius * 2);
+                        // Boss用专门的boss精灵图片
+                        this.drawBoss(enemy);
                     } else {
-                        // 普通敌人用圆形
-                        this.ctx.arc(enemy.x, enemy.y, enemy.radius, 0, Math.PI * 2);
+                        // 所有其他敌人都用精灵图片
+                        this.drawEnemy(enemy);
                     }
-                    this.ctx.fill();
                     
                     // 敌人血条
                     const enemyHpPercent = enemy.hp / enemy.maxHp;
@@ -1640,8 +1837,436 @@
                     }
                 }
                 this.ctx.closePath();
+                this.ctx.fill();
             }
-            
+
+            // 判断玩家是否达到满级状态
+            isPlayerMaxLevel() {
+                // 检查攻速、子弹数量、射程、换弹速度是否都达到满级
+                return this.upgradeLevels.attackSpeed >= this.upgradeMaxLevels.attackSpeed &&
+                       this.upgradeLevels.bulletCount >= this.upgradeMaxLevels.bulletCount &&
+                       this.upgradeLevels.range >= this.upgradeMaxLevels.range &&
+                       this.upgradeLevels.reloadSpeed >= this.upgradeMaxLevels.reloadSpeed;
+            }
+
+            // 检查并触发人物形象变化特效
+            checkPlayerTransformation() {
+                const newForm = this.isPlayerMaxLevel() ? 'player1' : 'player';
+
+                // 如果形象发生变化，触发特效
+                if (newForm !== this.currentPlayerForm) {
+                    this.currentPlayerForm = newForm;
+                    this.triggerTransformEffect();
+                }
+            }
+
+            // 触发变身特效
+            triggerTransformEffect() {
+                this.transformEffect.active = true;
+                this.transformEffect.startTime = Date.now();
+                this.transformEffect.particles = [];
+
+                // 创建变身粒子特效
+                for (let i = 0; i < 30; i++) {
+                    const angle = (Math.PI * 2 / 30) * i;
+                    const speed = 3 + Math.random() * 4;
+                    const distance = 20 + Math.random() * 30;
+
+                    this.transformEffect.particles.push({
+                        x: this.player.x + Math.cos(angle) * distance,
+                        y: this.player.y + Math.sin(angle) * distance,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed,
+                        life: 1.0,
+                        decay: 0.015,
+                        color: this.currentPlayerForm === 'player1' ? '#ffff00' : '#00ffff',
+                        size: 3 + Math.random() * 3
+                    });
+                }
+
+                // 显示变身提示
+                const message = this.currentPlayerForm === 'player1' ? '✨ 终极形态！✨' : '⚡ 基础形态 ⚡';
+                this.createFloatingText(this.player.x, this.player.y - 60, message, '#ffff00');
+
+                // 创建冲击波效果
+                this.createShockwave();
+            }
+
+            // 创建冲击波效果
+            createShockwave() {
+                this.transformEffect.shockwave = {
+                    x: this.player.x,
+                    y: this.player.y,
+                    radius: 0,
+                    maxRadius: 100,
+                    alpha: 0.8,
+                    startTime: Date.now()
+                };
+            }
+
+            // 计算玩家的动态大小
+            getPlayerSize() {
+                // 基础大小
+                const baseSize = 40; // 基础直径
+
+                // 根据各种属性计算大小增益
+                const attackSpeedBonus = this.upgradeLevels.attackSpeed * 0.8; // 攻速每级增加0.8像素
+                const bulletCountBonus = this.upgradeLevels.bulletCount * 8; // 子弹数量每级增加8像素
+                const rangeBonus = this.upgradeLevels.range * 1.2; // 射程每级增加1.2像素
+                const reloadSpeedBonus = this.upgradeLevels.reloadSpeed * 1.5; // 换弹速度每级增加1.5像素
+                const levelBonus = (this.level - 1) * 0.5; // 等级每级增加0.5像素
+
+                // 计算总大小
+                const totalSize = baseSize + attackSpeedBonus + bulletCountBonus + rangeBonus + reloadSpeedBonus + levelBonus;
+
+                // 限制最大大小，避免过大
+                return Math.min(totalSize, 80);
+            }
+
+            // 绘制玩家精灵
+            drawPlayer() {
+                // 检查是否需要触发变身特效
+                this.checkPlayerTransformation();
+
+                if (this.spriteLoaded) {
+                    // 根据升级状态选择精灵
+                    const spriteKey = this.currentPlayerForm;
+                    const sprite = this.sprites[spriteKey];
+
+                    // 获取动态大小
+                    const playerSize = this.getPlayerSize();
+
+                    // 计算绘制尺寸（保持比例，使用动态大小）
+                    const scale = playerSize / Math.max(sprite.width, sprite.height);
+                    const drawWidth = sprite.width * scale;
+                    const drawHeight = sprite.height * scale;
+
+                    // 变身特效期间的闪烁效果
+                    let alpha = 1;
+                    if (this.transformEffect.active) {
+                        const elapsed = Date.now() - this.transformEffect.startTime;
+                        const progress = elapsed / this.transformEffect.duration;
+
+                        if (progress < 1) {
+                            // 闪烁效果
+                            alpha = 0.5 + 0.5 * Math.sin(elapsed * 0.02);
+                        } else {
+                            this.transformEffect.active = false;
+                        }
+                    }
+
+                    // 如果正在换弹，添加灰色滤镜效果
+                    if (this.player.isReloading) {
+                        this.ctx.globalAlpha = 0.6 * alpha;
+                        this.ctx.filter = 'grayscale(100%)';
+                    } else {
+                        this.ctx.globalAlpha = alpha;
+                    }
+
+                    // 绘制精灵
+                    this.ctx.drawImage(
+                        this.playerSprite,
+                        sprite.x, sprite.y, sprite.width, sprite.height,
+                        this.player.x - drawWidth / 2, this.player.y - drawHeight / 2,
+                        drawWidth, drawHeight
+                    );
+
+                    // 重置滤镜和透明度
+                    this.ctx.globalAlpha = 1;
+                    this.ctx.filter = 'none';
+                } else {
+                    // 如果精灵未加载，使用原来的圆形绘制（也使用动态大小）
+                    const playerSize = this.getPlayerSize();
+                    const radius = playerSize / 2;
+
+                    this.ctx.fillStyle = this.player.isReloading ? '#888888' : this.player.color;
+                    this.ctx.beginPath();
+                    this.ctx.arc(this.player.x, this.player.y, radius, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
+
+                // 绘制变身特效
+                this.drawTransformEffect();
+            }
+
+            // 绘制变身特效
+            drawTransformEffect() {
+                if (!this.transformEffect.active) return;
+
+                const currentTime = Date.now();
+                const elapsed = currentTime - this.transformEffect.startTime;
+                const progress = elapsed / this.transformEffect.duration;
+
+                if (progress >= 1) {
+                    this.transformEffect.active = false;
+                    return;
+                }
+
+                // 绘制冲击波
+                if (this.transformEffect.shockwave) {
+                    const shockwave = this.transformEffect.shockwave;
+                    const shockwaveProgress = elapsed / 1000; // 冲击波1秒内完成
+
+                    if (shockwaveProgress < 1) {
+                        shockwave.radius = shockwave.maxRadius * shockwaveProgress;
+                        shockwave.alpha = 0.8 * (1 - shockwaveProgress);
+
+                        this.ctx.strokeStyle = `rgba(255, 255, 0, ${shockwave.alpha})`;
+                        this.ctx.lineWidth = 3;
+                        this.ctx.beginPath();
+                        this.ctx.arc(shockwave.x, shockwave.y, shockwave.radius, 0, Math.PI * 2);
+                        this.ctx.stroke();
+
+                        // 内圈冲击波
+                        this.ctx.strokeStyle = `rgba(255, 255, 255, ${shockwave.alpha * 0.5})`;
+                        this.ctx.lineWidth = 1;
+                        this.ctx.beginPath();
+                        this.ctx.arc(shockwave.x, shockwave.y, shockwave.radius * 0.7, 0, Math.PI * 2);
+                        this.ctx.stroke();
+                    }
+                }
+
+                // 更新和绘制变身粒子
+                for (let i = this.transformEffect.particles.length - 1; i >= 0; i--) {
+                    const particle = this.transformEffect.particles[i];
+
+                    // 更新粒子位置
+                    particle.x += particle.vx;
+                    particle.y += particle.vy;
+                    particle.life -= particle.decay;
+
+                    // 移除生命值耗尽的粒子
+                    if (particle.life <= 0) {
+                        this.transformEffect.particles.splice(i, 1);
+                        continue;
+                    }
+
+                    // 绘制粒子
+                    this.ctx.fillStyle = particle.color;
+                    this.ctx.globalAlpha = particle.life;
+                    this.ctx.beginPath();
+                    this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    this.ctx.fill();
+
+                    // 添加粒子光晕效果
+                    this.ctx.shadowColor = particle.color;
+                    this.ctx.shadowBlur = 10;
+                    this.ctx.beginPath();
+                    this.ctx.arc(particle.x, particle.y, particle.size * 0.5, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    this.ctx.shadowBlur = 0;
+                }
+
+                this.ctx.globalAlpha = 1;
+            }
+
+            // 绘制boss精灵
+            drawBoss(enemy) {
+                if (!enemy.bossVariant) {
+                    // 如果没有变体信息，使用默认星形
+                    this.drawStar(enemy.x, enemy.y, enemy.radius, enemy.radius * 0.5, 8);
+                    return;
+                }
+
+                const variant = enemy.bossVariant;
+                let spriteImage = null;
+                let spriteData = null;
+
+                // 确定使用哪个图片和精灵数据
+                if (variant === 'bigboss') {
+                    spriteImage = this.bossSprites.bigboss;
+                    spriteData = this.sprites.bigboss;
+                } else if (variant === 'xiaoboss') {
+                    spriteImage = this.bossSprites.xiaoboss;
+                    spriteData = this.sprites.xiaoboss;
+                } else if (variant === 'xiaoboss1') {
+                    spriteImage = this.bossSprites.xiaoboss1;
+                    spriteData = this.sprites.xiaoboss1;
+                } else if (variant.startsWith('xiaoboss2_')) {
+                    spriteImage = this.bossSprites.xiaoboss2;
+                    spriteData = this.sprites[variant];
+                } else if (variant.startsWith('boss')) {
+                    spriteImage = this.bossSprites.boss;
+                    spriteData = this.sprites[variant];
+                }
+
+                // 检查图片是否加载完成
+                const spriteKey = variant === 'bigboss' ? 'bigboss' :
+                                 variant === 'xiaoboss' ? 'xiaoboss' :
+                                 variant === 'xiaoboss1' ? 'xiaoboss1' :
+                                 variant.startsWith('xiaoboss2_') ? 'xiaoboss2' : 'boss';
+
+                if (!this.bossSpritesLoaded[spriteKey] || !spriteImage || !spriteData) {
+                    // 如果图片未加载，使用星形作为后备
+                    this.drawStar(enemy.x, enemy.y, enemy.radius, enemy.radius * 0.5, 8);
+                    return;
+                }
+
+                // 计算绘制尺寸
+                const scale = (enemy.radius * 2) / Math.max(spriteData.width, spriteData.height);
+                const drawWidth = spriteData.width * scale;
+                const drawHeight = spriteData.height * scale;
+
+                // 狂暴状态特效
+                if (enemy.isRaging) {
+                    this.ctx.shadowColor = '#ff0000';
+                    this.ctx.shadowBlur = 15;
+                }
+
+                // 护盾状态特效
+                if (enemy.hasShield) {
+                    this.ctx.shadowColor = '#00ff00';
+                    this.ctx.shadowBlur = 10;
+                }
+
+                // 绘制boss精灵
+                if (variant === 'bigboss') {
+                    // bigboss是单张图片，绘制整个图片
+                    this.ctx.drawImage(
+                        spriteImage,
+                        enemy.x - drawWidth / 2, enemy.y - drawHeight / 2,
+                        drawWidth, drawHeight
+                    );
+                } else {
+                    // 其他boss从精灵表中绘制
+                    this.ctx.drawImage(
+                        spriteImage,
+                        spriteData.x, spriteData.y, spriteData.width, spriteData.height,
+                        enemy.x - drawWidth / 2, enemy.y - drawHeight / 2,
+                        drawWidth, drawHeight
+                    );
+                }
+
+                // 重置阴影
+                this.ctx.shadowBlur = 0;
+            }
+
+            // 绘制敌人精灵
+            drawEnemy(enemy) {
+                if (!enemy.enemyVariant) {
+                    // 如果没有变体信息，使用圆形作为后备
+                    this.ctx.fillStyle = enemy.color;
+                    this.ctx.beginPath();
+                    this.ctx.arc(enemy.x, enemy.y, enemy.radius, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    return;
+                }
+
+                // 检查是否使用boss精灵（精英敌人）
+                if (enemy.usesBossSprite) {
+                    this.drawEnemyWithBossSprite(enemy);
+                    return;
+                }
+
+                // 使用普通敌人精灵
+                if (!this.enemySpriteLoaded) {
+                    // 如果图片未加载，使用圆形作为后备
+                    this.ctx.fillStyle = enemy.color;
+                    this.ctx.beginPath();
+                    this.ctx.arc(enemy.x, enemy.y, enemy.radius, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    return;
+                }
+
+                const spriteData = this.sprites[enemy.enemyVariant];
+                if (!spriteData) {
+                    // 如果精灵数据不存在，使用圆形作为后备
+                    this.ctx.fillStyle = enemy.color;
+                    this.ctx.beginPath();
+                    this.ctx.arc(enemy.x, enemy.y, enemy.radius, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    return;
+                }
+
+                // 计算绘制尺寸
+                const scale = (enemy.radius * 2) / Math.max(spriteData.width, spriteData.height);
+                const drawWidth = spriteData.width * scale;
+                const drawHeight = spriteData.height * scale;
+
+                // 添加不同类型敌人的特效
+                this.applyEnemyEffects(enemy);
+
+                // 绘制敌人精灵
+                this.ctx.drawImage(
+                    this.enemySprite,
+                    spriteData.x, spriteData.y, spriteData.width, spriteData.height,
+                    enemy.x - drawWidth / 2, enemy.y - drawHeight / 2,
+                    drawWidth, drawHeight
+                );
+
+                // 重置阴影
+                this.ctx.shadowBlur = 0;
+            }
+
+            // 为精英敌人绘制boss精灵
+            drawEnemyWithBossSprite(enemy) {
+                const variant = enemy.enemyVariant;
+                const spriteImage = this.bossSprites.boss;
+                const spriteData = this.sprites[variant];
+
+                if (!this.bossSpritesLoaded.boss || !spriteData) {
+                    // 如果boss图片未加载，使用圆形作为后备
+                    this.ctx.fillStyle = enemy.color;
+                    this.ctx.beginPath();
+                    this.ctx.arc(enemy.x, enemy.y, enemy.radius, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    return;
+                }
+
+                // 计算绘制尺寸
+                const scale = (enemy.radius * 2) / Math.max(spriteData.width, spriteData.height);
+                const drawWidth = spriteData.width * scale;
+                const drawHeight = spriteData.height * scale;
+
+                // 精英敌人特效
+                this.applyEnemyEffects(enemy);
+
+                // 绘制boss精灵
+                this.ctx.drawImage(
+                    spriteImage,
+                    spriteData.x, spriteData.y, spriteData.width, spriteData.height,
+                    enemy.x - drawWidth / 2, enemy.y - drawHeight / 2,
+                    drawWidth, drawHeight
+                );
+
+                // 重置阴影
+                this.ctx.shadowBlur = 0;
+            }
+
+            // 应用不同类型敌人的视觉特效
+            applyEnemyEffects(enemy) {
+                switch (enemy.type) {
+                    case 'fast':
+                        // 快速敌人：蓝色光晕
+                        this.ctx.shadowColor = '#00aaff';
+                        this.ctx.shadowBlur = 8;
+                        break;
+                    case 'tank':
+                        // 坦克敌人：红色光晕
+                        this.ctx.shadowColor = '#ff4444';
+                        this.ctx.shadowBlur = 10;
+                        break;
+                    case 'elite':
+                        // 精英敌人：金色光晕
+                        this.ctx.shadowColor = '#ffaa00';
+                        this.ctx.shadowBlur = 12;
+                        break;
+                    case 'split':
+                        // 分裂敌人：紫色光晕，表示它们来自分裂
+                        this.ctx.shadowColor = '#ff00ff';
+                        this.ctx.shadowBlur = 10;
+                        break;
+                    case 'summoned':
+                        // 召唤敌人：橙色光晕，表示它们是被召唤的
+                        this.ctx.shadowColor = '#ffaa00';
+                        this.ctx.shadowBlur = 6;
+                        break;
+                    default:
+                        // 普通敌人：无特效
+                        break;
+                }
+            }
+
             gameLoop() {
                 const currentTime = Date.now();
                 const deltaTime = currentTime - this.lastTime;

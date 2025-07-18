@@ -57,7 +57,8 @@
             top: 0;
             left: 0;
             pointer-events: none;
-            z-index: 10;
+            z-index: 100;
+            background: transparent;
         }
         
         .selection-box {
@@ -300,14 +301,24 @@
                 document.getElementById('loadStatus').textContent = '加载成功';
                 document.getElementById('loadStatus').style.color = '#00ff00';
 
-                // 设置overlay canvas尺寸
-                selectionOverlay.width = this.naturalWidth;
-                selectionOverlay.height = this.naturalHeight;
-                selectionOverlay.style.width = this.offsetWidth + 'px';
-                selectionOverlay.style.height = this.offsetHeight + 'px';
+                // 等待图片完全渲染后设置canvas
+                setTimeout(() => {
+                    // 设置overlay canvas尺寸
+                    selectionOverlay.width = this.naturalWidth;
+                    selectionOverlay.height = this.naturalHeight;
+                    selectionOverlay.style.width = this.offsetWidth + 'px';
+                    selectionOverlay.style.height = this.offsetHeight + 'px';
 
-                drawAllSelections();
-                updatePreview();
+                    // 确保canvas在图片上方
+                    selectionOverlay.style.position = 'absolute';
+                    selectionOverlay.style.top = '0';
+                    selectionOverlay.style.left = '0';
+                    selectionOverlay.style.zIndex = '100';
+                    selectionOverlay.style.pointerEvents = 'none';
+
+                    drawAllSelections();
+                    updatePreview();
+                }, 100);
             };
 
             spriteImage.onerror = function() {
@@ -424,34 +435,48 @@
         function drawAllSelections() {
             if (!spriteImage.complete || !spriteImage.naturalWidth) return;
 
+            // 确保canvas尺寸正确
+            const imgRect = spriteImage.getBoundingClientRect();
+            selectionOverlay.style.width = imgRect.width + 'px';
+            selectionOverlay.style.height = imgRect.height + 'px';
+            selectionOverlay.width = spriteImage.naturalWidth;
+            selectionOverlay.height = spriteImage.naturalHeight;
+
             overlayCtx.clearRect(0, 0, selectionOverlay.width, selectionOverlay.height);
 
             const scaleX = spriteImage.offsetWidth / spriteImage.naturalWidth;
             const scaleY = spriteImage.offsetHeight / spriteImage.naturalHeight;
 
             Object.entries(spriteCoords).forEach(([name, coords]) => {
+                if (coords.width <= 0 || coords.height <= 0) return; // 跳过无效坐标
+
                 const x = coords.x * scaleX;
                 const y = coords.y * scaleY;
                 const width = coords.width * scaleX;
                 const height = coords.height * scaleY;
 
-                // 设置颜色
+                // 设置颜色和线条样式
+                overlayCtx.lineWidth = 3; // 增加线条宽度
                 if (name === currentSprite) {
                     overlayCtx.strokeStyle = '#ff0000';
-                    overlayCtx.fillStyle = 'rgba(255, 0, 0, 0.2)';
+                    overlayCtx.fillStyle = 'rgba(255, 0, 0, 0.3)';
                 } else {
                     overlayCtx.strokeStyle = '#00ff00';
-                    overlayCtx.fillStyle = 'rgba(0, 255, 0, 0.1)';
+                    overlayCtx.fillStyle = 'rgba(0, 255, 0, 0.2)';
                 }
 
-                overlayCtx.lineWidth = 2;
+                // 绘制填充和边框
                 overlayCtx.fillRect(x, y, width, height);
                 overlayCtx.strokeRect(x, y, width, height);
 
-                // 绘制标签
-                overlayCtx.fillStyle = name === currentSprite ? '#ff0000' : '#00ff00';
-                overlayCtx.font = '12px Arial';
-                overlayCtx.fillText(name, x + 2, y - 5);
+                // 绘制标签背景
+                overlayCtx.fillStyle = name === currentSprite ? 'rgba(255, 0, 0, 0.8)' : 'rgba(0, 255, 0, 0.8)';
+                overlayCtx.fillRect(x, y - 20, name.length * 8, 18);
+
+                // 绘制标签文字
+                overlayCtx.fillStyle = '#ffffff';
+                overlayCtx.font = 'bold 12px Arial';
+                overlayCtx.fillText(name, x + 2, y - 6);
             });
         }
 

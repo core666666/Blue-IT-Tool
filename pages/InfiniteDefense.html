@@ -312,6 +312,7 @@
     
     <div id="ui">
         <div class="stat-line">难度: <span class="stat-value" id="difficulty">-</span></div>
+        <div class="stat-line">地图: <span class="stat-value" id="currentMap">-</span></div>
         <div class="stat-line">波数: <span class="stat-value" id="wave">1</span></div>
         <div class="stat-line">击杀数: <span class="stat-value" id="kills">0</span></div>
         <div class="stat-line">金币: <span class="stat-value" id="gold">50</span></div>
@@ -408,6 +409,24 @@
                 this.bulletSprite.src = '../assets/images/InfiniteDefense/zidan.png';
                 this.bulletSpriteLoaded = false;
 
+                // 加载背景地图
+                this.backgroundImages = {
+                    bg1: new Image(),
+                    bg2: new Image()
+                };
+
+                this.backgroundImages.bg1.src = '../assets/images/InfiniteDefense/bg1.png';
+                this.backgroundImages.bg2.src = '../assets/images/InfiniteDefense/bg2.png';
+
+                this.backgroundsLoaded = {
+                    bg1: false,
+                    bg2: false
+                };
+
+                // 随机选择本局游戏的背景
+                const backgroundOptions = ['bg1', 'bg2'];
+                this.currentBackground = backgroundOptions[Math.floor(Math.random() * backgroundOptions.length)];
+
                 // 精灵坐标定义
                 this.sprites = {
                     player: { x: 149, y: 344, width: 255, height: 369 },
@@ -478,6 +497,15 @@
 
                 this.bulletSprite.onload = () => {
                     this.bulletSpriteLoaded = true;
+                };
+
+                // 设置背景图片加载回调
+                this.backgroundImages.bg1.onload = () => {
+                    this.backgroundsLoaded.bg1 = true;
+                };
+
+                this.backgroundImages.bg2.onload = () => {
+                    this.backgroundsLoaded.bg2 = true;
                 };
 
                 // 为本局游戏随机选择一种子弹类型
@@ -667,7 +695,15 @@
                 
                 document.getElementById('difficultyMenu').style.display = 'none';
                 document.getElementById('difficulty').textContent = settings.name;
-                
+
+                // 显示地图选择信息
+                const mapNames = {
+                    'bg1': '🌲 森林战场',
+                    'bg2': '🏜️ 沙漠战场'
+                };
+                this.createFloatingText(this.canvas.width / 2, 100,
+                    `地图: ${mapNames[this.currentBackground]}`, '#00ff00', 3000);
+
                 this.startWave();
                 this.updateUI();
             }
@@ -1692,6 +1728,13 @@
                 document.getElementById('exp').textContent = this.exp;
                 document.getElementById('expNeeded').textContent = this.expNeeded;
                 document.getElementById('level').textContent = this.level;
+
+                // 显示当前地图信息
+                const mapNames = {
+                    'bg1': '🌲 森林战场',
+                    'bg2': '🏜️ 沙漠战场'
+                };
+                document.getElementById('currentMap').textContent = mapNames[this.currentBackground] || this.currentBackground;
                 document.getElementById('hp').textContent = Math.max(0, Math.floor(this.player.hp));
                 document.getElementById('maxHp').textContent = this.player.maxHp;
                 document.getElementById('damage').textContent = this.player.damage;
@@ -1717,12 +1760,11 @@
             }
             
             render() {
-                // 清空画布
-                this.ctx.fillStyle = '#1a1a1a';
-                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-                
+                // 绘制背景
+                this.drawBackground();
+
                 if (!this.isGameStarted) return;
-                
+
                 // 绘制网格
                 this.drawGrid();
                 
@@ -1969,6 +2011,36 @@
 
                 // 限制最大大小
                 return Math.min(finalSize, 150);
+            }
+
+            // 绘制背景地图
+            drawBackground() {
+                // 先用纯色填充作为后备
+                this.ctx.fillStyle = '#1a1a1a';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                // 如果背景图片已加载，则绘制背景
+                if (this.backgroundsLoaded[this.currentBackground]) {
+                    const bgImage = this.backgroundImages[this.currentBackground];
+
+                    // 计算缩放比例以填满整个画布
+                    const scaleX = this.canvas.width / bgImage.width;
+                    const scaleY = this.canvas.height / bgImage.height;
+                    const scale = Math.max(scaleX, scaleY); // 使用较大的缩放比例确保填满
+
+                    const scaledWidth = bgImage.width * scale;
+                    const scaledHeight = bgImage.height * scale;
+
+                    // 居中绘制
+                    const x = (this.canvas.width - scaledWidth) / 2;
+                    const y = (this.canvas.height - scaledHeight) / 2;
+
+                    this.ctx.drawImage(bgImage, x, y, scaledWidth, scaledHeight);
+
+                    // 添加轻微的暗化效果，让游戏元素更突出
+                    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+                    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                }
             }
 
             // 绘制玩家精灵

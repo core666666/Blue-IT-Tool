@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>符文法师 - Glyph Caster</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #0a0a0a;
+            overflow: hidden;
+            touch-action: none;
+            font-family: Arial, sans-serif;
+        }
+        
+        #gameCanvas {
+            display: block;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #0a0a0a 100%);
+        }
+        
+        #ui {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #fff;
+            font-size: 18px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        
+        .ui-element {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .mana-bar {
+            width: 200px;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #4a90e2;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-left: 10px;
+        }
+        
+        .mana-fill {
+            height: 100%;
+            background: linear-gradient(to right, #4a90e2, #7bb3f0);
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px #4a90e2;
+        }
+        
+        /* 技能栏样式 */
+        #skillBar {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            display: flex;
+            gap: 10px;
+            display: none;
+        }
+        
+        .skill-icon {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #4a90e2;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .skill-icon:hover {
+            background: rgba(0, 0, 0, 0.9);
+            transform: scale(1.05);
+        }
+        
+        .skill-icon.on-cooldown {
+            border-color: #666;
+            background: rgba(0, 0, 0, 0.9);
+            cursor: not-allowed;
+        }
+        
+        .skill-icon.low-mana {
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.2);
+        }
+        
+        .cooldown-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ff6b6b;
+            font-weight: bold;
+            font-size: 14px;
+            border-radius: 8px;
+        }
+        
+        .skill-emoji {
+            font-size: 24px;
+            margin-bottom: 2px;
+        }
+        
+        .mana-cost {
+            font-size: 10px;
+            color: #4a90e2;
+            margin-top: 2px;
+        }
+        
+        .skill-name {
+            font-size: 8px;
+            color: #ccc;
+            text-align: center;
+        }
+        
+        #helpButton {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 10px 20px;
+            background: rgba(74, 144, 226, 0.3);
+            color: #fff;
+            border: 2px solid #4a90e2;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        #helpButton:hover {
+            background: rgba(74, 144, 226, 0.5);
+        }
+        
+        #gameOver, #helpScreen, #upgradeScreen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #fff;
+            display: none;
+            background: rgba(0, 0, 0, 1.0);
+            padding: 30px;
+            border-radius: 10px;
+            border: 2px solid #4a90e2;
+            max-width: 90%;
+            max-height: 95%;
+            overflow-y: auto;
+        }
+        
+        #gameOver h2, #helpScreen h2, #upgradeScreen h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+        }
+        
+        button {
+            padding: 15px 30px;
+            font-size: 20px;
+            background: #4a90e2;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(74, 144, 226, 0.5);
+            margin: 10px;
+        }
+        
+        button:hover {
+            background: #5ba0f2;
+        }
+        
+        .glyph-guide {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .glyph-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            width: 200px;
+        }
+        
+        .glyph-item canvas {
+            width: 100%;
+            height: 80px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .glyph-name {
+            font-size: 18px;
+            color: #4a90e2;
+            margin-bottom: 5px;
+        }
+        
+        .glyph-desc {
+            font-size: 14px;
+            color: #ccc;
+        }
+        
+        .upgrade-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .upgrade-option {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .upgrade-option:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #4a90e2;
+            transform: scale(1.02);
+        }
+        
+        .upgrade-title {
+            font-size: 20px;
+            color: #4a90e2;
+            margin-bottom: 10px;
+        }
+        
+        .upgrade-desc {
+            font-size: 16px;
+            color: #ccc;
+        }
+        
+        #startScreen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 40px;
+            border-radius: 10px;
+            border: 2px solid #4a90e2;
+        }
+        
+        #startScreen h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(74, 144, 226, 0.8);
+        }
+        
+        #startScreen p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            color: #ccc;
+        }
+        
+        /* 新增：单独调整#helpScreen最大宽度和隐藏Y轴滚动条 */
+        #helpScreen {
+            max-width: 900px;
+            overflow-y: hidden;
+            width: 80%;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    
+    <div id="ui" style="display: none;">
+        <div class="ui-element">
+            <span>分数: <span id="score">0</span></span>
+        </div>
+        <div class="ui-element">
+            <span>波次: <span id="wave">1</span></span>
+        </div>
+        <div class="ui-element">
+            <span>法力值:</span>
+            <div class="mana-bar">
+                <div class="mana-fill" id="manaFill"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 技能栏 -->
+    <div id="skillBar">
+        <div class="skill-icon" data-skill="line">
+            <div class="skill-emoji">🔥</div>
+            <div class="skill-name">火球</div>
+            <div class="mana-cost">10</div>
+        </div>
+        <div class="skill-icon" data-skill="circle">
+            <div class="skill-emoji">🛡️</div>
+            <div class="skill-name">护盾</div>
+            <div class="mana-cost">30</div>
+        </div>
+        <div class="skill-icon" data-skill="triangle">
+            <div class="skill-emoji">🎯</div>
+            <div class="skill-name">追踪</div>
+            <div class="mana-cost">20</div>
+        </div>
+        <div class="skill-icon" data-skill="z">
+            <div class="skill-emoji">⚡</div>
+            <div class="skill-name">闪电</div>
+            <div class="mana-cost">40</div>
+        </div>
+        <div class="skill-icon" data-skill="spiral">
+            <div class="skill-emoji">🌀</div>
+            <div class="skill-name">旋涡</div>
+            <div class="mana-cost">50</div>
+        </div>
+    </div>
+    
+    <button id="helpButton" style="display: none;" onclick="showHelp()">游戏说明</button>
+    
+    <div id="startScreen">
+        <h1>符文法师</h1>
+        <p>在屏幕上绘制神秘符文，释放强大魔法！</p>
+        <button onclick="startGame()">开始游戏</button>
+        <button onclick="showHelp()">游戏说明</button>
+    </div>
+    
+    <div id="helpScreen">
+        <h2>游戏说明</h2>
+        <h3 style="color: #4a90e2; margin: 20px 0;">基础玩法</h3>
+        <p style="margin-bottom: 20px;">在屏幕上绘制不同的符文图案来释放对应的魔法。敌人会从四面八方涌来，使用你的魔法消灭它们！</p>
+        
+        <h3 style="color: #4a90e2; margin: 20px 0;">符文系统</h3>
+        <div class="glyph-guide" id="glyphGuide"></div>
+        
+        <h3 style="color: #4a90e2; margin: 20px 0;">游戏机制</h3>
+        <ul style="text-align: left; margin: 0 auto; max-width: 400px;">
+            <li>消灭敌人获得分数和法力值</li>
+            <li>法力值会缓慢自动恢复</li>
+            <li>每波敌人消灭后可选择一个强化</li>
+            <li>被敌人碰到会损失护盾或游戏结束</li>
+        </ul>
+        
+        <button onclick="hideHelp()">关闭</button>
+    </div>
+    
+    <div id="upgradeScreen">
+        <h2>选择你的强化</h2>
+        <p style="margin-bottom: 20px;">成功防御了一波攻击！选择一个强化继续战斗：</p>
+        <div class="upgrade-options" id="upgradeOptions"></div>
+    </div>
+    
+    <div id="gameOver">
+        <h2>游戏结束</h2>
+        <p>最终分数: <span id="finalScore">0</span></p>
+        <p>生存波次: <span id="finalWave">0</span></p>
+        <button onclick="location.reload()">重新开始</button>
+    </div>
+
+    <script>
+        // 游戏配置
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 设置画布大小
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // 游戏状态
+        const game = {
+            score: 0,
+            wave: 1,
+            mana: 100,
+            maxMana: 100,
+            manaRegen: 0.2,
+            isDrawing: false,
+            currentGlyph: [],
+            enemies: [],
+            projectiles: [],
+            effects: [],
+            vortexes: [], // 新增：旋涡数组
+            player: {
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                radius: 30,
+                shield: 0,
+                shieldMax: 3
+            },
+            isPaused: false,
+            isGameOver: false,
+            hasStarted: false,
+            upgrades: {
+                fireballExplosion: false,
+                shieldPush: false,
+                chainLightningExtra: 0,
+                manaRegenBonus: 0,
+                fireballSize: 1,
+                shieldDuration: 1,
+                projectileSpeed: 1,
+                manaCostReduction: 0
+            }
+        };
+        
+        // 符文模板
+        const glyphTemplates = {
+            line: {
+                name: '火球术',
+                description: '向指定方向发射火球',
+                color: '#ff6b6b',
+                manaCost: 10,
+                cooldown: 0,
+                lastUsed: 0,
+                pattern: 'line'
+            },
+            circle: {
+                name: '魔法护盾',
+                description: '生成保护护盾',
+                color: '#4ecdc4',
+                manaCost: 30,
+                cooldown: 5000,
+                lastUsed: 0,
+                pattern: 'circle'
+            },
+            triangle: {
+                name: '追踪飞弹',
+                description: '发射自动追踪的飞弹',
+                color: '#ffe66d',
+                manaCost: 20,
+                cooldown: 1000,
+                lastUsed: 0,
+                pattern: 'triangle'
+            },
+            z: {
+                name: '连锁闪电',
+                description: '在敌人间跳跃的闪电',
+                color: '#a8e6cf',
+                manaCost: 40,
+                cooldown: 3000,
+                lastUsed: 0,
+                pattern: 'z'
+            },
+            spiral: {
+                name: '引力旋涡',
+                description: '创造吸引敌人的旋涡',
+                color: '#c7ceea',
+                manaCost: 50,
+                cooldown: 8000,
+                lastUsed: 0,
+                pattern: 'spiral'
+            }
+        };
+        
+        // 可能的升级选项
+        const possibleUpgrades = [
+            {
+                id: 'fireballExplosion',
+                title: '爆炸火球',
+                description: '你的火球术击中目标后会产生小范围爆炸',
+                apply: () => { game.upgrades.fireballExplosion = true; }
+            },
+            {
+                id: 'shieldPush',
+                title: '反击护盾',
+                description: '魔法护盾被击破时会推开周围的敌人',
+                apply: () => { game.upgrades.shieldPush = true; }
+            },
+            {
+                id: 'chainLightningExtra',
+                title: '强化闪电',
+                description: '连锁闪电可以多弹跳2次',
+                apply: () => { game.upgrades.chainLightningExtra += 2; }
+            },
+            {
+                id: 'manaRegenBonus',
+                title: '法力涌流',
+                description: '法力恢复速度提升50%',
+                apply: () => { 
+                    game.upgrades.manaRegenBonus += 0.5;
+                    game.manaRegen *= 1.5;
+                }
+            },
+            {
+                id: 'fireballSize',
+                title: '巨型火球',
+                description: '火球体积和伤害增加30%',
+                apply: () => { game.upgrades.fireballSize *= 1.3; }
+            },
+            {
+                id: 'maxManaBonus',
+                title: '法力扩展',
+                description: '最大法力值增加30点',
+                apply: () => { 
+                    game.maxMana += 30;
+                    game.mana += 30;
+                }
+            },
+            {
+                id: 'projectileSpeed',
+                title: '疾速施法',
+                description: '所有投射物速度提升30%',
+                apply: () => { game.upgrades.projectileSpeed *= 1.3; }
+            },
+            {
+                id: 'manaCostReduction',
+                title: '节能施法',
+                description: '所有法术消耗减少20%',
+                apply: () => { game.upgrades.manaCostReduction += 0.2; }
+            },
+            {
+                id: 'triangleCount',
+                title: '多重追踪',
+                description: '追踪飞弹数量+2',
+                apply: () => { game.upgrades.triangleCount = (game.upgrades.triangleCount || 0) + 2; }
+            },
+            {
+                id: 'vortexDamage',
+                title: '破坏旋涡',
+                description: '引力旋涡对敌人造成持续伤害',
+                apply: () => { game.upgrades.vortexDamage = true; }
+            }
+        ];
+        
+        // 敌人类型
+        const enemyTypes = {
+            imp: {
+                radius: 15,
+                speed: 1.5,
+                health: 1,
+                color: '#ff6b6b',
+                score: 10
+            },
+            brute: {
+                radius: 25,
+                speed: 0.5,
+                health: 5,
+                color: '#ff4757',
+                score: 30
+            },
+            wraith: {
+                radius: 12,
+                speed: 3,
+                health: 1,
+                color: '#dfe6e9',
+                score: 20
+            },
+            swarm: {
+                radius: 8,
+                speed: 2,
+                health: 1,
+                color: '#fdcb6e',
+                score: 5
+            }
+        };
+        
+        // 粒子效果类
+        class Particle {
+            constructor(x, y, color, velocity, lifetime = 1000) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.velocity = velocity;
+                this.lifetime = lifetime;
+                this.age = 0;
+                this.radius = Math.random() * 3 + 1;
+            }
+            
+            update(deltaTime) {
+                this.x += this.velocity.x;
+                this.y += this.velocity.y;
+                this.age += deltaTime;
+                this.velocity.x *= 0.98;
+                this.velocity.y *= 0.98;
+                return this.age < this.lifetime;
+            }
+            
+            draw() {
+                const alpha = 1 - (this.age / this.lifetime);
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+        
+        // 旋涡类
+        class Vortex {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.radius = 80;
+                this.strength = 2;
+                this.lifetime = 5000;
+                this.age = 0;
+                this.rotation = 0;
+            }
+            
+            update(deltaTime) {
+                this.age += deltaTime;
+                this.rotation += 0.1;
+                
+                // 影响范围内的敌人
+                game.enemies.forEach(enemy => {
+                    const dx = this.x - enemy.x;
+                    const dy = this.y - enemy.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < this.radius) {
+                        const force = this.strength * (1 - distance / this.radius);
+                        enemy.x += (dx / distance) * force;
+                        enemy.y += (dy / distance) * force;
+                        
+                        // 旋转效果
+                        const angle = Math.atan2(dy, dx);
+                        const tangentX = -Math.sin(angle);
+                        const tangentY = Math.cos(angle);
+                        enemy.x += tangentX * force * 0.5;
+                        enemy.y += tangentY * force * 0.5;
+                        
+                        // 如果有破坏旋涡升级，造成伤害
+                        if (game.upgrades.vortexDamage && Math.random() < 0.02) {
+                            if (enemy.takeDamage(1)) {
+                                game.enemies = game.enemies.filter(e => e !== enemy);
+                            }
+                        }
+                    }
+                });
+                
+                return this.age < this.lifetime;
+            }
+            
+            draw() {
+                const alpha = 1 - (this.age / this.lifetime);
+                ctx.globalAlpha = alpha * 0.3;
+                
+                // 绘制旋涡
+                ctx.strokeStyle = glyphTemplates.spiral.color;
+                ctx.lineWidth = 3;
+                
+                for (let i = 0; i < 5; i++) {
+                    const r = this.radius * (i + 1) / 5;
+                    ctx.beginPath();
+                    
+                    for (let angle = 0; angle < Math.PI * 4; angle += 0.1) {
+                        const spiralR = r * (1 - angle / (Math.PI * 4));
+                        const x = this.x + Math.cos(angle + this.rotation) * spiralR;
+                        const y = this.y + Math.sin(angle + this.rotation) * spiralR;
+                        
+                        if (angle === 0) {
+                            ctx.moveTo(x, y);
+                        } else {
+                            ctx.lineTo(x, y);
+                        }
+                    }
+                    ctx.stroke();
+                }
+                
+                ctx.globalAlpha = 1;
+            }
+        }
+        
+        // 敌人类
+        class Enemy {
+            constructor(type, x, y) {
+                this.type = type;
+                this.x = x;
+                this.y = y;
+                this.radius = enemyTypes[type].radius;
+                this.speed = enemyTypes[type].speed;
+                this.health = enemyTypes[type].health;
+                this.maxHealth = enemyTypes[type].health;
+                this.color = enemyTypes[type].color;
+                this.score = enemyTypes[type].score;
+            }
+            
+            update() {
+                const dx = game.player.x - this.x;
+                const dy = game.player.y - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance > 0) {
+                    this.x += (dx / distance) * this.speed;
+                    this.y += (dy / distance) * this.speed;
+                }
+                
+                // 检查与玩家的碰撞
+                if (distance < this.radius + game.player.radius) {
+                    this.takeDamage(this.health);
+                    if (game.player.shield > 0) {
+                        game.player.shield--;
+                        if (game.upgrades.shieldPush) {
+                            // 护盾反击
+                            this.x = game.player.x + (dx / distance) * 100;
+                            this.y = game.player.y + (dy / distance) * 100;
+                        }
+                    } else {
+                        game.isGameOver = true;
+                    }
+                }
+            }
+            
+            takeDamage(damage) {
+                this.health -= damage;
+                if (this.health <= 0) {
+                    game.score += this.score;
+                    const manaGain = game.upgrades.killManaBonus ? 10 : 5;
+                    game.mana = Math.min(game.mana + manaGain, game.maxMana);
+                    createExplosion(this.x, this.y, this.color);
+                    return true;
+                }
+                return false;
+            }
+            
+            draw() {
+                // 绘制敌人
+                ctx.strokeStyle = this.color;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.stroke();
+                
+                // 绘制血条
+                if (this.health < this.maxHealth) {
+                    const barWidth = this.radius * 2;
+                    const barHeight = 4;
+                    const barY = this.y - this.radius - 10;
+                    
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+                    ctx.fillRect(this.x - barWidth/2, barY, barWidth, barHeight);
+                    
+                    ctx.fillStyle = this.color;
+                    ctx.fillRect(this.x - barWidth/2, barY, barWidth * (this.health / this.maxHealth), barHeight);
+                }
+            }
+        }
+        
+        // 投射物类
+        class Projectile {
+            constructor(x, y, target, type, damage = 1) {
+                this.x = x;
+                this.y = y;
+                this.target = target;
+                this.type = type;
+                this.damage = damage * (type === 'line' ? game.upgrades.fireballSize : 1);
+                this.speed = 8 * game.upgrades.projectileSpeed;
+                this.radius = 5 * (type === 'line' ? game.upgrades.fireballSize : 1);
+                this.trail = [];
+                this.isHomingMissile = (type === 'triangle');
+            }
+            
+            update() {
+                this.trail.push({x: this.x, y: this.y});
+                if (this.trail.length > 10) {
+                    this.trail.shift();
+                }
+                
+                // 追踪飞弹重新寻找目标
+                if (this.isHomingMissile && (!this.target || !game.enemies.includes(this.target))) {
+                    this.target = findNearestEnemy(this.x, this.y);
+                }
+                
+                if (this.target) {
+                    const dx = this.target.x - this.x;
+                    const dy = this.target.y - this.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < this.radius + this.target.radius) {
+                        // 命中目标
+                        if (this.target.takeDamage(this.damage)) {
+                            game.enemies = game.enemies.filter(e => e !== this.target);
+                        }
+                        
+                        // 火球爆炸效果
+                        if (this.type === 'line' && game.upgrades.fireballExplosion) {
+                            const explosionRadius = 50;
+                            game.enemies.forEach(enemy => {
+                                const dx = enemy.x - this.x;
+                                const dy = enemy.y - this.y;
+                                const dist = Math.sqrt(dx * dx + dy * dy);
+                                if (dist < explosionRadius && enemy !== this.target) {
+                                    if (enemy.takeDamage(1)) {
+                                        game.enemies = game.enemies.filter(e => e !== enemy);
+                                    }
+                                }
+                            });
+                            createExplosion(this.x, this.y, '#ff9999');
+                        }
+                        
+                        return false;
+                    }
+                    
+                    this.x += (dx / distance) * this.speed;
+                    this.y += (dy / distance) * this.speed;
+                } else {
+                    // 没有目标，直线飞行
+                    this.x += Math.cos(this.angle || 0) * this.speed;
+                    this.y += Math.sin(this.angle || 0) * this.speed;
+                }
+                
+                // 检查是否超出屏幕
+                return this.x > 0 && this.x < canvas.width && 
+                       this.y > 0 && this.y < canvas.height;
+            }
+            
+            draw() {
+                // 绘制轨迹
+                ctx.strokeStyle = glyphTemplates[this.type].color;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                this.trail.forEach((point, index) => {
+                    if (index === 0) {
+                        ctx.moveTo(point.x, point.y);
+                    } else {
+                        ctx.lineTo(point.x, point.y);
+                    }
+                });
+                ctx.lineTo(this.x, this.y);
+                ctx.stroke();
+                
+                // 绘制投射物
+                ctx.fillStyle = glyphTemplates[this.type].color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        // 创建爆炸效果
+        function createExplosion(x, y, color) {
+            for (let i = 0; i < 20; i++) {
+                const angle = (Math.PI * 2 * i) / 20;
+                const speed = Math.random() * 3 + 2;
+                game.effects.push(new Particle(
+                    x, y, color,
+                    {
+                        x: Math.cos(angle) * speed,
+                        y: Math.sin(angle) * speed
+                    }
+                ));
+            }
+        }
+        
+        // 查找最近的敌人
+        function findNearestEnemy(x, y) {
+            let nearest = null;
+            let minDistance = Infinity;
+            
+            game.enemies.forEach(enemy => {
+                const dx = enemy.x - x;
+                const dy = enemy.y - y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearest = enemy;
+                }
+            });
+            
+            return nearest;
+        }
+        
+        // ==================== 改进的符文识别算法 ====================
+        
+        // 改进的圆形检测
+        function isCircleShape(points) {
+            if (points.length < 20) return false;
+            
+            // 检查起点和终点是否接近（闭合性检查）
+            const firstPoint = points[0];
+            const lastPoint = points[points.length - 1];
+            const closureDistance = Math.sqrt(
+                Math.pow(lastPoint.x - firstPoint.x, 2) + 
+                Math.pow(lastPoint.y - firstPoint.y, 2)
+            );
+            
+            // 计算总路径长度
+            let totalLength = 0;
+            for (let i = 1; i < points.length; i++) {
+                const dx = points[i].x - points[i-1].x;
+                const dy = points[i].y - points[i-1].y;
+                totalLength += Math.sqrt(dx * dx + dy * dy);
+            }
+            
+            // 闭合性检查：起点终点距离应该小于总长度的10%
+            if (closureDistance > totalLength * 0.1) return false;
+            
+            // 计算中心点
+            const centerX = points.reduce((sum, p) => sum + p.x, 0) / points.length;
+            const centerY = points.reduce((sum, p) => sum + p.y, 0) / points.length;
+            
+            // 计算平均半径
+            const avgRadius = points.reduce((sum, p) => {
+                const dx = p.x - centerX;
+                const dy = p.y - centerY;
+                return sum + Math.sqrt(dx * dx + dy * dy);
+            }, 0) / points.length;
+            
+            // 计算半径方差
+            const radiusVariance = points.reduce((sum, p) => {
+                const dx = p.x - centerX;
+                const dy = p.y - centerY;
+                const radius = Math.sqrt(dx * dx + dy * dy);
+                return sum + Math.abs(radius - avgRadius);
+            }, 0) / points.length;
+            
+            // 检查角度分布是否均匀（圆形特征）
+            const angles = points.map(p => Math.atan2(p.y - centerY, p.x - centerX));
+            angles.sort((a, b) => a - b);
+            
+            let angleSpread = 0;
+            for (let i = 1; i < angles.length; i++) {
+                let diff = angles[i] - angles[i-1];
+                if (diff > Math.PI) diff = 2 * Math.PI - diff;
+                angleSpread += diff;
+            }
+            
+            // 圆形判断条件
+            return radiusVariance < avgRadius * 0.25 && // 半径变化小
+                   angleSpread > Math.PI * 1.5 && // 角度覆盖足够
+                   avgRadius > 20; // 最小半径
+        }
+        
+        // 改进的三角形检测
+        function isTriangleShape(points) {
+            if (points.length < 15) return false;
+            
+            // 检查闭合性
+            const firstPoint = points[0];
+            const lastPoint = points[points.length - 1];
+            const closureDistance = Math.sqrt(
+                Math.pow(lastPoint.x - firstPoint.x, 2) + 
+                Math.pow(lastPoint.y - firstPoint.y, 2)
+            );
+            
+            let totalLength = 0;
+            for (let i = 1; i < points.length; i++) {
+                const dx = points[i].x - points[i-1].x;
+                const dy = points[i].y - points[i-1].y;
+                totalLength += Math.sqrt(dx * dx + dy * dy);
+            }
+            
+            // 必须是相对闭合的形状
+            if (closureDistance > totalLength * 0.15) return false;
+            
+            // 寻找角点（方向显著变化的点）
+            const corners = [];
+            const threshold = Math.PI / 2.5; // 约72度
+            
+            for (let i = 8; i < points.length - 8; i++) {
+                const before = points[i - 8];
+                const current = points[i];
+                const after = points[i + 8];
+                
+                const angle1 = Math.atan2(current.y - before.y, current.x - before.x);
+                const angle2 = Math.atan2(after.y - current.y, after.x - current.x);
+                
+                let angleDiff = Math.abs(angle2 - angle1);
+                if (angleDiff > Math.PI) angleDiff = Math.PI * 2 - angleDiff;
+                
+                if (angleDiff > threshold) {
+                    // 检查这个角点是否与之前的角点距离足够远
+                    let isFarEnough = true;
+                    for (const corner of corners) {
+                        const dist = Math.sqrt(
+                            Math.pow(corner.x - current.x, 2) + 
+                            Math.pow(corner.y - current.y, 2)
+                        );
+                        if (dist < 40) {
+                            isFarEnough = false;
+                            break;
+                        }
+                    }
+                    if (isFarEnough) {
+                        corners.push(current);
+                    }
+                }
+            }
+            
+            // 三角形应该有2-4个角点
+            return corners.length >= 2 && corners.length <= 4;
+        }
+        
+        // 改进的Z字形检测
+        function isZShape(points) {
+            if (points.length < 25) return false;
+            
+            const firstPoint = points[0];
+            const lastPoint = points[points.length - 1];
+            
+            // Z形基本特征检查
+            const totalHorizontal = Math.abs(lastPoint.x - firstPoint.x);
+            const totalVertical = Math.abs(lastPoint.y - firstPoint.y);
+            
+            // Z形应该有明显的水平延伸
+            if (totalHorizontal < 60 || totalVertical < 30) return false;
+            
+            // 将路径分成三段分析
+            const segment1End = Math.floor(points.length * 0.33);
+            const segment2End = Math.floor(points.length * 0.67);
+            
+            const segment1 = points.slice(0, segment1End);
+            const segment2 = points.slice(segment1End, segment2End);
+            const segment3 = points.slice(segment2End);
+            
+            // 计算每段的主要方向
+            function getSegmentDirection(segment) {
+                const start = segment[0];
+                const end = segment[segment.length - 1];
+                return Math.atan2(end.y - start.y, end.x - start.x);
+            }
+            
+            const dir1 = getSegmentDirection(segment1);
+            const dir2 = getSegmentDirection(segment2);
+            const dir3 = getSegmentDirection(segment3);
+            
+            // 检查Z形的特征：第一段和第三段应该方向相似，第二段方向不同
+            function normalizeAngle(angle) {
+                while (angle > Math.PI) angle -= 2 * Math.PI;
+                while (angle <= -Math.PI) angle += 2 * Math.PI;
+                return angle;
+            }
+            
+            const diff1_3 = Math.abs(normalizeAngle(dir1 - dir3));
+            const diff1_2 = Math.abs(normalizeAngle(dir1 - dir2));
+            const diff2_3 = Math.abs(normalizeAngle(dir2 - dir3));
+            
+            // Z形特征：第一段和第三段方向相似，与第二段方向差异大
+            const isValidZ = (diff1_3 < Math.PI / 3) && // 第一段和第三段方向相似
+                             (diff1_2 > Math.PI / 4) && // 第一段和第二段方向不同
+                             (diff2_3 > Math.PI / 4);   // 第二段和第三段方向不同
+            
+            return isValidZ;
+        }
+        
+        // 螺旋形检测（保持原有算法）
+        function isSpiralShape(points) {
+            if (points.length < 30) return false;
+            
+            // 计算中心点
+            const centerX = points.reduce((sum, p) => sum + p.x, 0) / points.length;
+            const centerY = points.reduce((sum, p) => sum + p.y, 0) / points.length;
+            
+            let totalAngleChange = 0;
+            let previousAngle = Math.atan2(points[0].y - centerY, points[0].x - centerX);
+            
+            for (let i = 1; i < points.length; i++) {
+                const currentAngle = Math.atan2(points[i].y - centerY, points[i].x - centerX);
+                let angleDiff = currentAngle - previousAngle;
+                
+                // 处理角度跳跃
+                if (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
+                if (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
+                
+                totalAngleChange += angleDiff;
+                previousAngle = currentAngle;
+            }
+            
+            // 螺旋形应该有至少一圈的旋转
+            return Math.abs(totalAngleChange) > Math.PI;
+        }
+        
+        // 更新主识别函数
+        function recognizeGlyph(points) {
+            if (points.length < 5) return null;
+            
+            const firstPoint = points[0];
+            const lastPoint = points[points.length - 1];
+            
+            // 计算总长度
+            let totalLength = 0;
+            for (let i = 1; i < points.length; i++) {
+                const dx = points[i].x - points[i-1].x;
+                const dy = points[i].y - points[i-1].y;
+                totalLength += Math.sqrt(dx * dx + dy * dy);
+            }
+            
+            // 优先检查复杂形状，按识别难度排序
+            if (isSpiralShape(points)) {
+                return 'spiral';
+            }
+            
+            if (isZShape(points)) {
+                return 'z';
+            }
+            
+            if (isCircleShape(points)) {
+                return 'circle';
+            }
+            
+            if (isTriangleShape(points)) {
+                return 'triangle';
+            }
+            
+            // 直线检测（最宽松的条件放最后）
+            const directDistance = Math.sqrt(
+                Math.pow(lastPoint.x - firstPoint.x, 2) + 
+                Math.pow(lastPoint.y - firstPoint.y, 2)
+            );
+            
+            if (directDistance > 50 && totalLength < directDistance * 1.3) {
+                return 'line';
+            }
+            
+            return null;
+        }
+        
+        // ==================== 识别算法结束 ====================
+        
+        // 更新技能图标
+        function updateSkillIcons() {
+            const skillIcons = document.querySelectorAll('.skill-icon');
+            const now = Date.now();
+            
+            skillIcons.forEach(icon => {
+                const skillType = icon.getAttribute('data-skill');
+                const glyph = glyphTemplates[skillType];
+                if (!glyph) return;
+                
+                const actualManaCost = glyph.manaCost * (1 - game.upgrades.manaCostReduction);
+                const cooldownRemaining = Math.max(0, glyph.cooldown - (now - glyph.lastUsed));
+                
+                // 移除之前的状态类
+                icon.classList.remove('on-cooldown', 'low-mana');
+                
+                // 清除冷却倒计时显示
+                let cooldownOverlay = icon.querySelector('.cooldown-overlay');
+                if (cooldownOverlay) {
+                    cooldownOverlay.remove();
+                }
+                
+                // 检查冷却状态
+                if (cooldownRemaining > 0) {
+                    icon.classList.add('on-cooldown');
+                    cooldownOverlay = document.createElement('div');
+                    cooldownOverlay.className = 'cooldown-overlay';
+                    cooldownOverlay.textContent = Math.ceil(cooldownRemaining / 1000);
+                    icon.appendChild(cooldownOverlay);
+                }
+                // 检查法力不足状态
+                else if (game.mana < actualManaCost) {
+                    icon.classList.add('low-mana');
+                }
+                
+                // 更新法力消耗显示
+                const manaCostElement = icon.querySelector('.mana-cost');
+                if (manaCostElement) {
+                    manaCostElement.textContent = Math.ceil(actualManaCost);
+                }
+            });
+        }
+        
+        // 施放法术
+        function castSpell(glyphType, endPoint) {
+            const glyph = glyphTemplates[glyphType];
+            const now = Date.now();
+            
+            // 计算实际法力消耗
+            const actualManaCost = glyph.manaCost * (1 - game.upgrades.manaCostReduction);
+            
+            // 检查法力值
+            if (game.mana < actualManaCost) {
+                showMessage('法力不足！', '#ff6b6b');
+                return;
+            }
+            
+            // 检查冷却
+            if (glyph.cooldown && now - glyph.lastUsed < glyph.cooldown) {
+                showMessage('技能冷却中！', '#ff6b6b');
+                return;
+            }
+            
+            game.mana -= actualManaCost;
+            if (glyph.cooldown) {
+                glyph.lastUsed = now;
+            }
+            
+            switch(glyphType) {
+                case 'line':
+                    // 火球术
+                    const angle = Math.atan2(
+                        endPoint.y - game.player.y,
+                        endPoint.x - game.player.x
+                    );
+                    const projectile = new Projectile(
+                        game.player.x,
+                        game.player.y,
+                        null,
+                        'line',
+                        2
+                    );
+                    projectile.angle = angle;
+                    projectile.target = findNearestEnemy(
+                        game.player.x + Math.cos(angle) * 100,
+                        game.player.y + Math.sin(angle) * 100
+                    );
+                    game.projectiles.push(projectile);
+                    break;
+                    
+                case 'circle':
+                    // 魔法护盾
+                    game.player.shield = game.player.shieldMax;
+                    createShieldEffect();
+                    break;
+                    
+                case 'triangle':
+                    // 追踪飞弹
+                    const missileCount = 3 + (game.upgrades.triangleCount || 0);
+                    for (let i = 0; i < missileCount; i++) {
+                        const missile = new Projectile(
+                            game.player.x,
+                            game.player.y,
+                            null,
+                            'triangle',
+                            1
+                        );
+                        // 初始随机方向
+                        missile.angle = (Math.PI * 2 * i) / missileCount;
+                        game.projectiles.push(missile);
+                    }
+                    break;
+                    
+                case 'z':
+                    // 连锁闪电
+                    castChainLightning();
+                    break;
+                    
+                case 'spiral':
+                    // 引力旋涡
+                    game.vortexes.push(new Vortex(endPoint.x, endPoint.y));
+                    break;
+            }
+            
+            showMessage(glyph.name + '!', glyph.color);
+        }
+        
+        // 连锁闪电
+        function castChainLightning() {
+            const maxJumps = 5 + game.upgrades.chainLightningExtra;
+            const visited = new Set();
+            let current = findNearestEnemy(game.player.x, game.player.y);
+            let previous = game.player;
+            
+            if (!current) return;
+            
+            for (let i = 0; i < maxJumps && current; i++) {
+                visited.add(current);
+                
+                // 造成伤害
+                if (current.takeDamage(3)) {
+                    game.enemies = game.enemies.filter(e => e !== current);
+                }
+                
+                // 绘制闪电效果
+                createLightningEffect(previous, current);
+                
+                // 寻找下一个目标
+                let next = null;
+                let minDistance = 200; // 最大跳跃距离
+                
+                game.enemies.forEach(enemy => {
+                    if (!visited.has(enemy)) {
+                        const dx = enemy.x - current.x;
+                        const dy = enemy.y - current.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < minDistance) {
+                            minDistance = distance;
+                            next = enemy;
+                        }
+                    }
+                });
+                
+                previous = current;
+                current = next;
+            }
+        }
+        
+        // 创建闪电效果
+        function createLightningEffect(from, to) {
+            const segments = 10;
+            for (let i = 0; i < segments; i++) {
+                const t = i / segments;
+                const x = from.x + (to.x - from.x) * t + (Math.random() - 0.5) * 20;
+                const y = from.y + (to.y - from.y) * t + (Math.random() - 0.5) * 20;
+                
+                game.effects.push(new Particle(
+                    x, y,
+                    glyphTemplates.z.color,
+                    {x: 0, y: 0},
+                    500
+                ));
+            }
+        }
+        
+        // 创建护盾效果
+        function createShieldEffect() {
+            const particles = 30;
+            for (let i = 0; i < particles; i++) {
+                const angle = (Math.PI * 2 * i) / particles;
+                const radius = game.player.radius + 20;
+                
+                game.effects.push(new Particle(
+                    game.player.x + Math.cos(angle) * radius,
+                    game.player.y + Math.sin(angle) * radius,
+                    glyphTemplates.circle.color,
+                    {x: 0, y: 0},
+                    2000
+                ));
+            }
+        }
+        
+        // 显示消息
+        function showMessage(text, color) {
+            const message = {
+                text: text,
+                color: color,
+                x: game.player.x,
+                y: game.player.y - 50,
+                age: 0,
+                lifetime: 1000
+            };
+            game.effects.push(message);
+        }
+        
+        // 显示升级选项
+        function showUpgradeOptions() {
+            game.isPaused = true;
+            const upgradeScreen = document.getElementById('upgradeScreen');
+            const optionsContainer = document.getElementById('upgradeOptions');
+            
+            // 清空之前的选项
+            optionsContainer.innerHTML = '';
+            
+            // 随机选择3个不同的升级
+            const availableUpgrades = [...possibleUpgrades];
+            const selectedUpgrades = [];
+            
+            for (let i = 0; i < 3 && availableUpgrades.length > 0; i++) {
+                const index = Math.floor(Math.random() * availableUpgrades.length);
+                selectedUpgrades.push(availableUpgrades[index]);
+                availableUpgrades.splice(index, 1);
+            }
+            
+            // 创建升级选项UI
+            selectedUpgrades.forEach(upgrade => {
+                const option = document.createElement('div');
+                option.className = 'upgrade-option';
+                option.innerHTML = `
+                    <div class="upgrade-title">${upgrade.title}</div>
+                    <div class="upgrade-desc">${upgrade.description}</div>
+                `;
+                option.onclick = () => {
+                    upgrade.apply();
+                    upgradeScreen.style.display = 'none';
+                    game.isPaused = false;
+                    game.wave++;
+                    spawnWave();
+                };
+                optionsContainer.appendChild(option);
+            });
+            
+            upgradeScreen.style.display = 'block';
+        }
+        
+        // 生成敌人波次
+        function spawnWave() {
+            const waveSize = 3 + game.wave * 2;
+            const types = Object.keys(enemyTypes);
+            
+            for (let i = 0; i < waveSize; i++) {
+                const angle = (Math.PI * 2 * i) / waveSize;
+                const distance = Math.max(canvas.width, canvas.height) * 0.6;
+                const x = game.player.x + Math.cos(angle) * distance;
+                const y = game.player.y + Math.sin(angle) * distance;
+                
+                // 根据波次选择敌人类型
+                let type;
+                if (game.wave < 3) {
+                    type = 'imp';
+                } else if (game.wave < 5) {
+                    type = Math.random() < 0.7 ? 'imp' : 'brute';
+                } else {
+                    type = types[Math.floor(Math.random() * types.length)];
+                }
+                
+                // 集群生成
+                if (type === 'swarm') {
+                    for (let j = 0; j < 5; j++) {
+                        const offsetX = (Math.random() - 0.5) * 50;
+                        const offsetY = (Math.random() - 0.5) * 50;
+                        game.enemies.push(new Enemy(type, x + offsetX, y + offsetY));
+                    }
+                } else {
+                    game.enemies.push(new Enemy(type, x, y));
+                }
+            }
+        }
+        
+        // 输入处理
+        let touchStartPos = null;
+        
+        function handleStart(e) {
+            if (game.isGameOver || game.isPaused || !game.hasStarted) return;
+            
+            const pos = getInputPosition(e);
+            touchStartPos = pos;
+            game.isDrawing = true;
+            game.currentGlyph = [pos];
+        }
+        
+        function handleMove(e) {
+            if (!game.isDrawing || game.isGameOver || game.isPaused) return;
+            
+            const pos = getInputPosition(e);
+            game.currentGlyph.push(pos);
+        }
+        
+        function handleEnd(e) {
+            if (!game.isDrawing || game.isGameOver || game.isPaused) return;
+            
+            game.isDrawing = false;
+            
+            if (game.currentGlyph.length > 5) {
+                const glyphType = recognizeGlyph(game.currentGlyph);
+                if (glyphType) {
+                    castSpell(glyphType, game.currentGlyph[game.currentGlyph.length - 1]);
+                }
+            }
+            
+            game.currentGlyph = [];
+        }
+        
+        function getInputPosition(e) {
+            const rect = canvas.getBoundingClientRect();
+            if (e.touches) {
+                return {
+                    x: e.touches[0].clientX - rect.left,
+                    y: e.touches[0].clientY - rect.top
+                };
+            } else {
+                return {
+                    x: e.clientX - rect.left,
+                    y: e.clientY - rect.top
+                };
+            }
+        }
+        
+        // 事件监听
+        canvas.addEventListener('mousedown', handleStart);
+        canvas.addEventListener('mousemove', handleMove);
+        canvas.addEventListener('mouseup', handleEnd);
+        canvas.addEventListener('touchstart', handleStart);
+        canvas.addEventListener('touchmove', handleMove);
+        canvas.addEventListener('touchend', handleEnd);
+        
+        // 游戏循环
+        let lastTime = 0;
+        let waveTimer = 0;
+        
+        function gameLoop(currentTime) {
+            const deltaTime = currentTime - lastTime;
+            lastTime = currentTime;
+            
+            if (!game.isGameOver && !game.isPaused && game.hasStarted) {
+                update(deltaTime);
+            }
+            
+            if (game.hasStarted) {
+                render();
+                updateSkillIcons(); // 更新技能图标状态
+            }
+            
+            requestAnimationFrame(gameLoop);
+        }
+        
+        function update(deltaTime) {
+            // 更新法力值
+            game.mana = Math.min(game.mana + game.manaRegen, game.maxMana);
+            
+            // 更新敌人
+            game.enemies.forEach(enemy => enemy.update());
+            
+            // 更新投射物
+            game.projectiles = game.projectiles.filter(projectile => projectile.update());
+            
+            // 更新旋涡
+            game.vortexes = game.vortexes.filter(vortex => vortex.update(deltaTime));
+            
+            // 更新特效
+            game.effects = game.effects.filter(effect => {
+                if (effect instanceof Particle) {
+                    return effect.update(deltaTime);
+                } else if (effect.age !== undefined) {
+                    effect.age += deltaTime;
+                    effect.y -= 0.5;
+                    return effect.age < effect.lifetime;
+                }
+                return true;
+            });
+            
+            // 检查波次
+            if (game.enemies.length === 0 && !game.isPaused) {
+                waveTimer += deltaTime;
+                if (waveTimer > 1000) {
+                    showUpgradeOptions();
+                    waveTimer = 0;
+                }
+            }
+            
+            // 更新UI
+            document.getElementById('score').textContent = game.score;
+            document.getElementById('wave').textContent = game.wave;
+            document.getElementById('manaFill').style.width = (game.mana / game.maxMana * 100) + '%';
+            
+            // 检查游戏结束
+            if (game.isGameOver) {
+                document.getElementById('finalScore').textContent = game.score;
+                document.getElementById('finalWave').textContent = game.wave;
+                document.getElementById('gameOver').style.display = 'block';
+            }
+        }
+        
+        function render() {
+            // 清空画布
+            ctx.fillStyle = 'rgba(10, 10, 10, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制网格背景
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.lineWidth = 1;
+            const gridSize = 50;
+            for (let x = 0; x < canvas.width; x += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+            
+            // 绘制玩家
+            ctx.strokeStyle = '#4a90e2';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(game.player.x, game.player.y, game.player.radius, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // 绘制护盾
+            if (game.player.shield > 0) {
+                ctx.strokeStyle = glyphTemplates.circle.color;
+                ctx.lineWidth = 2;
+                ctx.globalAlpha = 0.5 + Math.sin(Date.now() * 0.005) * 0.2;
+                for (let i = 0; i < game.player.shield; i++) {
+                    ctx.beginPath();
+                    ctx.arc(game.player.x, game.player.y, game.player.radius + 10 + i * 5, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+                ctx.globalAlpha = 1;
+            }
+            
+            // 绘制当前符文轨迹
+            if (game.currentGlyph.length > 1) {
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(game.currentGlyph[0].x, game.currentGlyph[0].y);
+                for (let i = 1; i < game.currentGlyph.length; i++) {
+                    ctx.lineTo(game.currentGlyph[i].x, game.currentGlyph[i].y);
+                }
+                ctx.stroke();
+            }
+            
+            // 绘制旋涡
+            game.vortexes.forEach(vortex => vortex.draw());
+            
+            // 绘制敌人
+            game.enemies.forEach(enemy => enemy.draw());
+            
+            // 绘制投射物
+            game.projectiles.forEach(projectile => projectile.draw());
+            
+            // 绘制特效
+            game.effects.forEach(effect => {
+                if (effect instanceof Particle) {
+                    effect.draw();
+                } else if (effect.text) {
+                    // 绘制文字
+                    ctx.fillStyle = effect.color;
+                    ctx.font = 'bold 24px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.globalAlpha = 1 - (effect.age / effect.lifetime);
+                    ctx.fillText(effect.text, effect.x, effect.y);
+                    ctx.globalAlpha = 1;
+                }
+            });
+        }
+        
+        // UI功能
+        function startGame() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('ui').style.display = 'block';
+            document.getElementById('helpButton').style.display = 'block';
+            document.getElementById('skillBar').style.display = 'flex'; // 显示技能栏
+            game.hasStarted = true;
+            game.player.x = canvas.width / 2;
+            game.player.y = canvas.height / 2;
+            spawnWave();
+        }
+        
+        function showHelp() {
+            document.getElementById('helpScreen').style.display = 'block';
+            if (game.hasStarted) {
+                game.isPaused = true;
+            }
+        }
+        
+        function hideHelp() {
+            document.getElementById('helpScreen').style.display = 'none';
+            if (game.hasStarted) {
+                game.isPaused = false;
+            }
+        }
+        
+        // 生成符文指南
+        function generateGlyphGuide() {
+            const guide = document.getElementById('glyphGuide');
+            const glyphs = [
+                { type: 'line', name: '直线', desc: '火球术 - 消耗10法力' },
+                { type: 'circle', name: '圆圈', desc: '魔法护盾 - 消耗30法力' },
+                { type: 'triangle', name: '三角形', desc: '追踪飞弹 - 消耗20法力' },
+                { type: 'z', name: 'Z字形', desc: '连锁闪电 - 消耗40法力' },
+                { type: 'spiral', name: '螺旋', desc: '引力旋涡 - 消耗50法力' }
+            ];
+            
+            glyphs.forEach(glyph => {
+                const item = document.createElement('div');
+                item.className = 'glyph-item';
+                
+                const canvas = document.createElement('canvas');
+                canvas.width = 200;
+                canvas.height = 80;
+                const ctx = canvas.getContext('2d');
+                
+                // 绘制示例符文
+                ctx.strokeStyle = glyphTemplates[glyph.type].color;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                
+                switch(glyph.type) {
+                    case 'line':
+                        ctx.moveTo(30, 40);
+                        ctx.lineTo(170, 40);
+                        break;
+                    case 'circle':
+                        ctx.arc(100, 40, 30, 0, Math.PI * 2);
+                        break;
+                    case 'triangle':
+                        ctx.moveTo(100, 20);
+                        ctx.lineTo(50, 60);
+                        ctx.lineTo(150, 60);
+                        ctx.closePath();
+                        break;
+                    case 'z':
+                        ctx.moveTo(50, 20);
+                        ctx.lineTo(150, 20);
+                        ctx.lineTo(50, 60);
+                        ctx.lineTo(150, 60);
+                        break;
+                    case 'spiral':
+                        for (let angle = 0; angle < Math.PI * 4; angle += 0.2) {
+                            const radius = 10 + angle * 3;
+                            const x = 100 + Math.cos(angle) * radius;
+                            const y = 40 + Math.sin(angle) * radius;
+                            if (angle === 0) {
+                                ctx.moveTo(x, y);
+                            } else {
+                                ctx.lineTo(x, y);
+                            }
+                        }
+                        break;
+                }
+                ctx.stroke();
+                
+                item.innerHTML = `
+                    <div class="glyph-name">${glyph.name}</div>
+                    <div class="glyph-desc">${glyph.desc}</div>
+                `;
+                item.insertBefore(canvas, item.firstChild);
+                guide.appendChild(item);
+            });
+        }
+        
+        // 初始化
+        generateGlyphGuide();
+        gameLoop(0);
+    </script>
+</body>
+</html>

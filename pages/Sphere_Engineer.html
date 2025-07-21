@@ -1,0 +1,1782 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生态瓶工程师 - Ecosystem Bottle Engineer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .game-area {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .setup-phase, .game-phase, .help-panel, .ingame-help {
+            display: none;
+        }
+
+        .setup-phase.active, .game-phase.active, .help-panel.active, .ingame-help.active {
+            display: block;
+        }
+
+        .bottle-selection {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .bottle-option {
+            text-align: center;
+            padding: 20px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 10px;
+            min-width: 200px;
+        }
+
+        .bottle-option:hover, .bottle-option.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .bottle-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .control-panel {
+            display: grid;
+            grid-template-columns: 350px 1fr 350px;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .ecosystem-view {
+            background: linear-gradient(to bottom, #87CEEB 0%, #98FB98 30%, #8FBC8F 70%, #654321 100%);
+            border: 3px solid #4682B4;
+            border-radius: 15px;
+            height: 400px;
+            position: relative;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .water-level {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(135, 206, 235, 0.8);
+            transition: height 1s;
+        }
+
+        /* 生物基础样式 */
+        .organism {
+            position: absolute;
+            font-size: 1.5em;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* 绿藻 - 固定位置轻微摆动 */
+        .organism.greenAlgae {
+            animation: algaeSway 4s ease-in-out infinite;
+        }
+
+        @keyframes algaeSway {
+            0%, 100% { transform: rotate(-3deg) scale(1); }
+            50% { transform: rotate(3deg) scale(1.02); }
+        }
+
+        /* 蓝绿藻 - 微小漂浮 */
+        .organism.blueAlgae {
+            animation: microFloat 6s ease-in-out infinite;
+        }
+
+        @keyframes microFloat {
+            0%, 100% { transform: translateY(0px) translateX(0px); }
+            33% { transform: translateY(-3px) translateX(2px); }
+            66% { transform: translateY(2px) translateX(-2px); }
+        }
+
+        /* 浮萍 - 水面轻微漂移 */
+        .organism.duckweed {
+            animation: surfaceDrift 8s linear infinite;
+        }
+
+        @keyframes surfaceDrift {
+            0% { transform: translateX(0px); }
+            50% { transform: translateX(15px); }
+            100% { transform: translateX(0px); }
+        }
+
+        /* 水草 - 水流摆动 */
+        .organism.waterweed {
+            animation: underwaterSway 5s ease-in-out infinite;
+            transform-origin: bottom center;
+        }
+
+        @keyframes underwaterSway {
+            0%, 100% { transform: rotate(-8deg); }
+            50% { transform: rotate(8deg); }
+        }
+
+        /* 樱花虾 - 小跳跃游动 */
+        .organism.cherryShrimp {
+            animation: shrimpHop 3s ease-in-out infinite;
+        }
+
+        @keyframes shrimpHop {
+            0%, 90%, 100% { transform: translateY(0px) scaleX(1); }
+            10% { transform: translateY(-8px) scaleX(1.1); }
+            20% { transform: translateY(-5px) scaleX(1); }
+            30% { transform: translateY(-3px) scaleX(0.95); }
+        }
+
+        /* 苹果螺 - 缓慢蠕动 */
+        .organism.appleSnail {
+            animation: snailCrawl 10s linear infinite;
+        }
+
+        @keyframes snailCrawl {
+            0%, 100% { transform: scaleX(1) scaleY(1); }
+            25% { transform: scaleX(1.1) scaleY(0.95); }
+            50% { transform: scaleX(1) scaleY(1.05); }
+            75% { transform: scaleX(0.95) scaleY(1); }
+        }
+
+        /* 斑马鱼 - 自然游泳 */
+        .organism.zebrafish {
+            animation: fishSwim 4s ease-in-out infinite;
+        }
+
+        @keyframes fishSwim {
+            0%, 100% { transform: translateX(0px) scaleY(1); }
+            25% { transform: translateX(10px) scaleY(1.05); }
+            50% { transform: translateX(8px) scaleY(1); }
+            75% { transform: translateX(-5px) scaleY(0.98); }
+        }
+
+        /* 小龙虾 - 警觉性游动 */
+        .organism.crayfish {
+            animation: crayfishMove 6s ease-in-out infinite;
+        }
+
+        @keyframes crayfishMove {
+            0%, 80%, 100% { transform: translateX(0px) rotate(0deg); }
+            10% { transform: translateX(12px) rotate(5deg); }
+            20% { transform: translateX(15px) rotate(0deg); }
+            30% { transform: translateX(8px) rotate(-3deg); }
+            40% { transform: translateX(0px) rotate(0deg); }
+        }
+
+        /* 硝化细菌 - 微振动 */
+        .organism.nitrobacteria {
+            animation: bacteriaVibrate 1.5s ease-in-out infinite;
+        }
+
+        @keyframes bacteriaVibrate {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.05) translate(0.5px, -0.5px); }
+            50% { transform: scale(0.98) translate(-0.5px, 0.5px); }
+            75% { transform: scale(1.02) translate(0.5px, 0px); }
+        }
+
+        /* 气泡效果 */
+        .bubble {
+            position: absolute;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.3) 100%);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: bubbleRise 6s linear infinite;
+        }
+
+        @keyframes bubbleRise {
+            0% {
+                opacity: 0;
+                transform: translateY(0) scale(0);
+            }
+            10% {
+                opacity: 0.8;
+                transform: translateY(-20px) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-400px) scale(1.5);
+            }
+        }
+
+        /* 水波纹效果 */
+        .water-ripple {
+            position: absolute;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: ripple 4s ease-out infinite;
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(6);
+                opacity: 0;
+            }
+        }
+
+        /* 觅食动画 */
+        .organism.feeding {
+            animation-duration: 2s;
+            animation-timing-function: ease-in-out;
+            animation-iteration-count: 3;
+        }
+
+        .organism.feeding.cherryShrimp {
+            animation-name: shrimpFeeding;
+        }
+
+        @keyframes shrimpFeeding {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        .organism.feeding.zebrafish {
+            animation-name: fishFeeding;
+        }
+
+        @keyframes fishFeeding {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(1.2); }
+        }
+
+        /* 生长动画 */
+        .organism.growing {
+            animation: growth 2s ease-out;
+        }
+
+        @keyframes growth {
+            0% { 
+                transform: scale(0.3); 
+                opacity: 0.3; 
+            }
+            50% { 
+                transform: scale(1.1); 
+                opacity: 0.8; 
+            }
+            100% { 
+                transform: scale(1); 
+                opacity: 1; 
+            }
+        }
+
+        /* 死亡动画 */
+        .organism.dying {
+            animation: death 4s ease-out forwards;
+        }
+
+        @keyframes death {
+            0% { 
+                opacity: 1; 
+                transform: scale(1); 
+                filter: brightness(1);
+            }
+            50% { 
+                opacity: 0.5; 
+                transform: scale(0.8); 
+                filter: brightness(0.6);
+            }
+            100% { 
+                opacity: 0; 
+                transform: scale(0.3); 
+                filter: brightness(0.2);
+            }
+        }
+
+        /* 环境活跃度调节 */
+        .ecosystem-view.high-activity .organism {
+            animation-duration: 0.7s;
+        }
+
+        .ecosystem-view.low-activity .organism {
+            animation-duration: 8s;
+        }
+
+        .stats-panel {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        .stat-bar {
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .bar {
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            transition: width 1s;
+            border-radius: 10px;
+        }
+
+        .oxygen { background: linear-gradient(90deg, #ff6b6b, #4ecdc4); }
+        .ph { background: linear-gradient(90deg, #45b7d1, #96ceb4); }
+        .nutrients { background: linear-gradient(90deg, #feca57, #ff9ff3); }
+        .temperature { background: linear-gradient(90deg, #ff9a9e, #fecfef); }
+
+        .control-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .control-section h3 {
+            margin-bottom: 15px;
+            color: #495057;
+        }
+
+        .slider {
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .organism-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 8px;
+            margin: 15px 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .organism-card {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .organism-card:hover {
+            border-color: #667eea;
+            transform: scale(1.05);
+        }
+
+        .organism-card.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .organism-card .icon {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        .organism-card .name {
+            font-size: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            margin: 5px;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 14px;
+            width: auto;
+            display: inline-block;
+        }
+
+        .event-popup, .ingame-help-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            z-index: 1000;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            text-align: center;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .help-content {
+            max-height: 400px;
+            overflow-y: auto;
+            text-align: left;
+        }
+
+        .achievement {
+            background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            margin: 5px;
+            display: inline-block;
+            font-size: 14px;
+        }
+
+        .game-time {
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .population-count {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+
+        .tips-panel {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .tips-panel h4 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+        }
+
+        .danger {
+            background: #f8d7da;
+            border: 1px solid #dc3545;
+            color: #721c24;
+        }
+
+        .success {
+            background: #d4edda;
+            border: 1px solid #28a745;
+            color: #155724;
+        }
+
+        .ecosystem-status {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+
+        .balance-indicator {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+
+        .balance-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .balanced { background: #28a745; }
+        .warning { background: #ffc107; }
+        .critical { background: #dc3545; }
+
+        @media (max-width: 1200px) {
+            .control-panel {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .bottle-selection {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* 粒子效果 */
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            border-radius: 50%;
+            animation: particleFloat 10s linear infinite;
+        }
+
+        @keyframes particleFloat {
+            0% { 
+                transform: translateY(0) translateX(0);
+                opacity: 0.4;
+            }
+            50% {
+                opacity: 0.8;
+                transform: translateY(-100px) translateX(20px);
+            }
+            100% { 
+                transform: translateY(-200px) translateX(-10px);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 生态瓶工程师</h1>
+            <p>创造并维护您的微生态系统</p>
+            <button class="btn btn-secondary btn-small" onclick="showHelp()">📖 游戏说明</button>
+        </div>
+
+        <div class="game-area">
+            <!-- 游戏设置阶段 -->
+            <div class="setup-phase active">
+                <h2>🚀 开始您的生态之旅</h2>
+                <p>选择生态瓶大小，不同大小会影响游戏难度和生态复杂性：</p>
+                
+                <div class="bottle-selection">
+                    <div class="bottle-option" data-size="small">
+                        <div class="bottle-icon">🍶</div>
+                        <h3>小型瓶 (250ml)</h3>
+                        <p>适合新手</p>
+                        <small>变化较慢，容易控制</small>
+                    </div>
+                    <div class="bottle-option" data-size="medium">
+                        <div class="bottle-icon">🏺</div>
+                        <h3>中型瓶 (500ml)</h3>
+                        <p>标准难度</p>
+                        <small>平衡的挑战性</small>
+                    </div>
+                    <div class="bottle-option" data-size="large">
+                        <div class="bottle-icon">🫙</div>
+                        <h3>大型瓶 (1000ml)</h3>
+                        <p>专家模式</p>
+                        <small>复杂的生态关系</small>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn" onclick="startGame()" id="startBtn" disabled>开始游戏</button>
+                </div>
+            </div>
+
+            <!-- 游戏主界面 -->
+            <div class="game-phase">
+                <div class="control-panel">
+                    <!-- 左侧控制面板 -->
+                    <div>
+                        <div class="control-section">
+                            <h3>🎮 环境控制</h3>
+                            <div>
+                                <label>光照强度: <span id="lightValue">50</span>%</label>
+                                <input type="range" class="slider" id="lightSlider" min="0" max="100" value="50">
+                                <small style="color: #666;">💡 影响植物光合作用效率</small>
+                            </div>
+                            <div>
+                                <label>温度: <span id="tempValue">23</span>°C</label>
+                                <input type="range" class="slider" id="tempSlider" min="15" max="30" value="23">
+                                <small style="color: #666;">🌡️ 影响生物活动速度</small>
+                            </div>
+                            <div>
+                                <label>通风: <span id="ventValue">密封</span></label>
+                                <select id="ventSelect" style="width: 100%; padding: 5px;">
+                                    <option value="sealed">密封</option>
+                                    <option value="semi">半开放</option>
+                                    <option value="open">开放</option>
+                                </select>
+                                <small style="color: #666;">💨 影响气体交换速度</small>
+                            </div>
+                            <button class="btn btn-danger" onclick="emergencyOpen()">🚨 紧急开瓶</button>
+                            <button class="btn btn-secondary" onclick="showIngameHelp()">💡 游戏提示</button>
+                        </div>
+
+                        <div class="control-section">
+                            <h3>➕ 添加生物</h3>
+                            <p style="font-size: 14px; color: #666; margin-bottom: 10px;">
+                                点击选择生物，然后点击添加按钮
+                            </p>
+                            <div class="organism-grid" id="organismSelector">
+                                <!-- 生物选择器将在这里生成 -->
+                            </div>
+                            <button class="btn" onclick="addSelectedOrganism()" id="addOrganismBtn" disabled>添加选中的生物</button>
+                        </div>
+                    </div>
+
+                    <!-- 中央生态瓶视图 -->
+                    <div>
+                        <div class="game-time" id="gameTime">第 1 天</div>
+                        <div class="ecosystem-view" id="ecosystemView">
+                            <div class="population-count" id="populationCount">总数: 0</div>
+                            <div class="ecosystem-status" id="ecosystemStatus">
+                                <!-- 生态状态指示器 -->
+                            </div>
+                            <!-- 生物将在这里显示 -->
+                        </div>
+                        <div style="text-align: center;">
+                            <button class="btn btn-small" onclick="pauseGame()" id="pauseBtn">⏸️ 暂停</button>
+                            <button class="btn btn-small" onclick="speedUp()" id="speedBtn">⏩ 2x速度</button>
+                            <button class="btn btn-danger btn-small" onclick="resetGame()">🔄 重新开始</button>
+                        </div>
+
+                        <!-- 实时提示面板 -->
+                        <div id="tipsPanel"></div>
+                    </div>
+
+                    <!-- 右侧状态面板 -->
+                    <div>
+                        <div class="stats-panel">
+                            <h3>📊 生态指标</h3>
+                            <div class="stat-bar">
+                                <div class="stat-label">
+                                    <span>溶氧量 🫧</span>
+                                    <span id="oxygenValue">50%</span>
+                                </div>
+                                <div class="bar">
+                                    <div class="bar-fill oxygen" id="oxygenBar" style="width: 50%"></div>
+                                </div>
+                                <small style="color: #666;">40-80%最佳，过高过低都危险</small>
+                            </div>
+                            <div class="stat-bar">
+                                <div class="stat-label">
+                                    <span>pH值 ⚗️</span>
+                                    <span id="phValue">7.0</span>
+                                </div>
+                                <div class="bar">
+                                    <div class="bar-fill ph" id="phBar" style="width: 50%"></div>
+                                </div>
+                                <small style="color: #666;">6.5-8.5最佳，影响所有生物</small>
+                            </div>
+                            <div class="stat-bar">
+                                <div class="stat-label">
+                                    <span>营养盐 🧂</span>
+                                    <span id="nutrientsValue">50%</span>
+                                </div>
+                                <div class="bar">
+                                    <div class="bar-fill nutrients" id="nutrientsBar" style="width: 50%"></div>
+                                </div>
+                                <small style="color: #666;">植物需要，过多会富营养化</small>
+                            </div>
+                            <div class="stat-bar">
+                                <div class="stat-label">
+                                    <span>有毒物质 ☠️</span>
+                                    <span id="toxinsValue">0%</span>
+                                </div>
+                                <div class="bar">
+                                    <div class="bar-fill temperature" id="toxinsBar" style="width: 0%"></div>
+                                </div>
+                                <small style="color: #666;">越低越好，高于50%很危险</small>
+                            </div>
+                        </div>
+
+                        <div class="stats-panel">
+                            <h3>🌱 种群统计</h3>
+                            <div id="populationStats">
+                                <p style="color: #666; font-size: 14px;">还没有生物，快去添加一些吧！</p>
+                            </div>
+                        </div>
+
+                        <div class="stats-panel">
+                            <h3>🏆 成就</h3>
+                            <div id="achievements">
+                                <p style="color: #666; font-size: 14px;">暂无成就，继续努力！</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 帮助面板 -->
+    <div class="help-panel">
+        <div class="overlay" onclick="hideHelp()"></div>
+        <div class="event-popup">
+            <h2>📚 游戏说明</h2>
+            <div class="help-content">
+                <h3>🎯 游戏目标</h3>
+                <p>创造并维护一个稳定的微生态系统，让不同的生物和谐共存。</p>
+                
+                <h3>🎮 基本操作</h3>
+                <ul>
+                    <li><strong>环境控制</strong>：调节光照、温度和通风来影响生态平衡</li>
+                    <li><strong>添加生物</strong>：选择合适的生物组合建立食物链</li>
+                    <li><strong>监控指标</strong>：关注溶氧量、pH值、营养盐和有毒物质</li>
+                </ul>
+
+                <h3>🌿 生物行为特征</h3>
+                <ul>
+                    <li><strong>🌱 绿藻</strong>：固定摆动，进行光合作用</li>
+                    <li><strong>🌿 蓝绿藻</strong>：微小漂浮，可固氮</li>
+                    <li><strong>🍃 浮萍</strong>：水面漂移，提供遮阴</li>
+                    <li><strong>🌾 水草</strong>：水下摆动，净化水质</li>
+                    <li><strong>🦐 樱花虾</strong>：小跳跃游动，清食藻类</li>
+                    <li><strong>🐌 苹果螺</strong>：缓慢蠕动，底栖清洁</li>
+                    <li><strong>🐟 斑马鱼</strong>：自然游泳，活跃觅食</li>
+                    <li><strong>🦞 小龙虾</strong>：警觉游动，顶级掠食</li>
+                    <li><strong>🦠 硝化细菌</strong>：微振动，分解废物</li>
+                </ul>
+
+                <h3>⚖️ 生态平衡要点</h3>
+                <ul>
+                    <li><strong>食物链</strong>：确保每个营养级都有合适的数量</li>
+                    <li><strong>溶氧</strong>：光合作用产生，呼吸消耗，需要适中</li>
+                    <li><strong>营养循环</strong>：植物消耗营养盐，分解者释放营养盐</li>
+                    <li><strong>废物处理</strong>：及时处理有毒物质，避免生态崩溃</li>
+                </ul>
+
+                <h3>🚨 常见问题</h3>
+                <ul>
+                    <li><strong>藻类爆发</strong>：减少光照或增加草食动物</li>
+                    <li><strong>溶氧不足</strong>：增加植物或改善通风</li>
+                    <li><strong>种群失衡</strong>：调整捕食者和被捕食者的比例</li>
+                    <li><strong>水质恶化</strong>：使用紧急开瓶功能</li>
+                </ul>
+
+                <h3>🎊 成就系统</h3>
+                <p>完成特定目标可获得成就：维持平衡、生物多样性、极限生存等。</p>
+            </div>
+            <button class="btn" onclick="hideHelp()">关闭</button>
+        </div>
+    </div>
+
+    <!-- 游戏内帮助面板 -->
+    <div class="ingame-help">
+        <div class="overlay" onclick="hideIngameHelp()"></div>
+        <div class="ingame-help-popup">
+            <h2>💡 生物行为观察指南</h2>
+            <div class="help-content">
+                <h3>🔄 营养循环机制</h3>
+                <p><strong>阳光能量流</strong>：光照 → 植物光合作用 → 产生氧气和有机物</p>
+                <p><strong>食物链传递</strong>：植物 → 草食动物 → 肉食动物</p>
+                <p><strong>物质循环</strong>：死亡有机物 → 分解者分解 → 释放营养盐 → 植物吸收</p>
+
+                <h3>🎬 生物行为解读</h3>
+                <ul>
+                    <li><strong>🌱 绿藻摆动</strong>：固定在基底，轻柔摆动表示光合作用活跃</li>
+                    <li><strong>🍃 浮萍漂移</strong>：在水面缓慢漂移，提供遮阴降温</li>
+                    <li><strong>🌾 水草摆动</strong>：根部固定，随水流摆动，净化水质</li>
+                    <li><strong>🦐 虾跳跃</strong>：小幅跳跃式游动，表示在觅食藻类</li>
+                    <li><strong>🐌 螺蠕动</strong>：缓慢变形移动，清理表面附着物</li>
+                    <li><strong>🐟 鱼游泳</strong>：流畅游动，活跃度反映水质状况</li>
+                    <li><strong>🦞 虾警觉</strong>：间歇性快速移动，顶级掠食者行为</li>
+                    <li><strong>🦠 菌振动</strong>：微小振动，分解有机物净化水质</li>
+                </ul>
+
+                <h3>🌡️ 环境因子影响</h3>
+                <ul>
+                    <li><strong>光照</strong>：强光促进植物摆动，弱光减缓生长</li>
+                    <li><strong>温度</strong>：适温生物活跃，极端温度行为迟缓</li>
+                    <li><strong>通风</strong>：影响气体交换，开放时气泡更多</li>
+                    <li><strong>水质</strong>：溶氧充足时动物游动活跃，缺氧时行动缓慢</li>
+                </ul>
+
+                <h3>⚠️ 异常行为预警</h3>
+                <ul>
+                    <li><strong>植物摆动减缓</strong>：可能缺光或营养不足</li>
+                    <li><strong>动物游动缓慢</strong>：可能缺氧或水质恶化</li>
+                    <li><strong>生物聚集一处</strong>：可能该区域环境更适宜</li>
+                    <li><strong>活动完全停止</strong>：生物健康严重受损</li>
+                </ul>
+
+                <h3>🎯 观察要点</h3>
+                <ul>
+                    <li><strong>节奏变化</strong>：生物活动节奏反映环境状态</li>
+                    <li><strong>空间分布</strong>：不同生物占据适合的生态位</li>
+                    <li><strong>相互作用</strong>：观察捕食与被捕食关系</li>
+                    <li><strong>环境响应</strong>：调整参数时观察生物反应</li>
+                </ul>
+
+                <h3>📈 成功指标</h3>
+                <p>理想状态：各种生物行为自然流畅，活动节奏稳定，生态系统和谐运转。</p>
+            </div>
+            <button class="btn" onclick="hideIngameHelp()">关闭</button>
+        </div>
+    </div>
+
+    <script>
+        // 游戏状态
+        let gameState = {
+            bottleSize: null,
+            day: 1,
+            speed: 1,
+            paused: false,
+            organisms: [],
+            environment: {
+                light: 50,
+                temperature: 23,
+                ventilation: 'sealed',
+                oxygen: 50,
+                ph: 7.0,
+                nutrients: 50,
+                toxins: 0
+            },
+            achievements: [],
+            selectedOrganism: null,
+            movementIntervals: []
+        };
+
+        // 生物定义
+        const organismTypes = {
+            greenAlgae: { 
+                name: '绿藻', 
+                icon: '🌱', 
+                type: 'producer', 
+                growth: 2, 
+                oxygen: 3, 
+                ph: 0.1, 
+                description: '固定摆动进行光合作用，高产氧但易过度繁殖',
+                layer: 'bottom',  // 底层固定
+                mobility: 'fixed' // 固定位置
+            },
+            blueAlgae: { 
+                name: '蓝绿藻', 
+                icon: '🌿', 
+                type: 'producer', 
+                growth: 1.5, 
+                oxygen: 2, 
+                ph: -0.1, 
+                description: '微小漂浮，可固氮，可能产生毒素',
+                layer: 'middle',
+                mobility: 'drift'  // 缓慢漂移
+            },
+            duckweed: { 
+                name: '浮萍', 
+                icon: '🍃', 
+                type: 'producer', 
+                growth: 1, 
+                oxygen: 2.5, 
+                ph: 0, 
+                description: '水面漂移，提供遮阴效果',
+                layer: 'surface', // 水面层
+                mobility: 'float'  // 水面漂浮
+            },
+            waterweed: { 
+                name: '水草', 
+                icon: '🌾', 
+                type: 'producer', 
+                growth: 0.5, 
+                oxygen: 1.5, 
+                ph: 0.05, 
+                description: '水下摆动，提供躲避空间，净化水质',
+                layer: 'bottom',
+                mobility: 'sway'   // 摆动
+            },
+            cherryShrimp: { 
+                name: '樱花虾', 
+                icon: '🦐', 
+                type: 'primary', 
+                growth: 1.2, 
+                oxygen: -1, 
+                nutrients: -1, 
+                description: '跳跃式游动，活泼觅食藻类',
+                layer: 'middle',
+                mobility: 'hop'    // 跳跃游动
+            },
+            appleSnail: { 
+                name: '苹果螺', 
+                icon: '🐌', 
+                type: 'primary', 
+                growth: 0.8, 
+                oxygen: -0.5, 
+                nutrients: -0.5, 
+                description: '缓慢蠕动，底栖清洁能力强',
+                layer: 'bottom',
+                mobility: 'crawl'  // 爬行
+            },
+            zebrafish: { 
+                name: '斑马鱼', 
+                icon: '🐟', 
+                type: 'secondary', 
+                growth: 0.3, 
+                oxygen: -2, 
+                nutrients: 0, 
+                description: '自然游泳，需要较高溶氧',
+                layer: 'middle',
+                mobility: 'swim'   // 游泳
+            },
+            crayfish: { 
+                name: '小龙虾', 
+                icon: '🦞', 
+                type: 'secondary', 
+                growth: 0.2, 
+                oxygen: -1.5, 
+                nutrients: 0, 
+                description: '警觉游动，顶级掠食者',
+                layer: 'bottom',
+                mobility: 'hunt'   // 狩猎游动
+            },
+            nitrobacteria: { 
+                name: '硝化细菌', 
+                icon: '🦠', 
+                type: 'decomposer', 
+                growth: 0.1, 
+                toxins: -2, 
+                nutrients: 1, 
+                description: '微振动分解有机物，净化水质',
+                layer: 'bottom',
+                mobility: 'vibrate' // 振动
+            }
+        };
+
+        // 初始化游戏
+        function initGame() {
+            createOrganismSelector();
+            updateDisplay();
+            startEnvironmentalEffects();
+            
+            // 事件监听器
+            document.getElementById('lightSlider').addEventListener('input', updateEnvironment);
+            document.getElementById('tempSlider').addEventListener('input', updateEnvironment);
+            document.getElementById('ventSelect').addEventListener('change', updateEnvironment);
+            
+            // 生态瓶选择
+            document.querySelectorAll('.bottle-option').forEach(option => {
+                option.addEventListener('click', selectBottle);
+            });
+        }
+
+        // 环境效果
+        function startEnvironmentalEffects() {
+            // 气泡效果 - 根据溶氧量调整频率
+            setInterval(() => {
+                if (gameState.environment.oxygen > 30 && !gameState.paused) {
+                    const frequency = Math.max(1, 5 - (gameState.environment.oxygen / 20));
+                    if (Math.random() < 1/frequency) {
+                        createBubble();
+                    }
+                }
+            }, 1500);
+
+            // 水波纹效果
+            setInterval(() => {
+                if (!gameState.paused && Math.random() < 0.3) {
+                    createRipple();
+                }
+            }, 4000);
+
+            // 营养粒子效果
+            setInterval(() => {
+                if (!gameState.paused && gameState.environment.nutrients > 20) {
+                    createParticle();
+                }
+            }, 3500);
+        }
+
+        function createBubble() {
+            const container = document.getElementById('ecosystemView');
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            
+            const size = Math.random() * 8 + 3;
+            bubble.style.width = size + 'px';
+            bubble.style.height = size + 'px';
+            bubble.style.left = Math.random() * 90 + 5 + '%';
+            bubble.style.bottom = '10px';
+            
+            container.appendChild(bubble);
+            
+            setTimeout(() => {
+                if (bubble.parentNode) {
+                    bubble.parentNode.removeChild(bubble);
+                }
+            }, 6000);
+        }
+
+        function createRipple() {
+            const container = document.getElementById('ecosystemView');
+            const ripple = document.createElement('div');
+            ripple.className = 'water-ripple';
+            
+            ripple.style.width = '15px';
+            ripple.style.height = '15px';
+            ripple.style.left = Math.random() * 70 + 15 + '%';
+            ripple.style.top = Math.random() * 50 + 25 + '%';
+            
+            container.appendChild(ripple);
+            
+            setTimeout(() => {
+                if (ripple.parentNode) {
+                    ripple.parentNode.removeChild(ripple);
+                }
+            }, 4000);
+        }
+
+        function createParticle() {
+            const container = document.getElementById('ecosystemView');
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            
+            const size = Math.random() * 2 + 1;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            particle.style.background = `hsl(${Math.random() * 40 + 100}, 50%, 70%)`;
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.bottom = '0px';
+            
+            container.appendChild(particle);
+            
+            setTimeout(() => {
+                if (particle.parentNode) {
+                    particle.parentNode.removeChild(particle);
+                }
+            }, 10000);
+        }
+
+        function selectBottle(event) {
+            document.querySelectorAll('.bottle-option').forEach(opt => opt.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            gameState.bottleSize = event.currentTarget.dataset.size;
+            document.getElementById('startBtn').disabled = false;
+        }
+
+        function startGame() {
+            if (!gameState.bottleSize) return;
+            
+            document.querySelector('.setup-phase').classList.remove('active');
+            document.querySelector('.game-phase').classList.add('active');
+            
+            // 根据瓶子大小调整难度
+            const sizeMultiplier = {
+                small: 0.7,
+                medium: 1.0,
+                large: 1.5
+            };
+            
+            gameState.sizeMultiplier = sizeMultiplier[gameState.bottleSize];
+            startGameLoop();
+            showInitialTip();
+        }
+
+        function createOrganismSelector() {
+            const selector = document.getElementById('organismSelector');
+            Object.keys(organismTypes).forEach(key => {
+                const organism = organismTypes[key];
+                const card = document.createElement('div');
+                card.className = 'organism-card';
+                card.dataset.type = key;
+                card.innerHTML = `
+                    <div class="icon">${organism.icon}</div>
+                    <div class="name">${organism.name}</div>
+                `;
+                card.title = organism.description;
+                card.addEventListener('click', () => selectOrganism(key));
+                selector.appendChild(card);
+            });
+        }
+
+        function selectOrganism(type) {
+            document.querySelectorAll('.organism-card').forEach(card => card.classList.remove('selected'));
+            document.querySelector(`[data-type="${type}"]`).classList.add('selected');
+            gameState.selectedOrganism = type;
+            document.getElementById('addOrganismBtn').disabled = false;
+            
+            // 显示生物信息
+            const organism = organismTypes[type];
+            showTip(`已选择：${organism.name} - ${organism.description}`, 'info');
+        }
+
+        function addSelectedOrganism() {
+            if (!gameState.selectedOrganism) return;
+            
+            const type = organismTypes[gameState.selectedOrganism];
+            let x, y;
+            
+            // 根据生物层次确定初始位置
+            switch(type.layer) {
+                case 'surface':  // 水面
+                    x = Math.random() * 60 + 20;
+                    y = Math.random() * 15 + 10;
+                    break;
+                case 'middle':   // 中层
+                    x = Math.random() * 70 + 15;
+                    y = Math.random() * 40 + 30;
+                    break;
+                case 'bottom':   // 底层
+                    x = Math.random() * 80 + 10;
+                    y = Math.random() * 20 + 70;
+                    break;
+                default:
+                    x = Math.random() * 80 + 10;
+                    y = Math.random() * 60 + 20;
+            }
+            
+            const organism = {
+                id: Date.now(),
+                type: gameState.selectedOrganism,
+                count: 1,
+                x: x,
+                y: y,
+                baseX: x,  // 记录基准位置
+                baseY: y,
+                direction: Math.random() * 360,
+                lastMove: Date.now()
+            };
+            
+            gameState.organisms.push(organism);
+            renderEcosystem();
+            updatePopulationStats();
+            checkAchievements();
+            
+            const orgType = organismTypes[gameState.selectedOrganism];
+            showTip(`成功添加 ${orgType.name}！观察它的自然行为模式。`, 'success');
+        }
+
+        function updateEnvironment() {
+            gameState.environment.light = parseInt(document.getElementById('lightSlider').value);
+            gameState.environment.temperature = parseInt(document.getElementById('tempSlider').value);
+            gameState.environment.ventilation = document.getElementById('ventSelect').value;
+            
+            document.getElementById('lightValue').textContent = gameState.environment.light;
+            document.getElementById('tempValue').textContent = gameState.environment.temperature;
+            document.getElementById('ventValue').textContent = {
+                'sealed': '密封',
+                'semi': '半开放',
+                'open': '开放'
+            }[gameState.environment.ventilation];
+            
+            updateEcosystemActivity();
+        }
+
+        function updateEcosystemActivity() {
+            const container = document.getElementById('ecosystemView');
+            const env = gameState.environment;
+            
+            // 根据环境条件调整活动级别
+            const activityLevel = (env.oxygen / 100 + env.temperature / 30 + (100 - env.toxins) / 100) / 3;
+            
+            container.classList.remove('high-activity', 'low-activity');
+            if (activityLevel > 0.75) {
+                container.classList.add('high-activity');
+            } else if (activityLevel < 0.4) {
+                container.classList.add('low-activity');
+            }
+        }
+
+        function renderEcosystem() {
+            const container = document.getElementById('ecosystemView');
+            // 清除现有生物
+            container.querySelectorAll('.organism').forEach(el => el.remove());
+            
+            gameState.organisms.forEach((organism, index) => {
+                const type = organismTypes[organism.type];
+                const element = document.createElement('div');
+                element.className = `organism ${organism.type}`;
+                element.style.left = organism.x + '%';
+                element.style.top = organism.y + '%';
+                element.innerHTML = `
+                    <div style="position: relative; display: inline-block;">
+                        ${type.icon}
+                        <span style="position: absolute; top: -8px; right: -8px; font-size: 0.5em; background: rgba(0,0,0,0.7); color: white; border-radius: 6px; padding: 1px 3px; min-width: 12px; text-align: center;">${organism.count}</span>
+                    </div>
+                `;
+                element.title = `${type.name}: ${organism.count}个 - ${type.description}`;
+                
+                container.appendChild(element);
+                
+                // 启动生物特定的移动行为
+                startOrganismBehavior(organism, element, type, index);
+            });
+            
+            // 更新总数
+            const total = gameState.organisms.reduce((sum, org) => sum + org.count, 0);
+            document.getElementById('populationCount').textContent = `总数: ${total}`;
+            
+            // 更新生态状态
+            updateEcosystemStatus();
+        }
+
+        function startOrganismBehavior(organism, element, type, index) {
+            const behaviorInterval = setInterval(() => {
+                if (gameState.paused) return;
+                
+                // 根据生物类型执行特定行为
+                switch(type.mobility) {
+                    case 'fixed':
+                        // 固定位置生物（如绿藻），只在原位小范围摆动
+                        break;
+                    case 'drift':
+                        // 缓慢漂移（如蓝绿藻）
+                        organism.x += (Math.random() - 0.5) * 2;
+                        organism.y += (Math.random() - 0.5) * 1.5;
+                        break;
+                    case 'float':
+                        // 水面漂浮（如浮萍）
+                        organism.x += (Math.random() - 0.5) * 4;
+                        // 保持在水面
+                        organism.y = Math.max(5, Math.min(25, organism.baseY + (Math.random() - 0.5) * 10));
+                        break;
+                    case 'sway':
+                        // 水下摆动（如水草），基本固定但有摆动
+                        organism.x = organism.baseX + (Math.random() - 0.5) * 8;
+                        organism.y = organism.baseY + (Math.random() - 0.5) * 6;
+                        break;
+                    case 'hop':
+                        // 跳跃游动（如樱花虾）
+                        if (Math.random() < 0.3) { // 30%概率移动
+                            organism.x += (Math.random() - 0.5) * 12;
+                            organism.y += (Math.random() - 0.5) * 8;
+                        }
+                        break;
+                    case 'crawl':
+                        // 爬行（如苹果螺）
+                        organism.x += (Math.random() - 0.5) * 3;
+                        organism.y += (Math.random() - 0.5) * 2;
+                        // 保持在底部
+                        organism.y = Math.max(70, Math.min(90, organism.y));
+                        break;
+                    case 'swim':
+                        // 游泳（如斑马鱼）
+                        organism.x += (Math.random() - 0.5) * 10;
+                        organism.y += (Math.random() - 0.5) * 8;
+                        // 随机觅食行为
+                        if (Math.random() < 0.2) {
+                            element.classList.add('feeding');
+                            setTimeout(() => element.classList.remove('feeding'), 2000);
+                        }
+                        break;
+                    case 'hunt':
+                        // 狩猎游动（如小龙虾）
+                        const prey = findNearbyPrey(organism, index);
+                        if (prey) {
+                            // 向猎物靠近
+                            const dx = prey.x - organism.x;
+                            const dy = prey.y - organism.y;
+                            organism.x += dx * 0.2;
+                            organism.y += dy * 0.2;
+                        } else {
+                            // 巡游
+                            organism.x += (Math.random() - 0.5) * 8;
+                            organism.y += (Math.random() - 0.5) * 6;
+                        }
+                        break;
+                    case 'vibrate':
+                        // 微振动（如细菌），基本不移动
+                        organism.x += (Math.random() - 0.5) * 0.5;
+                        organism.y += (Math.random() - 0.5) * 0.5;
+                        break;
+                }
+                
+                // 边界检查
+                organism.x = Math.max(5, Math.min(90, organism.x));
+                organism.y = Math.max(10, Math.min(85, organism.y));
+                
+                // 更新DOM位置
+                if (element.parentNode) {
+                    element.style.left = organism.x + '%';
+                    element.style.top = organism.y + '%';
+                }
+                
+            }, 3000 + Math.random() * 4000); // 每3-7秒执行一次行为
+            
+            gameState.movementIntervals.push(behaviorInterval);
+        }
+
+        function findNearbyPrey(predator, predatorIndex) {
+            const preyTypes = ['primary']; // 掠食者寻找初级消费者
+            const nearbyPrey = gameState.organisms.filter((org, index) => {
+                if (index === predatorIndex) return false;
+                if (!preyTypes.includes(organismTypes[org.type].type)) return false;
+                const distance = Math.sqrt(
+                    Math.pow(org.x - predator.x, 2) + 
+                    Math.pow(org.y - predator.y, 2)
+                );
+                return distance < 25; // 25% 范围内
+            });
+            
+            return nearbyPrey.length > 0 ? nearbyPrey[Math.floor(Math.random() * nearbyPrey.length)] : null;
+        }
+
+        function updateEcosystemStatus() {
+            const env = gameState.environment;
+            const status = document.getElementById('ecosystemStatus');
+            const indicators = [];
+            
+            // 溶氧状态
+            if (env.oxygen < 30) indicators.push('<div class="balance-indicator"><div class="balance-dot critical"></div>缺氧</div>');
+            else if (env.oxygen > 85) indicators.push('<div class="balance-indicator"><div class="balance-dot warning"></div>高氧</div>');
+            else indicators.push('<div class="balance-indicator"><div class="balance-dot balanced"></div>正常</div>');
+            
+            // pH状态
+            if (env.ph < 6.5 || env.ph > 8.5) indicators.push('<div class="balance-indicator"><div class="balance-dot critical"></div>pH异常</div>');
+            
+            // 毒素状态
+            if (env.toxins > 30) indicators.push('<div class="balance-indicator"><div class="balance-dot critical"></div>有毒</div>');
+            
+            status.innerHTML = indicators.join('');
+        }
+
+        function updateDisplay() {
+            const env = gameState.environment;
+            
+            // 修复浮点数精度问题
+            const dayDisplay = Math.round(gameState.day);
+            
+            // 更新环境指标
+            document.getElementById('oxygenValue').textContent = Math.round(env.oxygen) + '%';
+            document.getElementById('oxygenBar').style.width = env.oxygen + '%';
+            
+            document.getElementById('phValue').textContent = env.ph.toFixed(1);
+            const phPercent = ((env.ph - 6) / 3) * 100; // 6-9 范围转换为 0-100%
+            document.getElementById('phBar').style.width = Math.max(0, Math.min(100, phPercent)) + '%';
+            
+            document.getElementById('nutrientsValue').textContent = Math.round(env.nutrients) + '%';
+            document.getElementById('nutrientsBar').style.width = env.nutrients + '%';
+            
+            document.getElementById('toxinsValue').textContent = Math.round(env.toxins) + '%';
+            document.getElementById('toxinsBar').style.width = env.toxins + '%';
+            
+            // 更新游戏时间
+            document.getElementById('gameTime').textContent = `第 ${dayDisplay} 天`;
+            
+            // 检查生态状态并给出建议
+            checkEcosystemHealth();
+        }
+
+        function checkEcosystemHealth() {
+            const env = gameState.environment;
+            const producers = gameState.organisms.filter(org => organismTypes[org.type].type === 'producer').reduce((sum, org) => sum + org.count, 0);
+            const consumers = gameState.organisms.filter(org => organismTypes[org.type].type === 'primary').reduce((sum, org) => sum + org.count, 0);
+            
+            // 动态提示系统
+            if (env.oxygen < 30 && producers < 3) {
+                showTip('溶氧不足！观察生物活动是否变慢了？建议增加会摆动的植物（绿藻、水草）。', 'danger');
+            } else if (env.oxygen > 85) {
+                showTip('溶氧过高！注意气泡频繁出现，植物摆动过于剧烈，建议减少光照。', 'warning');
+            } else if (env.nutrients > 80 && consumers < 2) {
+                showTip('营养过剩！浮萍漂移加快，建议增加会跳跃的草食动物（樱花虾）。', 'warning');
+            } else if (env.toxins > 30) {
+                showTip('毒素积累！生物活动明显减缓，建议增加会振动的分解细菌。', 'danger');
+            } else if (gameState.organisms.length === 0) {
+                showTip('生态瓶是空的！先添加一些植物，观察它们的自然摆动和漂移行为。', 'info');
+            }
+        }
+
+        function showTip(message, type = 'info') {
+            const panel = document.getElementById('tipsPanel');
+            const tipClass = type === 'danger' ? 'danger' : type === 'warning' ? 'warning' : type === 'success' ? 'success' : '';
+            panel.innerHTML = `
+                <div class="tips-panel ${tipClass}">
+                    <h4>💡 生态提示</h4>
+                    <p>${message}</p>
+                </div>
+            `;
+            
+            // 5秒后自动隐藏
+            setTimeout(() => {
+                if (panel.innerHTML.includes(message)) {
+                    panel.innerHTML = '';
+                }
+            }, 5000);
+        }
+
+        function showInitialTip() {
+            showTip('欢迎来到真实的生态瓶世界！每种生物都有独特的行为：植物轻柔摆动，浮萍水面漂移，鱼儿自然游泳。先添加一些植物观察它们的自然行为吧！', 'info');
+        }
+
+        function updatePopulationStats() {
+            const stats = document.getElementById('populationStats');
+            if (gameState.organisms.length === 0) {
+                stats.innerHTML = '<p style="color: #666; font-size: 14px;">还没有生物，快去添加一些吧！</p>';
+                return;
+            }
+            
+            const typeGroups = {};
+            gameState.organisms.forEach(org => {
+                const type = organismTypes[org.type].type;
+                if (!typeGroups[type]) typeGroups[type] = 0;
+                typeGroups[type] += org.count;
+            });
+            
+            const typeNames = {
+                producer: '🌱 生产者',
+                primary: '🦐 初级消费者',
+                secondary: '🐟 次级消费者',
+                decomposer: '🦠 分解者'
+            };
+            
+            const html = Object.keys(typeGroups).map(type => {
+                const count = typeGroups[type];
+                const percentage = ((count / gameState.organisms.reduce((sum, org) => sum + org.count, 0)) * 100).toFixed(1);
+                return `<div style="margin: 8px 0; display: flex; justify-content: space-between;">
+                    <span>${typeNames[type]}</span>
+                    <span>${count} (${percentage}%)</span>
+                </div>`;
+            }).join('');
+            
+            stats.innerHTML = html;
+        }
+
+        function simulateEcosystem() {
+            if (gameState.paused) return;
+            
+            const env = gameState.environment;
+            let oxygenChange = 0;
+            let phChange = 0;
+            let nutrientsChange = 0;
+            let toxinsChange = 0;
+            
+            // 环境因素影响
+            const lightFactor = env.light / 100;
+            const tempFactor = Math.max(0, 1 - Math.abs(env.temperature - 23) / 10);
+            const ventFactor = { sealed: 0.5, semi: 1.0, open: 1.5 }[env.ventilation];
+            
+            // 模拟每个生物的影响
+            gameState.organisms.forEach((organism, index) => {
+                const type = organismTypes[organism.type];
+                const multiplier = organism.count * gameState.sizeMultiplier * tempFactor;
+                
+                // 生长或死亡
+                let growthRate = type.growth * lightFactor * multiplier * 0.01;
+                
+                // 环境压力
+                if (env.oxygen < 20 || env.oxygen > 90 || env.toxins > 50) {
+                    growthRate -= 0.1;
+                    // 添加死亡动画
+                    if (growthRate < -0.05) {
+                        const elements = document.querySelectorAll(`.${organism.type}`);
+                        elements.forEach(el => {
+                            if (Math.random() < 0.1) {
+                                el.classList.add('dying');
+                            }
+                        });
+                    }
+                }
+                
+                organism.count = Math.max(0, Math.round(organism.count + growthRate));
+                
+                // 环境影响
+                if (type.oxygen) oxygenChange += type.oxygen * multiplier * 0.1;
+                if (type.ph) phChange += type.ph * multiplier * 0.01;
+                if (type.nutrients) nutrientsChange += type.nutrients * multiplier * 0.1;
+                if (type.toxins) toxinsChange += type.toxins * multiplier * 0.1;
+                
+                // 移除死亡的种群
+                if (organism.count <= 0) {
+                    gameState.organisms.splice(index, 1);
+                }
+            });
+            
+            // 应用环境变化
+            env.oxygen = Math.max(0, Math.min(100, env.oxygen + oxygenChange * ventFactor));
+            env.ph = Math.max(6, Math.min(9, env.ph + phChange));
+            env.nutrients = Math.max(0, Math.min(100, env.nutrients + nutrientsChange));
+            env.toxins = Math.max(0, Math.min(100, env.toxins + toxinsChange));
+            
+            // 自然衰减
+            env.toxins *= 0.98;
+            
+            // 随机事件
+            if (Math.random() < 0.002 * gameState.speed) {
+                triggerRandomEvent();
+            }
+            
+            updateDisplay();
+            renderEcosystem();
+            updatePopulationStats();
+            checkAchievements();
+            updateEcosystemActivity();
+        }
+
+        function triggerRandomEvent() {
+            const events = [
+                {
+                    title: '🌊 藻类繁盛！',
+                    description: '营养充足，植物摆动更加活跃，观察绿藻的快速摆动！',
+                    effect: () => {
+                        gameState.organisms.forEach(org => {
+                            if (organismTypes[org.type].type === 'producer') {
+                                org.count = Math.round(org.count * 1.5);
+                            }
+                        });
+                        gameState.environment.oxygen += 20;
+                    }
+                },
+                {
+                    title: '🦠 细菌活跃期',
+                    description: '分解者活动加强，注意细菌的振动频率增加！',
+                    effect: () => {
+                        gameState.organisms.forEach(org => {
+                            if (organismTypes[org.type].type === 'decomposer') {
+                                org.count = Math.round(org.count * 1.4);
+                            }
+                        });
+                        gameState.environment.toxins -= 10;
+                    }
+                },
+                {
+                    title: '🐟 觅食高峰',
+                    description: '鱼类进入觅食期，游动更加频繁活跃！',
+                    effect: () => {
+                        gameState.organisms.forEach(org => {
+                            if (organismTypes[org.type].type === 'secondary') {
+                                org.count = Math.round(org.count * 1.2);
+                            }
+                        });
+                    }
+                }
+            ];
+            
+            const event = events[Math.floor(Math.random() * events.length)];
+            showEventPopup(event);
+        }
+
+        function showEventPopup(event) {
+            const popup = document.createElement('div');
+            popup.innerHTML = `
+                <div class="overlay" onclick="this.parentElement.remove()"></div>
+                <div class="event-popup">
+                    <h2>${event.title}</h2>
+                    <p>${event.description}</p>
+                    <p style="margin-top: 15px; color: #666;">仔细观察生物行为的变化，这是生态系统的自然节律！</p>
+                    <button class="btn" onclick="this.parentElement.parentElement.remove(); (${event.effect})()">确定</button>
+                </div>
+            `;
+            document.body.appendChild(popup);
+        }
+
+        function checkAchievements() {
+            const newAchievements = [];
+            
+            // 完美平衡
+            const env = gameState.environment;
+            if (env.oxygen > 40 && env.oxygen < 80 && 
+                env.ph > 6.5 && env.ph < 8.5 && 
+                env.nutrients > 30 && env.nutrients < 70 && 
+                env.toxins < 20 && gameState.day > 10) {
+                if (!gameState.achievements.includes('perfect_balance')) {
+                    newAchievements.push('perfect_balance');
+                }
+            }
+            
+            // 生物多样性
+            const uniqueTypes = new Set(gameState.organisms.map(org => organismTypes[org.type].type));
+            if (uniqueTypes.size >= 3 && !gameState.achievements.includes('biodiversity')) {
+                newAchievements.push('biodiversity');
+            }
+            
+            // 长期生存
+            if (Math.round(gameState.day) >= 30 && !gameState.achievements.includes('survival')) {
+                newAchievements.push('survival');
+            }
+            
+            // 行为观察者 - 新成就
+            if (gameState.organisms.length >= 4 && !gameState.achievements.includes('observer')) {
+                newAchievements.push('observer');
+            }
+            
+            // 添加新成就
+            newAchievements.forEach(achievement => {
+                gameState.achievements.push(achievement);
+                const achievementNames = {
+                    perfect_balance: '⚖️ 完美平衡',
+                    biodiversity: '🌈 生物多样性',
+                    survival: '🏆 长期生存',
+                    observer: '👁️ 行为观察者'
+                };
+                showTip(`🎉 获得成就：${achievementNames[achievement]}！`, 'success');
+            });
+            
+            updateAchievements();
+        }
+
+        function updateAchievements() {
+            const achievementNames = {
+                perfect_balance: '⚖️ 完美平衡',
+                biodiversity: '🌈 生物多样性',
+                survival: '🏆 长期生存',
+                observer: '👁️ 行为观察者'
+            };
+            
+            const container = document.getElementById('achievements');
+            if (gameState.achievements.length === 0) {
+                container.innerHTML = '<p style="color: #666; font-size: 14px;">暂无成就，继续努力！</p>';
+            } else {
+                container.innerHTML = gameState.achievements.map(ach => 
+                    `<div class="achievement">${achievementNames[ach]}</div>`
+                ).join('');
+            }
+        }
+
+        function startGameLoop() {
+            setInterval(() => {
+                if (!gameState.paused) {
+                    gameState.day += gameState.speed * 0.1;
+                    simulateEcosystem();
+                }
+            }, 1000);
+        }
+
+        function pauseGame() {
+            gameState.paused = !gameState.paused;
+            document.getElementById('pauseBtn').innerHTML = gameState.paused ? '▶️ 继续' : '⏸️ 暂停';
+            
+            if (gameState.paused) {
+                // 暂停时停止所有动画
+                const container = document.getElementById('ecosystemView');
+                container.style.animationPlayState = 'paused';
+                container.querySelectorAll('*').forEach(el => {
+                    el.style.animationPlayState = 'paused';
+                });
+            } else {
+                // 继续时恢复动画
+                const container = document.getElementById('ecosystemView');
+                container.style.animationPlayState = 'running';
+                container.querySelectorAll('*').forEach(el => {
+                    el.style.animationPlayState = 'running';
+                });
+            }
+        }
+
+        function speedUp() {
+            gameState.speed = gameState.speed === 1 ? 2 : gameState.speed === 2 ? 5 : 1;
+            document.getElementById('speedBtn').innerHTML = `⏩ ${gameState.speed}x速度`;
+        }
+
+        function emergencyOpen() {
+            gameState.environment.oxygen = Math.min(100, gameState.environment.oxygen + 30);
+            gameState.environment.toxins = Math.max(0, gameState.environment.toxins - 20);
+            updateDisplay();
+            
+            showTip('🚨 紧急处理完成！观察生物活动是否变得更活跃了？', 'info');
+            
+            // 创建额外的气泡效果
+            for (let i = 0; i < 8; i++) {
+                setTimeout(() => createBubble(), i * 150);
+            }
+        }
+
+        function resetGame() {
+            if (confirm('确定要重新开始吗？当前进度将会丢失。')) {
+                // 清理移动间隔
+                gameState.movementIntervals.forEach(interval => clearInterval(interval));
+                location.reload();
+            }
+        }
+
+        function showHelp() {
+            document.querySelector('.help-panel').classList.add('active');
+        }
+
+        function hideHelp() {
+            document.querySelector('.help-panel').classList.remove('active');
+        }
+
+        function showIngameHelp() {
+            document.querySelector('.ingame-help').classList.add('active');
+        }
+
+        function hideIngameHelp() {
+            document.querySelector('.ingame-help').classList.remove('active');
+        }
+
+        // 初始化游戏
+        initGame();
+    </script>
+</body>
+</html>

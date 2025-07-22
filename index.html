@@ -39,7 +39,8 @@
     <link rel="stylesheet" href="styles/common.css">
     <link rel="stylesheet" href="styles/index.css">
     
-    <script defer src="https://cloud.umami.is/script.js" data-website-id="09c0a9c3-17ec-49e2-8fd0-7064f75f6978"></script>
+    <!-- Umami 统计脚本延迟加载器 -->
+    <script src="scripts/umami-loader.js"></script>
 </head>
 
 <body class="light-mode">
@@ -480,6 +481,8 @@
         window.addEventListener('load', checkVisibility);
         // 滚动时检查
         window.addEventListener('scroll', checkVisibility);
+
+        // Umami 统计脚本已通过 umami-loader.js 自动延迟加载
     </script>
     </body>
     </html>

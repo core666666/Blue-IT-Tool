@@ -1,0 +1,2630 @@
+<!DOCTYPE html><html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生态瓶工程师 - 创造你的微型生态系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        .game-container {
+            width: 95%;
+            max-width: 1600px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 350px 1fr 350px;
+            gap: 20px;
+            min-height: 90vh;
+        }
+
+        /* 左侧控制面板 */
+        .control-panel {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .control-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .control-section h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* 中间生态瓶显示区 */
+        .bottle-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .bottle-container {
+            position: relative;
+            width: 400px;
+            height: 500px;
+            background: linear-gradient(to bottom, 
+                rgba(135, 206, 235, 0.3) 0%, 
+                rgba(135, 206, 235, 0.5) 30%,
+                rgba(135, 206, 235, 0.7) 100%);
+            border: 3px solid #4a90e2;
+            border-radius: 20px 20px 50px 50px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .water-surface {
+            position: absolute;
+            top: 10%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.6);
+            animation: wave 3s ease-in-out infinite;
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+
+        .substrate {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(to bottom, #8b7355, #6b5537);
+            border-radius: 0 0 47px 47px;
+        }
+
+        /* 生物图标样式 - 改为使用emoji */
+        .organism {
+            position: absolute;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.5s ease;
+            user-select: none;
+            z-index: 10;
+        }
+
+        .organism:hover {
+            transform: scale(1.2);
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
+        }
+
+        /* 不同生物的动画 */
+        .plant-organism {
+            animation: sway 4s ease-in-out infinite;
+        }
+
+        @keyframes sway {
+            0%, 100% { transform: rotate(-2deg); }
+            50% { transform: rotate(2deg); }
+        }
+
+        .fish-organism {
+            animation: swim 12s linear infinite;
+        }
+
+        @keyframes swim {
+            0% { left: -30px; transform: scaleX(1); }
+            50% { left: calc(50% - 15px); }
+            100% { left: calc(100% + 30px); transform: scaleX(-1); }
+        }
+
+        .shrimp-organism {
+            animation: hop 8s ease-in-out infinite;
+        }
+
+        @keyframes hop {
+            0%, 100% { bottom: 70px; }
+            25% { bottom: 120px; }
+            50% { bottom: 70px; }
+            75% { bottom: 100px; }
+        }
+
+        .snail-organism {
+            animation: crawl 20s linear infinite;
+        }
+
+        @keyframes crawl {
+            0% { left: 0; bottom: 60px; }
+            25% { left: 25%; bottom: 70px; }
+            50% { left: 50%; bottom: 60px; }
+            75% { left: 75%; bottom: 65px; }
+            100% { left: 100%; bottom: 60px; }
+        }
+
+        .floating-organism {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(5deg); }
+            66% { transform: translateY(10px) rotate(-3deg); }
+        }
+
+        .algae {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, 
+                rgba(0, 128, 0, 0.1) 0%, 
+                transparent 70%);
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0.3;
+        }
+
+        .bubble {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            animation: rise 5s linear infinite;
+        }
+
+        @keyframes rise {
+            0% { bottom: 60px; opacity: 0.7; transform: translateX(0); }
+            50% { opacity: 0.9; transform: translateX(10px); }
+            100% { bottom: 90%; opacity: 0; transform: translateX(-5px); }
+        }
+
+        /* 右侧数据面板 */
+        .data-panel {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .parameter {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .parameter-label {
+            font-weight: bold;
+            color: #34495e;
+            margin-bottom: 5px;
+        }
+
+        .parameter-value {
+            font-size: 24px;
+            color: #3498db;
+            font-weight: bold;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #ecf0f1;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #3498db;
+            transition: width 0.3s ease;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            margin: 5px;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #27ae60;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        /* 物种选择器 - 改进版 */
+        .species-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .species-card {
+            padding: 8px;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: white;
+            position: relative;
+        }
+
+        .species-card:hover {
+            border-color: #3498db;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .species-card.selected {
+            border-color: #2ecc71;
+            background: #e8f8f5;
+        }
+
+        .species-icon {
+            font-size: 20px;
+            margin-bottom: 3px;
+        }
+
+        .species-name {
+            font-size: 11px;
+            color: #34495e;
+            font-weight: bold;
+        }
+
+        /* 物种信息显示 */
+        .species-info {
+            margin-top: 15px;
+            padding: 15px;
+            background: #e8f6f3;
+            border-radius: 10px;
+            border: 2px solid #2ecc71;
+            display: none;
+        }
+
+        .species-info.show {
+            display: block;
+        }
+
+        .species-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #27ae60;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .species-role {
+            color: #2c3e50;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .species-stats {
+            margin-top: 10px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+            font-size: 12px;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 5px 8px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* 生态提示面板 */
+        .eco-tips {
+            margin-top: 15px;
+            padding: 15px;
+            background: #fff9e6;
+            border-radius: 10px;
+            border: 2px solid #f39c12;
+        }
+
+        .tips-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #e67e22;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .tip-item {
+            background: white;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border-left: 4px solid #f39c12;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .tip-priority {
+            font-weight: bold;
+            color: #d35400;
+        }
+
+        /* 滑块样式 */
+        .slider-container {
+            margin-top: 10px;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #ecf0f1;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+        }
+
+        .slider-value {
+            text-align: center;
+            margin-top: 5px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        /* 时间控制 */
+        .time-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .speed-indicator {
+            padding: 5px 10px;
+            background: #ecf0f1;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        /* 事件通知 */
+        .event-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            max-width: 300px;
+            z-index: 1000;
+        }
+
+        .event-notification.show {
+            transform: translateX(0);
+        }
+
+        .event-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .event-message {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        /* 教程覆盖层 */
+        .tutorial-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .tutorial-modal {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 700px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .tutorial-modal h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        .tutorial-content {
+            line-height: 1.6;
+            color: #34495e;
+        }
+
+        .tutorial-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .tutorial-section h3 {
+            color: #3498db;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .tutorial-section ul {
+            margin-left: 20px;
+        }
+
+        .tutorial-section li {
+            margin: 8px 0;
+        }
+
+        /* 成就系统 */
+        .achievement-popup {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(200px);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.5s ease;
+            z-index: 1000;
+        }
+
+        .achievement-popup.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .achievement-icon {
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .achievement-title {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* 图表样式 */
+        .chart-container {
+            width: 100%;
+            height: 150px;
+            background: white;
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-line {
+            stroke: #3498db;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .chart-grid {
+            stroke: #ecf0f1;
+            stroke-width: 1;
+        }
+
+        /* 食物链可视化 */
+        .food-chain {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .chain-node {
+            display: inline-block;
+            padding: 8px 15px;
+            margin: 5px;
+            background: #3498db;
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .chain-arrow {
+            display: inline-block;
+            margin: 0 10px;
+            color: #7f8c8d;
+        }
+
+        /* 游戏状态指示器 */
+        .game-status {
+            text-align: center;
+            padding: 10px;
+            background: #2ecc71;
+            color: white;
+            border-radius: 10px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .game-status.warning {
+            background: #f39c12;
+        }
+
+        .game-status.danger {
+            background: #e74c3c;
+        }
+
+        /* 帮助按钮 */
+        .help-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: #3498db;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .help-btn:hover {
+            transform: scale(1.1);
+            background: #2980b9;
+        }
+
+        /* 提示工具 */
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 100;
+            max-width: 200px;
+            line-height: 1.4;
+        }
+
+        .tooltip.show {
+            opacity: 1;
+        }
+
+        /* 加载动画 */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            flex-direction: column;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 20px;
+            color: #7f8c8d;
+            font-size: 16px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1400px) {
+            .game-container {
+                grid-template-columns: 300px 1fr 300px;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .game-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr auto;
+                gap: 15px;
+            }
+            
+            .control-panel, .data-panel {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 10px;
+            }
+            
+            .bottle-container {
+                width: 350px;
+                height: 450px;
+            }
+        }
+
+        /* 新增：进度提示条 */
+        .progress-tip {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+            font-size: 12px;
+            color: #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <!-- 加载画面 -->
+    <div class="loading" id="loading">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">正在准备你的生态实验室...</div>
+    </div>
+
+    <!-- 教程覆盖层 -->
+    <div class="tutorial-overlay" id="tutorialOverlay" style="display: none;">
+        <div class="tutorial-modal">
+            <h2>🌿 欢迎来到生态瓶工程师 🌿</h2>
+            <div class="tutorial-content">
+                <div class="tutorial-section">
+                    <h3>🎯 游戏目标</h3>
+                    <p>作为一名生态瓶工程师，你的任务是创建并维护一个平衡稳定的微型生态系统。通过科学搭配不同生物和精确调节环境参数，让你的生态瓶成为一个自给自足的小世界！</p>
+                </div>
+                
+                <div class="tutorial-section">
+                    <h3>🎮 游戏操作指南</h3>
+                    <ul>
+                        <li><strong>选择生物：</strong>点击左侧物种卡片查看详细信息，了解每种生物的生态作用</li>
+                        <li><strong>添加生物：</strong>选中后点击"添加选中生物"按钮，生物将随机出现在生态瓶中</li>
+                        <li><strong>环境调节：</strong>使用光照和温度滑块调节环境条件</li>
+                        <li><strong>监控数据：</strong>右侧面板实时显示水质参数和生物统计</li>
+                        <li><strong>时间控制：</strong>可暂停观察或加速时间流逝</li>
+                    </ul>
+                </div>
+                
+                <div class="tutorial-section">
+                    <h3>🔄 生态平衡原理</h3>
+                    <ul>
+                        <li><strong>生产者（植物）：</strong>利用光能产生氧气，消耗CO2和营养盐</li>
+                        <li><strong>初级消费者：</strong>虾、螺等草食动物，消耗植物和有机物</li>
+                        <li><strong>次级消费者：</strong>鱼类等肉食动物，需要充足氧气</li>
+                        <li><strong>分解者：</strong>细菌分解死亡生物，释放营养盐</li>
+                        <li><strong>关键指标：</strong>溶氧量、pH值、营养盐、氨氮浓度</li>
+                    </ul>
+                </div>
+                
+                <div class="tutorial-section">
+                    <h3>🌱 新手推荐流程</h3>
+                    <p><strong>第1步：</strong>建立植物基础 - 添加2-3种不同植物（如绿藻、水草）</p>
+                    <p><strong>第2步：</strong>等待稳定 - 观察植物生长，氧气上升</p>
+                    <p><strong>第3步：</strong>引入草食动物 - 添加虾、螺控制藻类</p>
+                    <p><strong>第4步：</strong>精细调节 - 根据生态提示调整参数</p>
+                    <p><strong>第5步：</strong>高级生物 - 条件合适时可引入鱼类</p>
+                </div>
+                
+                <div class="tutorial-section">
+                    <h3>⚠️ 常见问题与解决</h3>
+                    <ul>
+                        <li><strong>氧气不足：</strong>增加植物数量或提高光照</li>
+                        <li><strong>藻类爆发：</strong>添加草食动物或降低光照</li>
+                        <li><strong>pH异常：</strong>调整生物比例，增加缓冲植物</li>
+                        <li><strong>氨氮过高：</strong>清理系统或增加硝化细菌</li>
+                    </ul>
+                </div>
+                
+                <div class="tutorial-section">
+                    <h3>🏆 成就系统</h3>
+                    <p>完成各种挑战解锁成就：维持长期平衡、培养生物多样性、处理生态危机等。每个成就都代表你在生态学方面的进步！</p>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 25px;">
+                <button class="btn btn-primary" onclick="closeTutorial()" style="padding: 15px 30px; font-size: 16px;">开始我的生态之旅</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主游戏容器 -->
+    <div class="game-container">
+        <!-- 左侧控制面板 -->
+        <div class="control-panel">
+            <div class="game-status" id="gameStatus">生态系统：稳定</div>
+            
+            <div class="control-section">
+                <h3>🏺 生态瓶配置</h3>
+                <select id="bottleSize" class="form-control" style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+                    <option value="small">小型瓶 (250ml) - 新手推荐</option>
+                    <option value="medium" selected>中型瓶 (500ml) - 标准配置</option>
+                    <option value="large">大型瓶 (1000ml) - 专家挑战</option>
+                </select>
+                <div class="progress-tip">瓶子大小影响最大容量和环境稳定性</div>
+            </div>
+            
+            <div class="control-section">
+                <h3>🧬 生物物种库</h3>
+                <div class="species-selector">
+                    <!-- 植物类 -->
+                    <div class="species-card" data-species="algae" data-category="plant">
+                        <div class="species-icon">🌱</div>
+                        <div class="species-name">绿藻</div>
+                    </div>
+                    <div class="species-card" data-species="duckweed" data-category="plant">
+                        <div class="species-icon">🍃</div>
+                        <div class="species-name">浮萍</div>
+                    </div>
+                    <div class="species-card" data-species="waterweed" data-category="plant">
+                        <div class="species-icon">🌾</div>
+                        <div class="species-name">水草</div>
+                    </div>
+                    <div class="species-card" data-species="moss" data-category="plant">
+                        <div class="species-icon">🍀</div>
+                        <div class="species-name">水苔</div>
+                    </div>
+                    <div class="species-card" data-species="hornwort" data-category="plant">
+                        <div class="species-icon">🌿</div>
+                        <div class="species-name">金鱼藻</div>
+                    </div>
+                    <div class="species-card" data-species="lotus" data-category="plant">
+                        <div class="species-icon">🪷</div>
+                        <div class="species-name">睡莲</div>
+                    </div>
+                    
+                    <!-- 无脊椎动物 -->
+                    <div class="species-card" data-species="shrimp" data-category="herbivore">
+                        <div class="species-icon">🦐</div>
+                        <div class="species-name">樱花虾</div>
+                    </div>
+                    <div class="species-card" data-species="snail" data-category="herbivore">
+                        <div class="species-icon">🐌</div>
+                        <div class="species-name">苹果螺</div>
+                    </div>
+                    <div class="species-card" data-species="crab" data-category="omnivore">
+                        <div class="species-icon">🦀</div>
+                        <div class="species-name">小螃蟹</div>
+                    </div>
+                    <div class="species-card" data-species="copepods" data-category="microorganism">
+                        <div class="species-icon">🔬</div>
+                        <div class="species-name">桡足类</div>
+                    </div>
+                    <div class="species-card" data-species="daphnia" data-category="microorganism">
+                        <div class="species-icon">💧</div>
+                        <div class="species-name">水蚤</div>
+                    </div>
+                    <div class="species-card" data-species="rotifer" data-category="microorganism">
+                        <div class="species-icon">⚪</div>
+                        <div class="species-name">轮虫</div>
+                    </div>
+                    
+                    <!-- 鱼类 -->
+                    <div class="species-card" data-species="fish" data-category="carnivore">
+                        <div class="species-icon">🐟</div>
+                        <div class="species-name">斑马鱼</div>
+                    </div>
+                    <div class="species-card" data-species="guppy" data-category="omnivore">
+                        <div class="species-icon">🐠</div>
+                        <div class="species-name">孔雀鱼</div>
+                    </div>
+                    <div class="species-card" data-species="betta" data-category="carnivore">
+                        <div class="species-icon">🐡</div>
+                        <div class="species-name">斗鱼</div>
+                    </div>
+                    <div class="species-card" data-species="tetra" data-category="omnivore">
+                        <div class="species-icon">🎣</div>
+                        <div class="species-name">灯鱼</div>
+                    </div>
+                    
+                    <!-- 微生物 -->
+                    <div class="species-card" data-species="bacteria" data-category="decomposer">
+                        <div class="species-icon">🦠</div>
+                        <div class="species-name">硝化菌</div>
+                    </div>
+                    <div class="species-card" data-species="paramecium" data-category="microorganism">
+                        <div class="species-icon">🔬</div>
+                        <div class="species-name">草履虫</div>
+                    </div>
+                </div>
+                
+                <!-- 物种信息显示 -->
+                <div class="species-info" id="speciesInfo">
+                    <div class="species-title" id="speciesTitle">
+                        <span id="speciesTitleIcon">🌱</span>
+                        <span id="speciesTitleName">选择一个物种</span>
+                    </div>
+                    <div class="species-role" id="speciesRole">点击左侧物种卡片查看详细信息</div>
+                    <div class="species-stats" id="speciesStats">
+                        <!-- 动态生成统计信息 -->
+                    </div>
+                </div>
+                
+                <button class="btn btn-success" onclick="addSelectedSpecies()" style="width: 100%; margin-top: 15px; padding: 12px;">
+                    ➕ 添加选中生物
+                </button>
+            </div>
+            
+            <div class="control-section">
+                <h3>🌞 环境参数调节</h3>
+                <div class="slider-container">
+                    <label>☀️ 光照强度 - 影响植物光合作用</label>
+                    <input type="range" class="slider" id="lightIntensity" min="0" max="100" value="50">
+                    <div class="slider-value"><span id="lightValue">50</span>% (适中)</div>
+                </div>
+                <div class="slider-container" style="margin-top: 15px;">
+                    <label>🌡️ 水温 - 影响生物活性</label>
+                    <input type="range" class="slider" id="temperature" min="15" max="30" value="22">
+                    <div class="slider-value"><span id="tempValue">22</span>°C (适宜)</div>
+                </div>
+            </div>
+            
+            <div class="control-section">
+                <h3>⚡ 快速操作</h3>
+                <button class="btn btn-warning" onclick="feedSystem()" title="添加营养物质">
+                    🍽️ 投喂食物
+                </button>
+                <button class="btn btn-danger" onclick="cleanSystem()" title="清理有害物质">
+                    🧹 清理系统
+                </button>
+                <button class="btn btn-primary" onclick="oxygenBoost()" title="增加溶氧">
+                    💨 增氧
+                </button>
+            </div>
+            
+            <!-- 生态提示面板 -->
+            <div class="eco-tips">
+                <div class="tips-title">
+                    💡 生态智能提示
+                </div>
+                <div id="ecoTipsList">
+                    <div class="tip-item">
+                        欢迎来到生态瓶世界！开始添加一些植物建立基础吧。
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 中间生态瓶显示区 -->
+        <div class="bottle-area">
+            <div class="bottle-container" id="bottleContainer">
+                <div class="water-surface"></div>
+                <div class="substrate"></div>
+                <div class="algae" id="algaeLayer"></div>
+            </div>
+            
+            <div class="time-controls">
+                <button class="btn btn-primary" onclick="togglePause()">
+                    <span id="pauseBtn">⏸️ 暂停</span>
+                </button>
+                <button class="btn btn-primary" onclick="changeSpeed(1)">1x</button>
+                <button class="btn btn-primary" onclick="changeSpeed(2)">2x</button>
+                <button class="btn btn-primary" onclick="changeSpeed(5)">5x</button>
+                <div class="speed-indicator">时间流速: <span id="speedIndicator">1x</span></div>
+            </div>
+            
+            <div class="food-chain">
+                <h4 style="margin-bottom: 10px; color: #2c3e50;">🔄 生态循环链</h4>
+                <span class="chain-node">☀️ 阳光能</span>
+                <span class="chain-arrow">→</span>
+                <span class="chain-node">🌱 生产者</span>
+                <span class="chain-arrow">→</span>
+                <span class="chain-node">🦐 初级消费者</span>
+                <span class="chain-arrow">→</span>
+                <span class="chain-node">🐟 次级消费者</span>
+                <span class="chain-arrow">→</span>
+                <span class="chain-node">🦠 分解者</span>
+            </div>
+        </div>
+        
+        <!-- 右侧数据面板 -->
+        <div class="data-panel">
+            <h3 style="text-align: center; margin-bottom: 20px;">📊 实时生态数据</h3>
+            
+            <div class="parameter">
+                <div class="parameter-label">💧 溶解氧</div>
+                <div class="parameter-value"><span id="oxygenValue">7.5</span> mg/L</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="oxygenBar" style="width: 75%; background: #3498db;"></div>
+                </div>
+                <div class="progress-tip">正常范围：6-10 mg/L</div>
+            </div>
+            
+            <div class="parameter">
+                <div class="parameter-label">⚖️ 酸碱度</div>
+                <div class="parameter-value"><span id="phValue">7.0</span></div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="phBar" style="width: 50%; background: #2ecc71;"></div>
+                </div>
+                <div class="progress-tip">理想范围：6.5-7.5</div>
+            </div>
+            
+            <div class="parameter">
+                <div class="parameter-label">🌱 营养盐</div>
+                <div class="parameter-value"><span id="nutrientValue">2.5</span> mg/L</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="nutrientBar" style="width: 25%; background: #f39c12;"></div>
+                </div>
+                <div class="progress-tip">适宜范围：1-5 mg/L</div>
+            </div>
+            
+            <div class="parameter">
+                <div class="parameter-label">☠️ 氨氮毒性</div>
+                <div class="parameter-value"><span id="ammoniaValue">0.1</span> mg/L</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="ammoniaBar" style="width: 10%; background: #e74c3c;"></div>
+                </div>
+                <div class="progress-tip">安全上限：< 0.5 mg/L</div>
+            </div>
+            
+            <div class="chart-container">
+                <svg width="100%" height="100%" id="populationChart">
+                    <!-- 动态生成的种群图表 -->
+                </svg>
+            </div>
+            
+            <div class="control-section" style="margin-top: 20px;">
+                <h3>📈 生态统计</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px;">
+                    <div>运行时间: <strong><span id="gameTime">0</span></strong> 天</div>
+                    <div>生物总数: <strong><span id="totalOrganisms">0</span></strong></div>
+                    <div>物种数量: <strong><span id="speciesCount">0</span></strong> 种</div>
+                    <div>生态评分: <strong><span id="ecoScore">100</span></strong></div>
+                </div>
+                
+                <div style="margin-top: 15px;">
+                    <h4>🏆 生态系统等级</h4>
+                    <div id="ecoLevel" style="padding: 8px; background: #e8f5e8; border-radius: 5px; text-align: center; font-weight: bold; color: #2ecc71;">
+                        新手生态学家
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 事件通知 -->
+    <div class="event-notification" id="eventNotification">
+        <div class="event-title" id="eventTitle">事件标题</div>
+        <div class="event-message" id="eventMessage">事件描述</div>
+    </div>
+
+    <!-- 成就弹窗 -->
+    <div class="achievement-popup" id="achievementPopup">
+        <div class="achievement-icon">🏆</div>
+        <div class="achievement-title" id="achievementTitle">成就解锁！</div>
+    </div>
+
+    <!-- 帮助按钮 -->
+    <div class="help-btn" onclick="showTutorial()" title="查看游戏教程">?</div>
+
+    <!-- 提示工具 -->
+    <div class="tooltip" id="tooltip"></div>
+
+    <script>
+        // 扩展的物种数据库 - 修复stats格式统一问题
+        const speciesDatabase = {
+            // 植物类
+            algae: {
+                name: '绿藻', 
+                icon: '🌱', 
+                category: 'plant',
+                role: '快速增殖的初级生产者，能够高效进行光合作用产生氧气。是生态系统的基础，但过量会导致水体富营养化。',
+                stats: { oxygen_production: '+3', nutrient_consumption: '-2', growth_rate: '快', lifespan: '短' },
+                requirements: { light: 'medium', temperature: 'any', space: 'low' },
+                effects: { oxygenBoost: 0.3, nutrientConsumption: 0.2, phEffect: -0.01 }
+            },
+            duckweed: {
+                name: '浮萍', 
+                icon: '🍃', 
+                category: 'plant',
+                role: '浮在水面的植物，能够遮蔽阳光并净化水质。快速繁殖，需要定期控制数量以防止过度遮光。',
+                stats: { oxygen_production: '+2', shade_effect: '+2', growth_rate: '很快', lifespan: '中' },
+                requirements: { light: 'high', temperature: 'warm', space: 'surface' },
+                effects: { oxygenBoost: 0.2, lightReduction: 0.1, nutrientConsumption: 0.15 }
+            },
+            waterweed: {
+                name: '水草', 
+                icon: '🌾', 
+                category: 'plant',
+                role: '沉水植物，提供稳定的氧气产出和生物栖息地。生长缓慢但寿命长，是生态系统的稳定基础。',
+                stats: { oxygen_production: '+4', shelter_provision: '+3', growth_rate: '慢', lifespan: '长' },
+                requirements: { light: 'medium', temperature: 'cool', space: 'bottom' },
+                effects: { oxygenBoost: 0.4, shelter: 0.3, phBuffer: 0.02 }
+            },
+            moss: {
+                name: '水苔', 
+                icon: '🍀', 
+                category: 'plant',
+                role: '附着在基质上的低等植物，能够吸收过量营养盐，具有很强的水质净化能力。',
+                stats: { purification: '+4', attachment: '+3', growth_rate: '慢', lifespan: '很长' },
+                requirements: { light: 'low', temperature: 'cool', space: 'substrate' },
+                effects: { nutrientConsumption: 0.3, ammoniaReduction: 0.1, oxygenBoost: 0.1 }
+            },
+            hornwort: {
+                name: '金鱼藻', 
+                icon: '🌿', 
+                category: 'plant',
+                role: '无根沉水植物，优秀的天然过滤器，能快速吸收氨氮和多余营养。鱼类的理想伙伴植物。',
+                stats: { filtration: '+5', oxygen_production: '+3', growth_rate: '快', lifespan: '中' },
+                requirements: { light: 'medium', temperature: 'any', space: 'water' },
+                effects: { oxygenBoost: 0.3, ammoniaReduction: 0.15, nutrientConsumption: 0.25 }
+            },
+            lotus: {
+                name: '睡莲', 
+                icon: '🪷', 
+                category: 'plant',
+                role: '美丽的水生花卉，叶片浮在水面提供遮荫，根系强大能稳定水质。装饰性与功能性并存。',
+                stats: { beauty: '+5', shade_effect: '+3', stability: '+4', lifespan: '很长' },
+                requirements: { light: 'high', temperature: 'warm', space: 'large' },
+                effects: { oxygenBoost: 0.2, lightReduction: 0.15, phBuffer: 0.03, stability: 0.2 }
+            },
+            
+            // 草食动物
+            shrimp: {
+                name: '樱花虾', 
+                icon: '🦐', 
+                category: 'herbivore',
+                role: '优秀的清道夫，主要以藻类和有机废料为食。能有效控制藻类过度繁殖，维持水体清洁。',
+                stats: { algae_control: '-3', cleanup: '+4', reproduction: '+3', lifespan: '中' },
+                requirements: { oxygen: 'medium', temperature: 'moderate', ph: 'neutral' },
+                effects: { algaeControl: 0.2, oxygenConsumption: 0.1, ammoniaProduction: 0.05, reproduction: 0.1 }
+            },
+            snail: {
+                name: '苹果螺', 
+                icon: '🐌', 
+                category: 'herbivore',
+                role: '底栖清洁工，以腐烂植物和藻类为食。行动缓慢但清洁效果持久，有助于基质的健康。',
+                stats: { cleanup: '+5', algae_control: '-2', movement: '+1', lifespan: '长' },
+                requirements: { oxygen: 'low', temperature: 'cool', ph: 'alkaline' },
+                effects: { algaeControl: 0.1, detritivore: 0.3, oxygenConsumption: 0.05, calcification: 0.02 }
+            },
+            
+            // 杂食动物
+            crab: {
+                name: '小螃蟹', 
+                icon: '🦀', 
+                category: 'omnivore',
+                role: '活跃的杂食者，既吃植物也吃小动物。具有一定的攻击性，能控制其他小型生物的数量。',
+                stats: { predation: '+3', cleanup: '+2', aggressiveness: '+2', lifespan: '中' },
+                requirements: { oxygen: 'medium', temperature: 'moderate', space: 'bottom' },
+                effects: { predation: 0.15, scavenging: 0.2, oxygenConsumption: 0.15, ammoniaProduction: 0.08 }
+            },
+            guppy: {
+                name: '孔雀鱼', 
+                icon: '🐠', 
+                category: 'omnivore',
+                role: '美丽的小型热带鱼，食性广泛。繁殖能力强，能够吃掉蚊虫幼虫，但需要稳定的水质。',
+                stats: { beauty: '+4', reproduction: '+5', activity: '+4', lifespan: '中' },
+                requirements: { oxygen: 'medium', temperature: 'warm', ph: 'neutral' },
+                effects: { reproduction: 0.2, pestControl: 0.1, oxygenConsumption: 0.12, ammoniaProduction: 0.06 }
+            },
+            tetra: {
+                name: '灯鱼', 
+                icon: '🎣', 
+                category: 'omnivore',
+                role: '群居性小型鱼类，性格温和，喜欢在水中层游动。对水质要求不高，适合新手饲养。',
+                stats: { peaceful: '+5', schooling: '+4', hardiness: '+3', lifespan: '中' },
+                requirements: { oxygen: 'medium', temperature: 'moderate', ph: 'neutral' },
+                effects: { groupBonus: 0.1, oxygenConsumption: 0.1, ammoniaProduction: 0.05, stability: 0.05 }
+            },
+            
+            // 肉食动物
+            fish: {
+                name: '斑马鱼', 
+                icon: '🐟', 
+                category: 'carnivore',
+                role: '活跃的小型肉食鱼类，主要捕食浮游动物和小型无脊椎动物。需要较高的溶氧量和清洁的水质。',
+                stats: { predation: '+4', oxygen_demand: '-3', activity: '+5', lifespan: '中' },
+                requirements: { oxygen: 'high', temperature: 'moderate', ph: 'neutral' },
+                effects: { predation: 0.25, oxygenConsumption: 0.2, ammoniaProduction: 0.1, activityBoost: 0.1 }
+            },
+            betta: {
+                name: '斗鱼', 
+                icon: '🐡', 
+                category: 'carnivore',
+                role: '美丽但具有攻击性的肉食鱼类。单独饲养效果最佳，能够有效控制其他小型生物的数量。',
+                stats: { beauty: '+5', predation: '+5', territoriality: '+4', lifespan: '长' },
+                requirements: { oxygen: 'medium', temperature: 'warm', space: 'territorial' },
+                effects: { predation: 0.3, territoriality: 0.2, oxygenConsumption: 0.15, ammoniaProduction: 0.08 }
+            },
+            
+            // 微生物
+            copepods: {
+                name: '桡足类', 
+                icon: '🔬', 
+                category: 'microorganism',
+                role: '重要的浮游动物，是鱼类的天然食物。能够控制浮游植物的数量，维持水体生态平衡。',
+                stats: { food_value: '+3', plankton_control: '-2', microscopic: '+5', lifespan: '短' },
+                requirements: { oxygen: 'any', temperature: 'cool', ph: 'any' },
+                effects: { foodWeb: 0.2, planktonControl: 0.15, reproduction: 0.3, bioactivity: 0.1 }
+            },
+            daphnia: {
+                name: '水蚤', 
+                icon: '💧', 
+                category: 'microorganism',
+                role: '高效的滤食性浮游动物，能够清除水中的细菌和小颗粒有机物。是天然的水质净化器。',
+                stats: { filtration: '+4', food_value: '+3', reproduction: '+4', lifespan: '短' },
+                requirements: { oxygen: 'any', temperature: 'cool', ph: 'any' },
+                effects: { filtration: 0.25, foodWeb: 0.15, reproduction: 0.4, waterClarity: 0.1 }
+            },
+            rotifer: {
+                name: '轮虫', 
+                icon: '⚪', 
+                category: 'microorganism',
+                role: '微小的多细胞动物，以细菌和有机颗粒为食。繁殖迅速，是小型鱼类幼鱼的理想开口食物。',
+                stats: { microscopic: '+5', food_value: '+2', reproduction: '+5', lifespan: '很短' },
+                requirements: { oxygen: 'low', temperature: 'any', ph: 'any' },
+                effects: { microbialControl: 0.2, foodWeb: 0.1, reproduction: 0.5, bioactivity: 0.15 }
+            },
+            bacteria: {
+                name: '硝化菌', 
+                icon: '🦠', 
+                category: 'decomposer',
+                role: '关键的分解者，能将有毒的氨氮转化为无害的硝酸盐。是维持水质健康的无名英雄。',
+                stats: { detoxification: '+5', invisibility: '+5', essential: '+5', lifespan: '永久' },
+                requirements: { oxygen: 'medium', temperature: 'stable', ph: 'neutral' },
+                effects: { nitrification: 0.3, ammoniaReduction: 0.25, phBuffer: 0.01, stability: 0.2 }
+            },
+            paramecium: {
+                name: '草履虫', 
+                icon: '🔬', 
+                category: 'microorganism',
+                role: '单细胞原生动物，以细菌和有机物为食。在显微镜下观察，是了解微生物世界的窗口。',
+                stats: { microscopic: '+5', educational: '+3', basic: '+4', lifespan: '很短' },
+                requirements: { oxygen: 'low', temperature: 'any', ph: 'any' },
+                effects: { microbialControl: 0.15, organicDecomposition: 0.1, bioactivity: 0.2, education: 0.1 }
+            }
+        };
+
+        // 统计信息翻译表
+        const statTranslations = {
+            oxygen_production: '产氧量',
+            nutrient_consumption: '营养消耗',
+            growth_rate: '生长速度',
+            lifespan: '寿命',
+            shade_effect: '遮光效果',
+            shelter_provision: '庇护提供',
+            purification: '净化能力',
+            attachment: '附着力',
+            filtration: '过滤能力',
+            beauty: '观赏价值',
+            stability: '稳定性',
+            algae_control: '藻类控制',
+            cleanup: '清理能力',
+            reproduction: '繁殖能力',
+            movement: '移动性',
+            predation: '捕食能力',
+            aggressiveness: '攻击性',
+            activity: '活跃度',
+            peaceful: '温和性',
+            schooling: '群居性',
+            hardiness: '耐受性',
+            oxygen_demand: '需氧量',
+            territoriality: '领域性',
+            food_value: '食物价值',
+            plankton_control: '浮游控制',
+            microscopic: '微观性',
+            detoxification: '解毒能力',
+            invisibility: '隐蔽性',
+            essential: '重要性',
+            educational: '教育价值',
+            basic: '基础性'
+        };
+
+        // 游戏核心数据
+        const gameState = {
+            isPaused: false,
+            speed: 1,
+            time: 0,
+            bottleSize: 'medium',
+            selectedSpecies: null,
+            organisms: [],
+            parameters: {
+                oxygen: 7.5,
+                ph: 7.0,
+                nutrients: 2.5,
+                ammonia: 0.1,
+                temperature: 22,
+                light: 50
+            },
+            populationData: {
+                plants: [],
+                herbivores: [],
+                carnivores: [],
+                microorganisms: []
+            },
+            achievements: {
+                firstOrganism: false,
+                perfectBalance: false,
+                biodiversity: false,
+                survivor: false,
+                masterEcologist: false,
+                crisisManager: false
+            },
+            ecoTips: [],
+            lastEventTime: 0
+        };
+
+        // 扩展生物类
+        class Organism {
+            constructor(type, x, y) {
+                this.type = type;
+                this.x = x;
+                this.y = y;
+                this.age = 0;
+                this.health = 100;
+                this.element = null;
+                this.id = Date.now() + Math.random();
+                this.reproductionCooldown = 0;
+                this.activityLevel = Math.random();
+                this.createVisual();
+            }
+
+            createVisual() {
+                const elem = document.createElement('div');
+                elem.className = `organism ${this.getAnimationClass()}`;
+                elem.style.left = this.x + 'px';
+                elem.style.bottom = this.y + 'px';
+                elem.id = `organism-${this.id}`;
+                
+                // 使用emoji图标显示
+                const species = speciesDatabase[this.type];
+                elem.textContent = species ? species.icon : '❓';
+                
+                // 添加悬停提示
+                elem.addEventListener('mouseenter', (e) => {
+                    showTooltip(e, this.getDetailedInfo());
+                });
+                elem.addEventListener('mouseleave', hideTooltip);
+                
+                // 添加点击交互
+                elem.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.interact();
+                });
+                
+                document.getElementById('bottleContainer').appendChild(elem);
+                this.element = elem;
+                
+                // 根据物种调整位置
+                this.adjustPosition();
+            }
+
+            getAnimationClass() {
+                const species = speciesDatabase[this.type];
+                if (!species) return 'floating-organism';
+                
+                switch(species.category) {
+                    case 'plant':
+                        return 'plant-organism';
+                    case 'carnivore':
+                        return this.type === 'fish' || this.type === 'betta' ? 'fish-organism' : 'floating-organism';
+                    case 'herbivore':
+                        return this.type === 'shrimp' ? 'shrimp-organism' : 
+                               this.type === 'snail' ? 'snail-organism' : 'floating-organism';
+                    case 'omnivore':
+                        return this.type === 'crab' ? 'snail-organism' : 'fish-organism';
+                    case 'microorganism':
+                    case 'decomposer':
+                        return 'floating-organism';
+                    default:
+                        return 'floating-organism';
+                }
+            }
+
+            adjustPosition() {
+                const species = speciesDatabase[this.type];
+                if (!species) return;
+                
+                // 根据生物习性调整位置
+                if (species.category === 'plant') {
+                    if (this.type === 'duckweed' || this.type === 'lotus') {
+                        this.y = Math.max(400, this.y); // 水面附近
+                    } else {
+                        this.y = Math.max(60, Math.min(150, this.y)); // 水底植物
+                    }
+                } else if (species.requirements.space === 'bottom') {
+                    this.y = Math.max(60, Math.min(100, this.y)); // 底栖
+                } else if (this.type === 'duckweed') {
+                    this.y = 450; // 水面
+                }
+                
+                this.element.style.bottom = this.y + 'px';
+            }
+
+            getDetailedInfo() {
+                const species = speciesDatabase[this.type];
+                if (!species) return `未知生物<br>健康度: ${this.health.toFixed(1)}%<br>年龄: ${this.age}天`;
+                
+                return `
+                    <strong>${species.name}</strong><br>
+                    ${species.role.substring(0, 50)}...<br>
+                    健康度: ${this.health.toFixed(1)}%<br>
+                    年龄: ${this.age}天<br>
+                    活跃度: ${Math.round(this.activityLevel * 100)}%<br>
+                    <em>点击查看更多信息</em>
+                `;
+            }
+
+            interact() {
+                const species = speciesDatabase[this.type];
+                if (species) {
+                    showNotification(`${species.icon} ${species.name}`, 
+                        `年龄: ${this.age}天, 健康: ${this.health.toFixed(1)}%, 状态: ${this.getHealthStatus()}`);
+                }
+            }
+
+            getHealthStatus() {
+                if (this.health > 80) return '健康';
+                if (this.health > 60) return '良好';
+                if (this.health > 40) return '一般';
+                if (this.health > 20) return '虚弱';
+                return '濒危';
+            }
+
+            update() {
+                this.age++;
+                this.reproductionCooldown = Math.max(0, this.reproductionCooldown - 1);
+                
+                // 根据环境和物种特性更新健康度
+                this.updateHealth();
+                
+                // 生物行为
+                this.behave();
+                
+                // 死亡检查
+                if (this.health <= 0 || this.age > this.getMaxAge()) {
+                    this.die();
+                    return false;
+                }
+                
+                // 繁殖检查
+                if (this.canReproduce()) {
+                    this.tryReproduce();
+                }
+                
+                return true;
+            }
+
+            updateHealth() {
+                const species = speciesDatabase[this.type];
+                if (!species) return;
+
+                const params = gameState.parameters;
+                let healthChange = 0;
+
+                // 氧气需求检查
+                if (species.requirements.oxygen === 'high' && params.oxygen < 6) {
+                    healthChange -= 5;
+                } else if (species.requirements.oxygen === 'medium' && params.oxygen < 4) {
+                    healthChange -= 3;
+                }
+
+                // 温度适应性
+                const idealTemp = species.requirements.temperature === 'warm' ? 26 : 
+                                species.requirements.temperature === 'cool' ? 18 : 22;
+                const tempDiff = Math.abs(params.temperature - idealTemp);
+                if (tempDiff > 5) {
+                    healthChange -= tempDiff * 0.5;
+                }
+
+                // pH适应性
+                if (species.requirements.ph === 'neutral') {
+                    const phDiff = Math.abs(params.ph - 7);
+                    healthChange -= phDiff * 2;
+                }
+
+                // 营养状况
+                if (species.category === 'plant' && params.nutrients < 1) {
+                    healthChange -= 2;
+                }
+
+                // 氨氮毒性
+                if (params.ammonia > 1) {
+                    healthChange -= params.ammonia * 2;
+                }
+
+                // 年龄影响
+                const maxAge = this.getMaxAge();
+                if (this.age > maxAge * 0.8) {
+                    healthChange -= 1;
+                }
+
+                // 应用健康变化 - 添加NaN检查
+                if (!isNaN(healthChange)) {
+                    this.health = Math.max(0, Math.min(100, this.health + healthChange));
+                }
+            }
+
+            behave() {
+                const species = speciesDatabase[this.type];
+                if (!species || !species.effects) return;
+
+                // 植物行为
+                if (species.category === 'plant') {
+                    // 光合作用产氧 - 添加NaN检查
+                    const oxygenBoost = species.effects.oxygenBoost * (gameState.parameters.light / 100);
+                    if (!isNaN(oxygenBoost)) {
+                        gameState.parameters.oxygen += oxygenBoost;
+                    }
+                    
+                    // 消耗营养盐
+                    if (species.effects.nutrientConsumption && !isNaN(species.effects.nutrientConsumption)) {
+                        gameState.parameters.nutrients -= species.effects.nutrientConsumption;
+                    }
+                }
+                // 动物行为
+                else {
+                    // 消耗氧气
+                    if (species.effects.oxygenConsumption && !isNaN(species.effects.oxygenConsumption)) {
+                        gameState.parameters.oxygen -= species.effects.oxygenConsumption;
+                    }
+                    
+                    // 产生氨氮
+                    if (species.effects.ammoniaProduction && !isNaN(species.effects.ammoniaProduction)) {
+                        gameState.parameters.ammonia += species.effects.ammoniaProduction;
+                    }
+                    
+                    // 觅食行为
+                    if (species.category === 'herbivore' || species.category === 'omnivore') {
+                        this.feedOnAlgae();
+                    }
+                    if (species.category === 'carnivore' || species.category === 'omnivore') {
+                        this.hunt();
+                    }
+                }
+
+                // 特殊效果 - 添加NaN检查
+                if (species.effects.ammoniaReduction && !isNaN(species.effects.ammoniaReduction)) {
+                    gameState.parameters.ammonia -= species.effects.ammoniaReduction;
+                }
+                if (species.effects.phBuffer && !isNaN(species.effects.phBuffer)) {
+                    const targetPH = 7;
+                    const diff = targetPH - gameState.parameters.ph;
+                    if (!isNaN(diff)) {
+                        gameState.parameters.ph += diff * species.effects.phBuffer;
+                    }
+                }
+            }
+
+            feedOnAlgae() {
+                // 寻找附近的藻类并以其为食
+                const nearbyAlgae = gameState.organisms.filter(org => 
+                    org.type === 'algae' && this.getDistance(org) < 50
+                );
+                if (nearbyAlgae.length > 0) {
+                    nearbyAlgae[0].health -= 10;
+                    this.health += 2;
+                }
+            }
+
+            hunt() {
+                // 捕食较小的动物
+                const prey = gameState.organisms.filter(org => {
+                    const species = speciesDatabase[org.type];
+                    return species && species.category === 'microorganism' && 
+                           this.getDistance(org) < 30;
+                });
+                if (prey.length > 0) {
+                    prey[0].health -= 20;
+                    this.health += 3;
+                }
+            }
+
+            getDistance(other) {
+                const dx = this.x - other.x;
+                const dy = this.y - other.y;
+                return Math.sqrt(dx * dx + dy * dy);
+            }
+
+            canReproduce() {
+                return this.health > 70 && 
+                       this.age > 20 && 
+                       this.age < this.getMaxAge() * 0.7 &&
+                       this.reproductionCooldown === 0;
+            }
+
+            tryReproduce() {
+                const species = speciesDatabase[this.type];
+                if (!species) return;
+
+                // 寻找同种配偶
+                const mates = gameState.organisms.filter(org => 
+                    org.type === this.type && 
+                    org.id !== this.id && 
+                    org.canReproduce() &&
+                    this.getDistance(org) < 100
+                );
+
+                if (mates.length > 0 || species.category === 'microorganism') {
+                    const reproductionChance = species.effects.reproduction || 0.05;
+                    if (Math.random() < reproductionChance) {
+                        this.reproduce();
+                    }
+                }
+            }
+
+            reproduce() {
+                // 检查环境容量
+                const maxOrganisms = {
+                    'small': 15,
+                    'medium': 25,
+                    'large': 40
+                };
+                
+                if (gameState.organisms.length >= maxOrganisms[gameState.bottleSize]) {
+                    return;
+                }
+
+                // 创建后代
+                const offspring = new Organism(
+                    this.type,
+                    this.x + (Math.random() - 0.5) * 50,
+                    this.y + (Math.random() - 0.5) * 30
+                );
+                gameState.organisms.push(offspring);
+                
+                // 设置繁殖冷却
+                this.reproductionCooldown = 50;
+                
+                // 通知事件
+                const species = speciesDatabase[this.type];
+                showNotification('🥚 新生命', `${species.name}成功繁殖了后代！`);
+                
+                // 创建庆祝气泡
+                createBubbles(3);
+            }
+
+            getMaxAge() {
+                const species = speciesDatabase[this.type];
+                const baseAges = {
+                    plant: 60,
+                    herbivore: 80,
+                    omnivore: 90,
+                    carnivore: 100,
+                    microorganism: 30,
+                    decomposer: 999
+                };
+                return baseAges[species?.category] || 50;
+            }
+
+            die() {
+                if (this.element) {
+                    // 死亡动画
+                    this.element.style.transition = 'all 1s ease-out';
+                    this.element.style.opacity = '0';
+                    this.element.style.transform = 'scale(0.1)';
+                    
+                    setTimeout(() => {
+                        if (this.element && this.element.parentNode) {
+                            this.element.remove();
+                        }
+                    }, 1000);
+                }
+                
+                // 从游戏状态中移除
+                const index = gameState.organisms.indexOf(this);
+                if (index > -1) {
+                    gameState.organisms.splice(index, 1);
+                }
+                
+                // 死亡后的环境影响
+                gameState.parameters.nutrients += 0.5;
+                gameState.parameters.ammonia += 0.3;
+                
+                // 记录死亡事件
+                const species = speciesDatabase[this.type];
+                if (species) {
+                    showNotification('💀 生命终结', `一只${species.name}寿终正寝，成为了生态循环的一部分`);
+                }
+            }
+        }
+
+        // 初始化游戏
+        function initGame() {
+            console.log('🌱 初始化生态瓶工程师...');
+            
+            // 首次访问显示教程
+            if (!localStorage.getItem('ecoBottleTutorial')) {
+                showTutorial();
+                localStorage.setItem('ecoBottleTutorial', 'true');
+            }
+            
+            // 设置事件监听
+            setupEventListeners();
+            
+            // 初始化生态提示
+            updateEcoTips();
+            
+            // 开始游戏循环
+            gameLoop();
+            
+            // 隐藏加载画面
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+            }, 1500);
+        }
+
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 物种选择事件
+            document.querySelectorAll('.species-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    // 移除之前的选中状态
+                    document.querySelectorAll('.species-card').forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                    
+                    // 设置选中物种
+                    gameState.selectedSpecies = this.dataset.species;
+                    
+                    // 显示物种信息
+                    showSpeciesInfo(this.dataset.species);
+                });
+            });
+            
+            // 环境控制滑块
+            document.getElementById('lightIntensity').addEventListener('input', function() {
+                gameState.parameters.light = parseInt(this.value);
+                document.getElementById('lightValue').textContent = this.value;
+                updateLightDescription(this.value);
+                updateAlgaeVisual();
+                updateEcoTips();
+            });
+            
+            document.getElementById('temperature').addEventListener('input', function() {
+                gameState.parameters.temperature = parseInt(this.value);
+                document.getElementById('tempValue').textContent = this.value;
+                updateTemperatureDescription(this.value);
+                updateEcoTips();
+            });
+            
+            // 瓶子大小选择
+            document.getElementById('bottleSize').addEventListener('change', function() {
+                gameState.bottleSize = this.value;
+                updateBottleSize();
+                updateEcoTips();
+            });
+
+            // 全局点击事件（隐藏tooltip）
+            document.addEventListener('click', () => {
+                hideTooltip();
+            });
+        }
+
+        // 显示物种信息
+        function showSpeciesInfo(speciesType) {
+            const species = speciesDatabase[speciesType];
+            if (!species) return;
+
+            const infoPanel = document.getElementById('speciesInfo');
+            const titleIcon = document.getElementById('speciesTitleIcon');
+            const titleName = document.getElementById('speciesTitleName');
+            const roleDesc = document.getElementById('speciesRole');
+            const statsContainer = document.getElementById('speciesStats');
+
+            // 更新基本信息
+            titleIcon.textContent = species.icon;
+            titleName.textContent = species.name;
+            roleDesc.textContent = species.role;
+
+            // 更新统计信息 - 修复显示问题
+            statsContainer.innerHTML = '';
+            Object.entries(species.stats).forEach(([key, value]) => {
+                const statItem = document.createElement('div');
+                statItem.className = 'stat-item';
+                const translatedKey = statTranslations[key] || key;
+                statItem.innerHTML = `<span>${translatedKey}</span><span>${value}</span>`;
+                statsContainer.appendChild(statItem);
+            });
+
+            // 显示信息面板
+            infoPanel.classList.add('show');
+        }
+
+        // 更新光照描述
+        function updateLightDescription(value) {
+            const lightValueSpan = document.getElementById('lightValue').parentNode;
+            let description = '';
+            if (value < 30) description = '(低光照)';
+            else if (value < 70) description = '(适中)';
+            else description = '(强光照)';
+            
+            lightValueSpan.innerHTML = `<span id="lightValue">${value}</span>% ${description}`;
+        }
+
+        // 更新温度描述
+        function updateTemperatureDescription(value) {
+            const tempValueSpan = document.getElementById('tempValue').parentNode;
+            let description = '';
+            if (value < 20) description = '(偏冷)';
+            else if (value < 25) description = '(适宜)';
+            else description = '(偏热)';
+            
+            tempValueSpan.innerHTML = `<span id="tempValue">${value}</span>°C ${description}`;
+        }
+
+        // 游戏主循环
+        function gameLoop() {
+            if (!gameState.isPaused) {
+                updateGame();
+            }
+            setTimeout(() => gameLoop(), 1000 / gameState.speed);
+        }
+
+        // 更新游戏状态
+        function updateGame() {
+            gameState.time++;
+            
+            // 更新所有生物
+            gameState.organisms = gameState.organisms.filter(organism => organism.update());
+            
+            // 更新环境参数
+            updateEnvironment();
+            
+            // 更新UI显示
+            updateUI();
+            
+            // 检查随机事件
+            if (gameState.time - gameState.lastEventTime > 100) {
+                checkRandomEvents();
+                gameState.lastEventTime = gameState.time;
+            }
+            
+            // 更新生态提示（每50个时间单位）
+            if (gameState.time % 50 === 0) {
+                updateEcoTips();
+            }
+            
+            // 检查成就
+            checkAchievements();
+        }
+
+        // 更新环境参数 - 修复NaN问题
+        function updateEnvironment() {
+            const params = gameState.parameters;
+            
+            // 添加NaN检查函数
+            const safeAdd = (current, change) => {
+                if (isNaN(current) || isNaN(change)) return current;
+                return current + change;
+            };
+            
+            // 基础环境变化
+            // 自然氧气消耗
+            params.oxygen = safeAdd(params.oxygen, -0.05);
+            
+            // 自然pH变化（趋向中性）
+            if (params.ph > 7) params.ph = safeAdd(params.ph, -0.005);
+            else if (params.ph < 7) params.ph = safeAdd(params.ph, 0.005);
+            
+            // 营养盐的自然分解
+            params.nutrients = safeAdd(params.nutrients, -0.02);
+            
+            // 氨氮的自然降解
+            params.ammonia = safeAdd(params.ammonia, -0.03);
+            
+            // 温度的自然调节（趋向环境温度）
+            const roomTemp = 22;
+            const tempDiff = params.temperature - roomTemp;
+            if (!isNaN(tempDiff)) {
+                params.temperature = safeAdd(params.temperature, -tempDiff * 0.01);
+            }
+            
+            // 参数边界限制 - 确保所有值都是有效数字
+            params.oxygen = Math.max(0, Math.min(15, isNaN(params.oxygen) ? 7.5 : params.oxygen));
+            params.ph = Math.max(5.5, Math.min(9.0, isNaN(params.ph) ? 7.0 : params.ph));
+            params.nutrients = Math.max(0, Math.min(15, isNaN(params.nutrients) ? 2.5 : params.nutrients));
+            params.ammonia = Math.max(0, Math.min(10, isNaN(params.ammonia) ? 0.1 : params.ammonia));
+            params.temperature = Math.max(15, Math.min(30, isNaN(params.temperature) ? 22 : params.temperature));
+        }
+
+        // 更新UI显示 - 确保数值显示正确
+        function updateUI() {
+            // 更新参数显示 - 添加NaN检查
+            const safeDisplay = (value, decimals = 1) => {
+                return isNaN(value) ? '0.0' : value.toFixed(decimals);
+            };
+
+            document.getElementById('oxygenValue').textContent = safeDisplay(gameState.parameters.oxygen);
+            document.getElementById('phValue').textContent = safeDisplay(gameState.parameters.ph, 2);
+            document.getElementById('nutrientValue').textContent = safeDisplay(gameState.parameters.nutrients);
+            document.getElementById('ammoniaValue').textContent = safeDisplay(gameState.parameters.ammonia, 2);
+            
+            // 更新进度条和颜色
+            updateProgressBar('oxygenBar', gameState.parameters.oxygen, 10, '#3498db', '#e74c3c');
+            updateProgressBar('phBar', (gameState.parameters.ph - 5.5), 3.5, '#2ecc71', '#f39c12');
+            updateProgressBar('nutrientBar', gameState.parameters.nutrients, 10, '#f39c12', '#e74c3c');
+            updateProgressBar('ammoniaBar', gameState.parameters.ammonia, 5, '#95a5a6', '#e74c3c');
+            
+            // 更新统计信息
+            document.getElementById('gameTime').textContent = gameState.time;
+            document.getElementById('totalOrganisms').textContent = gameState.organisms.length;
+            
+            // 统计物种数量
+            const speciesTypes = new Set(gameState.organisms.map(o => o.type));
+            document.getElementById('speciesCount').textContent = speciesTypes.size;
+            
+            // 更新生态评分
+            const ecoScore = calculateEcoScore();
+            document.getElementById('ecoScore').textContent = ecoScore;
+            updateEcoLevel(ecoScore);
+            
+            // 更新游戏状态指示器
+            updateGameStatus();
+            
+            // 更新种群图表
+            updatePopulationChart();
+        }
+
+        // 更新进度条 - 添加NaN检查
+        function updateProgressBar(barId, value, maxValue, normalColor, dangerColor) {
+            const bar = document.getElementById(barId);
+            if (!bar) return;
+            
+            const safeValue = isNaN(value) ? 0 : value;
+            const percentage = (safeValue / maxValue) * 100;
+            bar.style.width = Math.min(100, Math.max(0, percentage)) + '%';
+            
+            // 根据数值调整颜色
+            if (barId === 'oxygenBar' && safeValue < 4) {
+                bar.style.background = dangerColor;
+            } else if (barId === 'ammoniaBar' && safeValue > 2) {
+                bar.style.background = dangerColor;
+            } else if (barId === 'phBar' && (safeValue < 6.5 || safeValue > 7.5)) {
+                bar.style.background = dangerColor;
+            } else {
+                bar.style.background = normalColor;
+            }
+        }
+
+        // 计算生态评分 - 添加NaN检查
+        function calculateEcoScore() {
+            let score = 100;
+            const params = gameState.parameters;
+            
+            // 氧气评分
+            const oxygen = isNaN(params.oxygen) ? 7.5 : params.oxygen;
+            if (oxygen < 4) score -= 30;
+            else if (oxygen < 6) score -= 15;
+            else if (oxygen > 10) score -= 10;
+            
+            // pH评分
+            const ph = isNaN(params.ph) ? 7.0 : params.ph;
+            const phDiff = Math.abs(ph - 7);
+            score -= phDiff * 15;
+            
+            // 氨氮评分
+            const ammonia = isNaN(params.ammonia) ? 0.1 : params.ammonia;
+            score -= ammonia * 8;
+            
+            // 营养盐评分
+            const nutrients = isNaN(params.nutrients) ? 2.5 : params.nutrients;
+            if (nutrients < 0.5) score -= 10;
+            else if (nutrients > 8) score -= 15;
+            
+            // 生物多样性奖励
+            const speciesCount = new Set(gameState.organisms.map(o => o.type)).size;
+            score += speciesCount * 3;
+            
+            // 生物数量平衡
+            if (gameState.organisms.length > 0 && gameState.organisms.length < 5) {
+                score -= 10;
+            }
+            
+            // 时间生存奖励
+            score += Math.min(20, gameState.time / 100);
+            
+            return Math.max(0, Math.min(100, Math.round(score)));
+        }
+
+        // 更新生态系统等级
+        function updateEcoLevel(score) {
+            const levelElement = document.getElementById('ecoLevel');
+            let level = '';
+            let className = '';
+            
+            if (score >= 90) {
+                level = '🏆 生态大师';
+                className = 'eco-master';
+            } else if (score >= 80) {
+                level = '🥇 专业生态学家';
+                className = 'eco-expert';
+            } else if (score >= 70) {
+                level = '🥈 经验生态学家';
+                className = 'eco-experienced';
+            } else if (score >= 60) {
+                level = '🥉 进阶生态学家';
+                className = 'eco-advanced';
+            } else if (score >= 50) {
+                level = '📚 学习生态学家';
+                className = 'eco-learning';
+            } else {
+                level = '🌱 新手生态学家';
+                className = 'eco-beginner';
+            }
+            
+            levelElement.textContent = level;
+            levelElement.className = className;
+        }
+
+        // 更新游戏状态
+        function updateGameStatus() {
+            const status = document.getElementById('gameStatus');
+            const score = calculateEcoScore();
+            
+            if (score > 80) {
+                status.textContent = '🌟 生态系统：繁荣稳定';
+                status.className = 'game-status';
+            } else if (score > 60) {
+                status.textContent = '⚠️ 生态系统：需要注意';
+                status.className = 'game-status warning';
+            } else if (score > 30) {
+                status.textContent = '🚨 生态系统：面临风险';
+                status.className = 'game-status danger';
+            } else {
+                status.textContent = '💀 生态系统：濒临崩溃';
+                status.className = 'game-status danger';
+            }
+        }
+
+        // 更新生态提示
+        function updateEcoTips() {
+            const tipsList = document.getElementById('ecoTipsList');
+            const tips = generateEcoTips();
+            
+            tipsList.innerHTML = '';
+            tips.forEach((tip, index) => {
+                const tipElement = document.createElement('div');
+                tipElement.className = 'tip-item';
+                if (tip.priority === 'high') {
+                    tipElement.innerHTML = `<span class="tip-priority">⚠️ 紧急：</span>${tip.message}`;
+                } else if (tip.priority === 'medium') {
+                    tipElement.innerHTML = `<span class="tip-priority">💡 建议：</span>${tip.message}`;
+                } else {
+                    tipElement.innerHTML = `<span class="tip-priority">ℹ️ 提示：</span>${tip.message}`;
+                }
+                tipsList.appendChild(tipElement);
+            });
+        }
+
+        // 生成生态提示
+        function generateEcoTips() {
+            const tips = [];
+            const params = gameState.parameters;
+            const organismCount = gameState.organisms.length;
+            const speciesTypes = new Set(gameState.organisms.map(o => o.type));
+            
+            // 紧急提示
+            const oxygen = isNaN(params.oxygen) ? 7.5 : params.oxygen;
+            const ammonia = isNaN(params.ammonia) ? 0.1 : params.ammonia;
+            const ph = isNaN(params.ph) ? 7.0 : params.ph;
+            
+            if (oxygen < 4) {
+                tips.push({
+                    message: '溶氧量严重不足！立即增加植物或调高光照强度。',
+                    priority: 'high'
+                });
+            }
+            
+            if (ammonia > 2) {
+                tips.push({
+                    message: '氨氮浓度过高！清理系统或增加硝化菌。',
+                    priority: 'high'
+                });
+            }
+            
+            if (ph < 6 || ph > 8) {
+                tips.push({
+                    message: 'pH值异常！调整生物配比或使用缓冲植物。',
+                    priority: 'high'
+                });
+            }
+            
+            // 中等建议
+            if (organismCount === 0) {
+                tips.push({
+                    message: '生态瓶还是空的，建议先添加2-3种植物建立基础。',
+                    priority: 'medium'
+                });
+            } else if (organismCount < 5) {
+                tips.push({
+                    message: '生物数量较少，可以考虑增加一些草食动物。',
+                    priority: 'medium'
+                });
+            }
+            
+            if (speciesTypes.size < 3 && organismCount > 0) {
+                tips.push({
+                    message: '生物多样性不足，尝试添加不同类型的物种。',
+                    priority: 'medium'
+                });
+            }
+            
+            const plantCount = gameState.organisms.filter(o => speciesDatabase[o.type]?.category === 'plant').length;
+            const animalCount = gameState.organisms.filter(o => speciesDatabase[o.type]?.category !== 'plant').length;
+            
+            if (plantCount === 0 && animalCount > 0) {
+                tips.push({
+                    message: '缺少植物！动物需要植物产生的氧气才能生存。',
+                    priority: 'high'
+                });
+            }
+            
+            if (plantCount > 0 && animalCount === 0 && plantCount > 5) {
+                tips.push({
+                    message: '植物过多可能导致过度竞争，考虑添加草食动物。',
+                    priority: 'medium'
+                });
+            }
+            
+            // 一般提示
+            if (params.light < 30 && plantCount > 0) {
+                tips.push({
+                    message: '光照较弱，植物光合作用效率低，可适当调高光照。',
+                    priority: 'low'
+                });
+            }
+            
+            const nutrients = isNaN(params.nutrients) ? 2.5 : params.nutrients;
+            if (nutrients > 8) {
+                tips.push({
+                    message: '营养盐浓度较高，注意可能引起藻类爆发。',
+                    priority: 'low'
+                });
+            }
+            
+            if (gameState.time > 50 && calculateEcoScore() > 85) {
+                tips.push({
+                    message: '生态系统运行良好！继续保持当前的管理策略。',
+                    priority: 'low'
+                });
+            }
+            
+            // 如果没有提示，提供一般性建议
+            if (tips.length === 0) {
+                const generalTips = [
+                    '观察生物行为，它们会告诉你生态系统的健康状况。',
+                    '平衡是关键：生产者、消费者和分解者都很重要。',
+                    '定期监控水质参数，预防问题比解决问题更容易。',
+                    '不要急于添加大型动物，先确保基础环境稳定。',
+                    '每种生物都有其生态位，了解它们的需求很重要。'
+                ];
+                tips.push({
+                    message: generalTips[Math.floor(Math.random() * generalTips.length)],
+                    priority: 'low'
+                });
+            }
+            
+            return tips.slice(0, 3); // 最多显示3个提示
+        }
+
+        // 添加选中的物种
+        function addSelectedSpecies() {
+            if (!gameState.selectedSpecies) {
+                showNotification('⚠️ 提示', '请先选择要添加的生物物种');
+                return;
+            }
+            
+            // 检查是否可以添加
+            if (!canAddOrganism(gameState.selectedSpecies)) {
+                return;
+            }
+            
+            // 随机位置
+            const x = Math.random() * 350 + 25;
+            const y = Math.random() * 200 + 70;
+            
+            // 创建生物
+            const organism = new Organism(gameState.selectedSpecies, x, y);
+            gameState.organisms.push(organism);
+            
+            // 成就检查
+            if (!gameState.achievements.firstOrganism && gameState.organisms.length === 1) {
+                gameState.achievements.firstOrganism = true;
+                showAchievement('🌱 生命起源', '成功添加了第一个生物！生态之旅开始了');
+            }
+            
+            // 添加视觉效果
+            createBubbles(3);
+            
+            // 更新提示
+            updateEcoTips();
+            
+            const species = speciesDatabase[gameState.selectedSpecies];
+            showNotification('✅ 添加成功', 
+                `${species.icon} ${species.name} 已加入生态系统`);
+        }
+
+        // 检查是否可以添加生物
+        function canAddOrganism(type) {
+            const maxOrganisms = {
+                'small': 15,
+                'medium': 25,
+                'large': 40
+            };
+            
+            if (gameState.organisms.length >= maxOrganisms[gameState.bottleSize]) {
+                showNotification('⚠️ 容量限制', `${gameState.bottleSize}型生态瓶已达到最大容量`);
+                return false;
+            }
+            
+            // 检查环境条件
+            const species = speciesDatabase[type];
+            if (!species) return false;
+            
+            const oxygen = isNaN(gameState.parameters.oxygen) ? 7.5 : gameState.parameters.oxygen;
+            if (species.requirements.oxygen === 'high' && oxygen < 5) {
+                showNotification('⚠️ 环境不适', `氧气不足，无法添加${species.name}。先改善水质吧！`);
+                return false;
+            }
+            
+            if (species.category === 'carnivore' && gameState.organisms.length < 5) {
+                showNotification('⚠️ 食物不足', `肉食动物需要足够的食物来源，先建立基础生态吧！`);
+                return false;
+            }
+            
+            return true;
+        }
+
+        // 检查随机事件
+        function checkRandomEvents() {
+            const random = Math.random();
+            const score = calculateEcoScore();
+            
+            // 根据生态评分调整事件概率
+            let eventProbability = 0.3;
+            if (score < 50) eventProbability = 0.5;
+            else if (score > 80) eventProbability = 0.1;
+            
+            if (random < eventProbability) {
+                triggerRandomEvent();
+            }
+        }
+
+        // 触发随机事件
+        function triggerRandomEvent() {
+            const events = [
+                {
+                    condition: () => gameState.organisms.filter(o => o.type === 'algae').length > 8,
+                    event: () => {
+                        showNotification('🌊 藻类爆发', '绿藻大量繁殖，消耗大量氧气！');
+                        gameState.parameters.oxygen -= 3;
+                        gameState.parameters.ph += 0.3;
+                    }
+                },
+                {
+                    condition: () => gameState.parameters.ammonia > 1.5,
+                    event: () => {
+                        showNotification('💀 水质恶化', '有害物质积累，生物健康受威胁！');
+                        gameState.organisms.forEach(org => {
+                            org.health -= Math.random() * 15;
+                        });
+                    }
+                },
+                {
+                    condition: () => gameState.organisms.length > 20 && Math.random() < 0.3,
+                    event: () => {
+                        showNotification('🦠 疾病传播', '高密度饲养导致疾病传播');
+                        const affectedCount = Math.ceil(gameState.organisms.length * 0.3);
+                        for (let i = 0; i < affectedCount; i++) {
+                            const randomOrg = gameState.organisms[Math.floor(Math.random() * gameState.organisms.length)];
+                            if (randomOrg) randomOrg.health -= 20;
+                        }
+                    }
+                },
+                {
+                    condition: () => gameState.organisms.filter(o => speciesDatabase[o.type]?.category === 'plant').length > 5,
+                    event: () => {
+                        showNotification('🌸 生长旺季', '植物进入生长旺季，产氧量增加！');
+                        gameState.parameters.oxygen += 2;
+                        gameState.parameters.nutrients -= 1;
+                    }
+                },
+                {
+                    condition: () => Math.random() < 0.1,
+                    event: () => {
+                        showNotification('🌟 基因突变', '某个个体发生有利突变，适应性增强！');
+                        if (gameState.organisms.length > 0) {
+                            const luckyOne = gameState.organisms[Math.floor(Math.random() * gameState.organisms.length)];
+                            luckyOne.health += 20;
+                            luckyOne.activityLevel = Math.min(1, luckyOne.activityLevel + 0.2);
+                        }
+                    }
+                }
+            ];
+            
+            // 选择符合条件的事件
+            const possibleEvents = events.filter(e => e.condition());
+            if (possibleEvents.length > 0) {
+                const selectedEvent = possibleEvents[Math.floor(Math.random() * possibleEvents.length)];
+                selectedEvent.event();
+            }
+        }
+
+        // 检查成就
+        function checkAchievements() {
+            const score = calculateEcoScore();
+            const speciesCount = new Set(gameState.organisms.map(o => o.type)).size;
+            
+            // 完美平衡成就
+            if (gameState.time > 50 && score > 90 && !gameState.achievements.perfectBalance) {
+                gameState.achievements.perfectBalance = true;
+                showAchievement('⚖️ 完美平衡', '维持生态系统高度稳定50天！');
+            }
+            
+            // 生物多样性成就
+            if (speciesCount >= 8 && !gameState.achievements.biodiversity) {
+                gameState.achievements.biodiversity = true;
+                showAchievement('🌈 生物多样性', '同时培养了8种不同的生物！');
+            }
+            
+            // 长期生存成就
+            if (gameState.time > 200 && gameState.organisms.length > 0 && !gameState.achievements.survivor) {
+                gameState.achievements.survivor = true;
+                showAchievement('⏰ 时间守护者', '生态系统运行超过200天！');
+            }
+            
+            // 生态大师成就
+            if (gameState.time > 100 && score > 95 && speciesCount >= 6 && !gameState.achievements.masterEcologist) {
+                gameState.achievements.masterEcologist = true;
+                showAchievement('🎓 生态大师', '达成了生态学家的最高境界！');
+            }
+            
+            // 危机管理者成就
+            if (score < 30 && gameState.organisms.length > 0) {
+                // 检查是否从危机中恢复
+                setTimeout(() => {
+                    if (calculateEcoScore() > 70 && !gameState.achievements.crisisManager) {
+                        gameState.achievements.crisisManager = true;
+                        showAchievement('🚑 危机管理者', '成功拯救了濒临崩溃的生态系统！');
+                    }
+                }, 30000); // 30秒后检查
+            }
+        }
+
+        // 快速操作函数
+        function feedSystem() {
+            gameState.parameters.nutrients += 2;
+            showNotification('🍽️ 投喂', '已添加营养物质，注意不要过量投喂');
+            createBubbles(5);
+            updateEcoTips();
+        }
+
+        function cleanSystem() {
+            gameState.parameters.ammonia = Math.max(0, gameState.parameters.ammonia - 1.5);
+            gameState.parameters.nutrients = Math.max(0, gameState.parameters.nutrients - 0.5);
+            showNotification('🧹 清理', '已清除有害物质，水质得到改善');
+            updateEcoTips();
+        }
+
+        function oxygenBoost() {
+            gameState.parameters.oxygen += 2;
+            showNotification('💨 增氧', '人工增加了溶解氧');
+            createBubbles(8);
+        }
+
+        // 时间控制
+        function togglePause() {
+            gameState.isPaused = !gameState.isPaused;
+            document.getElementById('pauseBtn').textContent = gameState.isPaused ? '▶️ 继续' : '⏸️ 暂停';
+        }
+
+        function changeSpeed(speed) {
+            gameState.speed = speed;
+            document.getElementById('speedIndicator').textContent = speed + 'x';
+        }
+
+        // 视觉效果
+        function createBubbles(count) {
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const bubble = document.createElement('div');
+                    bubble.className = 'bubble';
+                    bubble.style.left = Math.random() * 380 + 10 + 'px';
+                    bubble.style.animationDelay = Math.random() * 2 + 's';
+                    document.getElementById('bottleContainer').appendChild(bubble);
+                    
+                    setTimeout(() => {
+                        if (bubble.parentNode) bubble.remove();
+                    }, 5000);
+                }, i * 100);
+            }
+        }
+
+        function updateAlgaeVisual() {
+            const algaeLayer = document.getElementById('algaeLayer');
+            const algaeCount = gameState.organisms.filter(o => o.type === 'algae').length;
+            const lightEffect = gameState.parameters.light / 100;
+            const opacity = Math.min(0.7, (algaeCount * 0.08) + (lightEffect * 0.1));
+            algaeLayer.style.opacity = opacity;
+            
+            // 根据藻类密度改变颜色
+            if (algaeCount > 10) {
+                algaeLayer.style.background = 'radial-gradient(circle at center, rgba(0, 100, 0, 0.2) 0%, transparent 70%)';
+            } else {
+                algaeLayer.style.background = 'radial-gradient(circle at center, rgba(0, 128, 0, 0.1) 0%, transparent 70%)';
+            }
+        }
+
+        function updateBottleSize() {
+            const bottle = document.getElementById('bottleContainer');
+            const sizes = {
+                'small': { width: 350, height: 450 },
+                'medium': { width: 400, height: 500 },
+                'large': { width: 450, height: 550 }
+            };
+            
+            const size = sizes[gameState.bottleSize];
+            bottle.style.width = size.width + 'px';
+            bottle.style.height = size.height + 'px';
+        }
+
+        // 数据可视化
+        function updatePopulationChart() {
+            const chart = document.getElementById('populationChart');
+            
+            // 统计各类生物数量
+            const plants = gameState.organisms.filter(o => speciesDatabase[o.type]?.category === 'plant').length;
+            const herbivores = gameState.organisms.filter(o => speciesDatabase[o.type]?.category === 'herbivore').length;
+            const carnivores = gameState.organisms.filter(o => ['carnivore', 'omnivore'].includes(speciesDatabase[o.type]?.category)).length;
+            const microorganisms = gameState.organisms.filter(o => ['microorganism', 'decomposer'].includes(speciesDatabase[o.type]?.category)).length;
+            
+            // 添加数据点
+            gameState.populationData.plants.push(plants);
+            gameState.populationData.herbivores.push(herbivores);
+            gameState.populationData.carnivores.push(carnivores);
+            gameState.populationData.microorganisms.push(microorganisms);
+            
+            // 限制数据长度
+            const maxPoints = 60;
+            Object.keys(gameState.populationData).forEach(key => {
+                if (gameState.populationData[key].length > maxPoints) {
+                    gameState.populationData[key].shift();
+                }
+            });
+            
+            // 重绘图表
+            redrawChart(chart);
+        }
+
+        function redrawChart(chart) {
+            chart.innerHTML = '';
+            
+            // 绘制网格
+            for (let i = 0; i <= 4; i++) {
+                const y = i * 30 + 10;
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', '10');
+                line.setAttribute('y1', y);
+                line.setAttribute('x2', '320');
+                line.setAttribute('y2', y);
+                line.setAttribute('class', 'chart-grid');
+                chart.appendChild(line);
+            }
+            
+            // 绘制数据线
+            drawDataLine(chart, gameState.populationData.plants, '#2ecc71', '植物');
+            drawDataLine(chart, gameState.populationData.herbivores, '#3498db', '草食');
+            drawDataLine(chart, gameState.populationData.carnivores, '#e74c3c', '肉食');
+            drawDataLine(chart, gameState.populationData.microorganisms, '#9b59b6', '微生物');
+            
+            // 添加图例
+            addChartLegend(chart);
+        }
+
+        function drawDataLine(chart, data, color, label) {
+            if (data.length < 2) return;
+            
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            const maxValue = Math.max(...Object.values(gameState.populationData).flat(), 10);
+            const xStep = 310 / Math.max(1, data.length - 1);
+            
+            let d = `M 10,${130 - (data[0] / maxValue) * 120}`;
+            for (let i = 1; i < data.length; i++) {
+                d += ` L ${10 + i * xStep},${130 - (data[i] / maxValue) * 120}`;
+            }
+            
+            path.setAttribute('d', d);
+            path.setAttribute('stroke', color);
+            path.setAttribute('stroke-width', '2');
+            path.setAttribute('fill', 'none');
+            path.setAttribute('opacity', '0.8');
+            
+            chart.appendChild(path);
+        }
+
+        function addChartLegend(chart) {
+            const legend = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            const legendData = [
+                { color: '#2ecc71', label: '植物', x: 10 },
+                { color: '#3498db', label: '草食', x: 70 },
+                { color: '#e74c3c', label: '肉食', x: 130 },
+                { color: '#9b59b6', label: '微生物', x: 190 }
+            ];
+            
+            legendData.forEach(item => {
+                const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                rect.setAttribute('x', item.x);
+                rect.setAttribute('y', '140');
+                rect.setAttribute('width', '8');
+                rect.setAttribute('height', '8');
+                rect.setAttribute('fill', item.color);
+                legend.appendChild(rect);
+                
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', item.x + 12);
+                text.setAttribute('y', '148');
+                text.setAttribute('font-size', '10');
+                text.setAttribute('fill', '#333');
+                text.textContent = item.label;
+                legend.appendChild(text);
+            });
+            
+            chart.appendChild(legend);
+        }
+
+        // 通知和弹窗
+        function showNotification(title, message) {
+            const notification = document.getElementById('eventNotification');
+            document.getElementById('eventTitle').textContent = title;
+            document.getElementById('eventMessage').textContent = message;
+            
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 4000);
+        }
+
+        function showAchievement(title, description) {
+            const popup = document.getElementById('achievementPopup');
+            document.getElementById('achievementTitle').textContent = title;
+            
+            popup.classList.add('show');
+            setTimeout(() => {
+                popup.classList.remove('show');
+            }, 5000);
+            
+            // 创建庆祝效果
+            createBubbles(10);
+        }
+
+        function showTooltip(event, text) {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.innerHTML = text;
+            tooltip.style.left = Math.min(event.pageX + 15, window.innerWidth - 220) + 'px';
+            tooltip.style.top = Math.max(event.pageY - 60, 10) + 'px';
+            tooltip.classList.add('show');
+        }
+
+        function hideTooltip() {
+            document.getElementById('tooltip').classList.remove('show');
+        }
+
+        // 教程系统
+        function showTutorial() {
+            document.getElementById('tutorialOverlay').style.display = 'flex';
+        }
+
+        function closeTutorial() {
+            document.getElementById('tutorialOverlay').style.display = 'none';
+        }
+
+        // 页面加载完成后初始化
+        window.addEventListener('load', () => {
+            initGame();
+            console.log('🎮 生态瓶工程师已启动！');
+        });
+
+        // 窗口调整大小时重新布局
+        window.addEventListener('resize', () => {
+            hideTooltip();
+        });
+
+        // 页面卸载前保存游戏状态
+        window.addEventListener('beforeunload', () => {
+            localStorage.setItem('ecoBottleGameState', JSON.stringify({
+                time: gameState.time,
+                achievements: gameState.achievements,
+                highScore: calculateEcoScore()
+            }));
+        });
+    </script>
+</body>
+</html>

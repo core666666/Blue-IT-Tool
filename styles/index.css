@@ -523,6 +523,97 @@ body.dark-mode .tool-card .category-tag {
     background: linear-gradient(90deg, #20BFA9, #2CD8D5);
 }
 
+/* 游戏类别样式 */
+/* 无限射击游戏 - 红色主题 */
+.tool-card[style*="--card-index: 12"] i {
+    color: #FF4757;
+}
+
+.tool-card[style*="--card-index: 12"] .icon-bg {
+    background: linear-gradient(135deg, rgba(255, 71, 87, 0.1) 0%, rgba(255, 99, 99, 0.1) 100%);
+}
+
+.tool-card[style*="--card-index: 12"] .category-tag {
+    background: rgba(255, 71, 87, 0.1);
+    color: #FF4757;
+}
+
+.tool-card[style*="--card-index: 12"]::before {
+    background: linear-gradient(90deg, #FF4757, #FF6B6B);
+}
+
+/* 无限防守游戏 - 绿色主题 */
+.tool-card[style*="--card-index: 13"] i {
+    color: #2ED573;
+}
+
+.tool-card[style*="--card-index: 13"] .icon-bg {
+    background: linear-gradient(135deg, rgba(46, 213, 115, 0.1) 0%, rgba(0, 206, 201, 0.1) 100%);
+}
+
+.tool-card[style*="--card-index: 13"] .category-tag {
+    background: rgba(46, 213, 115, 0.1);
+    color: #2ED573;
+}
+
+.tool-card[style*="--card-index: 13"]::before {
+    background: linear-gradient(90deg, #2ED573, #00CEC9);
+}
+
+/* 符文法师游戏 - 紫色主题 */
+.tool-card[style*="--card-index: 14"] i {
+    color: #A55EEA;
+}
+
+.tool-card[style*="--card-index: 14"] .icon-bg {
+    background: linear-gradient(135deg, rgba(165, 94, 234, 0.1) 0%, rgba(116, 59, 211, 0.1) 100%);
+}
+
+.tool-card[style*="--card-index: 14"] .category-tag {
+    background: rgba(165, 94, 234, 0.1);
+    color: #A55EEA;
+}
+
+.tool-card[style*="--card-index: 14"]::before {
+    background: linear-gradient(90deg, #A55EEA, #743BD3);
+}
+
+/* 生态瓶工程师（经典版）- 橙色主题 */
+.tool-card[style*="--card-index: 15"] i {
+    color: #FF9F43;
+}
+
+.tool-card[style*="--card-index: 15"] .icon-bg {
+    background: linear-gradient(135deg, rgba(255, 159, 67, 0.1) 0%, rgba(255, 177, 43, 0.1) 100%);
+}
+
+.tool-card[style*="--card-index: 15"] .category-tag {
+    background: rgba(255, 159, 67, 0.1);
+    color: #FF9F43;
+}
+
+.tool-card[style*="--card-index: 15"]::before {
+    background: linear-gradient(90deg, #FF9F43, #FFB12B);
+}
+
+/* 生态瓶工程师（增强版）- 青色主题 */
+.tool-card[style*="--card-index: 16"] i {
+    color: #26D0CE;
+}
+
+.tool-card[style*="--card-index: 16"] .icon-bg {
+    background: linear-gradient(135deg, rgba(38, 208, 206, 0.1) 0%, rgba(0, 184, 169, 0.1) 100%);
+}
+
+.tool-card[style*="--card-index: 16"] .category-tag {
+    background: rgba(38, 208, 206, 0.1);
+    color: #26D0CE;
+}
+
+.tool-card[style*="--card-index: 16"]::before {
+    background: linear-gradient(90deg, #26D0CE, #00B8A9);
+}
+
 /* 特色卡片指示器 */
 .featured-indicator {
     position: absolute;

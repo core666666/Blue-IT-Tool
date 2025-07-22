@@ -17,7 +17,7 @@
     const CONFIG = {
         SCRIPT_URL: 'https://cloud.umami.is/script.js',
         WEBSITE_ID: '09c0a9c3-17ec-49e2-8fd0-7064f75f6978',
-        DELAY_TIME: 2000, // 延迟加载时间（毫秒）
+        DELAY_TIME: 500,  // 减少延迟时间到500ms
         TIMEOUT: 10000,   // 脚本加载超时时间（毫秒）
     };
     
@@ -30,7 +30,8 @@
      * 检查是否已经加载过 Umami 脚本
      */
     function isUmamiLoaded() {
-        return document.querySelector('script[src*="umami"]') !== null;
+        // 更精确的检测：只检测实际的 Umami 脚本，不包括加载器本身
+        return document.querySelector('script[src="https://cloud.umami.is/script.js"]') !== null;
     }
     
     /**
@@ -61,7 +62,17 @@
                 clearTimeout(timeout);
                 isLoaded = true;
                 isLoading = false;
-                console.log('Umami 统计脚本加载成功');
+                console.log('✅ Umami 统计脚本加载成功');
+
+                // 验证 umami 对象是否可用
+                setTimeout(() => {
+                    if (window.umami) {
+                        console.log('✅ Umami 统计功能已激活');
+                    } else {
+                        console.warn('⚠️ Umami 脚本已加载但对象未初始化');
+                    }
+                }, 100);
+
                 resolve();
             };
             
@@ -69,8 +80,9 @@
             script.onerror = function() {
                 clearTimeout(timeout);
                 isLoading = false;
-                const error = new Error('Umami 统计脚本加载失败，但不影响页面功能');
+                const error = new Error('❌ Umami 统计脚本加载失败，但不影响页面功能');
                 console.warn(error.message);
+                console.warn('请检查网络连接或 Umami 服务状态');
                 reject(error);
             };
             
@@ -167,7 +179,23 @@
     window.UmamiLoader = {
         load: loadUmamiScript,
         isLoaded: () => isLoaded,
-        config: CONFIG
+        isLoading: () => isLoading,
+        config: CONFIG,
+        // 立即加载（用于调试）
+        loadNow: () => {
+            console.log('🚀 立即加载 Umami 统计脚本...');
+            return loadUmamiScript();
+        },
+        // 检查状态
+        status: () => {
+            console.log('📊 Umami 加载器状态:', {
+                isLoaded,
+                isLoading,
+                userInteracted,
+                umamiScriptExists: isUmamiLoaded(),
+                umamiObjectExists: !!window.umami
+            });
+        }
     };
     
     // 自动初始化

@@ -1,0 +1,1679 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Workflow Editor - Fixed Style Rendering</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg: #fafafa;
+            --surface: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-tertiary: #94a3b8;
+            --border: #e2e8f0;
+            --border-light: #f1f5f9;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --sidebar-width: 320px;
+            --toolbar-height: 64px;
+            --statusbar-height: 36px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+            position: relative;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 20;
+            box-shadow: var(--shadow);
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .app-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .main-editor {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .toolbar {
+            height: var(--toolbar-height);
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            gap: 24px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .tool-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            padding: 0 12px;
+            border-right: 1px solid var(--border-light);
+        }
+
+        .tool-group:last-child {
+            border-right: none;
+            margin-left: auto;
+            padding-right: 0;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-primary);
+            position: relative;
+        }
+
+        .btn:hover {
+            background: var(--bg);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn.primary {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .btn.primary:hover {
+            background: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+        .btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .btn.icon-only {
+            padding: 8px;
+            width: 36px;
+            height: 36px;
+            justify-content: center;
+        }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            overflow: auto;
+            background: var(--bg);
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            min-width: 100%;
+            min-height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+            background-position: 0 0;
+        }
+
+        .canvas {
+            position: absolute;
+            cursor: move;
+            background: var(--surface);
+            box-shadow: var(--shadow-lg);
+            border-radius: var(--radius-md);
+            transition: transform 0.1s ease-out;
+        }
+
+        .status-bar {
+            height: var(--statusbar-height);
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            gap: 24px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .textarea {
+            width: 100%;
+            min-height: 200px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            resize: vertical;
+            background: var(--bg);
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-light);
+        }
+
+        .component-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--bg);
+        }
+
+        .component-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-light);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .component-item:last-child {
+            border-bottom: none;
+        }
+
+        .component-item:hover {
+            background: var(--surface);
+            padding-left: 20px;
+        }
+
+        .component-item.selected {
+            background: rgba(99, 102, 241, 0.1);
+            border-left: 3px solid var(--primary);
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .component-type {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            background: var(--bg);
+            padding: 2px 8px;
+            border-radius: var(--radius-sm);
+        }
+
+        .property-panel {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin-top: 24px;
+        }
+
+        .property-item {
+            margin-bottom: 16px;
+        }
+
+        .property-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .property-item label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .property-item input,
+        .property-item select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            background: var(--surface);
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .property-item input:focus,
+        .property-item select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .log {
+            background: var(--text-primary);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            margin-top: 24px;
+            max-height: 150px;
+            overflow-y: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 12px;
+            color: var(--success);
+            line-height: 1.5;
+        }
+
+        /* SVG组件样式 - 保持原始样式 */
+        .svg-component {
+            cursor: move;
+        }
+
+        .svg-component.selected {
+            filter: drop-shadow(0 0 6px var(--primary)) drop-shadow(0 0 12px var(--primary-light));
+            stroke-width: 3 !important;
+            stroke: var(--primary) !important;
+        }
+
+        .svg-connection {
+            pointer-events: stroke;
+            cursor: pointer;
+        }
+
+        .svg-connection.selected {
+            filter: drop-shadow(0 0 6px var(--primary)) drop-shadow(0 0 12px var(--primary-light));
+            stroke-width: 4 !important;
+            stroke: var(--primary) !important;
+            animation: pulse-stroke 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse-stroke {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        .connection-hit-area {
+            stroke: transparent;
+            stroke-width: 20;
+            pointer-events: stroke;
+            cursor: pointer;
+            fill: none;
+        }
+
+        .control-point {
+            fill: var(--primary);
+            stroke: white;
+            stroke-width: 2;
+            cursor: move;
+            r: 6;
+            transition: r 0.2s;
+        }
+
+        .control-point:hover {
+            fill: var(--primary-dark);
+            r: 8;
+        }
+
+        .line-translate-handle {
+            fill: transparent;
+            stroke: var(--primary);
+            stroke-width: 2;
+            stroke-dasharray: 3,3;
+            cursor: move;
+        }
+
+        .floating-toolbar {
+            position: fixed;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 8px;
+            box-shadow: var(--shadow-md);
+            display: none;
+            flex-direction: row;
+            gap: 4px;
+            z-index: 100;
+        }
+
+        .floating-toolbar.visible {
+            display: flex;
+        }
+
+        .floating-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .floating-btn:hover {
+            background: var(--bg);
+        }
+
+        .floating-btn.danger:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .floating-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        .zoom-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg);
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+        }
+
+        .zoom-level {
+            font-size: 13px;
+            font-weight: 500;
+            min-width: 50px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .history-indicator {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            margin-left: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="app-logo">
+                    <div class="logo-icon">W</div>
+                    <span>SVG 工作流编辑器</span>
+                </div>
+            </div>
+            
+            <div class="sidebar-content">
+                <div class="section-title">导入 SVG</div>
+                <textarea class="textarea" id="svgInput" placeholder="粘贴 SVG 代码到这里..."></textarea>
+                <button class="btn primary" onclick="parseSVG()" style="width: 100%; margin-top: 12px;">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    解析 SVG
+                </button>
+                
+                <div class="section-title" style="margin-top: 32px;">元素列表</div>
+                <div class="component-list" id="componentList"></div>
+                
+                <div class="property-panel" id="propertyPanel" style="display: none;">
+                    <div class="section-title">属性编辑</div>
+                    <div id="propertyContent"></div>
+                </div>
+                
+                <div class="log" id="logOutput">系统就绪...</div>
+            </div>
+        </div>
+        
+        <!-- 主编辑器 -->
+        <div class="main-editor">
+            <!-- 工具栏 -->
+            <div class="toolbar">
+                <div class="tool-group">
+                    <button class="btn" onclick="exportSVG()">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                        </svg>
+                        导出 SVG
+                    </button>
+                    <button class="btn" onclick="savePNG()">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M5 4v2h14V4H5zm0 10h4v6h6v-6h4l-7-7-7 7z"/>
+                        </svg>
+                        保存 PNG
+                    </button>
+                </div>
+                
+                <div class="tool-group">
+                    <button class="btn active" id="selectMode" onclick="setMode('select')">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M3 5h2V3c-1.1 0-2 .9-2 2zm0 8h2v-2H3v2zm4 8h2v-2H7v2zM3 9h2V7H3v2zm10-6h-2v2h2V3zm6 0v2h2c0-1.1-.9-2-2-2zM5 21v-2H3c0 1.1.9 2 2 2zm-2-4h2v-2H3v2zM9 3H7v2h2V3zm2 18h2v-2h-2v2zm8-8h2v-2h-2v2zm0 8c1.1 0 2-.9 2-2h-2v2zm0-12h2V7h-2v2zm0 8h2v-2h-2v2zm-4 4h2v-2h-2v2zm0-16h2V3h-2v2z"/>
+                        </svg>
+                        选择
+                    </button>
+                    <button class="btn" id="editMode" onclick="setMode('edit')">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                        </svg>
+                        编辑线条
+                    </button>
+                </div>
+                
+                <div class="tool-group">
+                    <button class="btn icon-only" onclick="undo()" title="撤销">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/>
+                        </svg>
+                        <span class="history-indicator" id="undoCount"></span>
+                    </button>
+                    <button class="btn icon-only" onclick="redo()" title="重做">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/>
+                        </svg>
+                        <span class="history-indicator" id="redoCount"></span>
+                    </button>
+                </div>
+                
+                <div class="tool-group">
+                    <div class="zoom-control">
+                        <button class="btn icon-only" onclick="zoomOut()">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M19 13H5v-2h14v2z"/>
+                            </svg>
+                        </button>
+                        <span class="zoom-level" id="zoomLevel">100%</span>
+                        <button class="btn icon-only" onclick="zoomIn()">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                            </svg>
+                        </button>
+                        <button class="btn icon-only" onclick="zoomFit()">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M15 3l2.3 2.3-2.89 2.87 1.42 1.42L18.7 6.7 21 9V3h-6zM3 9l2.3-2.3 2.87 2.89 1.42-1.42L6.7 5.3 9 3H3v6zm6 12l-2.3-2.3 2.89-2.87-1.42-1.42L5.3 17.3 3 15v6h6zm12-6l-2.3 2.3-2.87-2.89-1.42 1.42 2.89 2.87L15 21h6v-6z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 画布容器 -->
+            <div class="canvas-container" id="canvasContainer">
+                <div class="canvas-wrapper" id="canvasWrapper">
+                    <svg class="canvas" id="canvas" width="1200" height="800" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#4a5568"/>
+                            </marker>
+                        </defs>
+                    </svg>
+                </div>
+                
+                <!-- 浮动工具栏 -->
+                <div class="floating-toolbar" id="floatingToolbar">
+                    <button class="floating-btn" onclick="selectAll()" title="全选">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M3 5h2V3c-1.1 0-2 .9-2 2zm0 8h2v-2H3v2zm4 8h2v-2H7v2zM3 9h2V7H3v2zm10-6h-2v2h2V3zm6 0v2h2c0-1.1-.9-2-2-2zM5 21v-2H3c0 1.1.9 2 2 2zm-2-4h2v-2H3v2zM9 3H7v2h2V3zm2 18h2v-2h-2v2zm8-8h2v-2h-2v2zm0 8c1.1 0 2-.9 2-2h-2v2zm0-12h2V7h-2v2zm0 8h2v-2h-2v2zm-4 4h2v-2h-2v2zm0-16h2V3h-2v2z"/>
+                        </svg>
+                    </button>
+                    <button class="floating-btn danger" onclick="deleteSelected()" title="删除">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 状态栏 -->
+            <div class="status-bar">
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span id="statusText">就绪</span>
+                </div>
+                <div class="status-item" style="margin-left: auto;">
+                    <span id="positionInfo">x: 0, y: 0</span>
+                </div>
+                <div class="status-item">
+                    <span id="elementCount">0 个元素</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局状态管理
+        let svgElements = [];
+        let selectedElements = new Set();
+        let isDragging = false;
+        let dragTarget = null;
+        let dragOffset = { x: 0, y: 0 };
+        let scale = 1;
+        let canvasOffset = { x: 0, y: 0 };
+        let currentMode = 'select';
+        let controlPoints = [];
+        let selectedConnection = null;
+        let lineTranslateMode = false;
+        
+        // 历史记录管理
+        let historyStack = [];
+        let historyIndex = -1;
+        const MAX_HISTORY = 50;
+
+        // DOM元素引用
+        const canvas = document.getElementById('canvas');
+        const canvasContainer = document.getElementById('canvasContainer');
+        const canvasWrapper = document.getElementById('canvasWrapper');
+        const componentList = document.getElementById('componentList');
+        const propertyPanel = document.getElementById('propertyPanel');
+        const logOutput = document.getElementById('logOutput');
+        const floatingToolbar = document.getElementById('floatingToolbar');
+
+        // 初始化画布位置
+        function initializeCanvas() {
+            const containerRect = canvasContainer.getBoundingClientRect();
+            const canvasRect = canvas.getBoundingClientRect();
+            
+            canvasOffset.x = (containerRect.width - canvasRect.width) / 2;
+            canvasOffset.y = (containerRect.height - canvasRect.height) / 2;
+            
+            updateCanvasTransform();
+        }
+
+        // 更新画布变换
+        function updateCanvasTransform() {
+            canvas.style.transform = `translate(${canvasOffset.x}px, ${canvasOffset.y}px) scale(${scale})`;
+        }
+
+        // 保存到历史记录
+        function saveToHistory() {
+            historyStack = historyStack.slice(0, historyIndex + 1);
+            
+            const state = {
+                svgContent: canvas.innerHTML,
+                svgElements: JSON.parse(JSON.stringify(svgElements))
+            };
+            
+            historyStack.push(state);
+            
+            if (historyStack.length > MAX_HISTORY) {
+                historyStack.shift();
+            } else {
+                historyIndex++;
+            }
+            
+            updateHistoryIndicators();
+        }
+
+        // 撤销
+        function undo() {
+            if (historyIndex > 0) {
+                historyIndex--;
+                restoreState(historyStack[historyIndex]);
+                log('撤销操作');
+            }
+        }
+
+        // 重做
+        function redo() {
+            if (historyIndex < historyStack.length - 1) {
+                historyIndex++;
+                restoreState(historyStack[historyIndex]);
+                log('重做操作');
+            }
+        }
+
+        // 恢复状态
+        function restoreState(state) {
+            canvas.innerHTML = state.svgContent;
+            svgElements = JSON.parse(JSON.stringify(state.svgElements));
+            
+            rebindEvents();
+            updateElementList();
+            updateHistoryIndicators();
+            updateStatusBar();
+        }
+
+        // 更新历史记录指示器
+        function updateHistoryIndicators() {
+            const undoCount = document.getElementById('undoCount');
+            const redoCount = document.getElementById('redoCount');
+            
+            undoCount.textContent = historyIndex > 0 ? `(${historyIndex})` : '';
+            redoCount.textContent = historyIndex < historyStack.length - 1 ? `(${historyStack.length - historyIndex - 1})` : '';
+        }
+
+        // 重新绑定事件
+        function rebindEvents() {
+            // 清除现有的控制点
+            clearControlPoints();
+            
+            // 重新绑定组件事件
+            document.querySelectorAll('.svg-component').forEach(element => {
+                element.addEventListener('mousedown', startDrag);
+                element.addEventListener('click', handleElementClick);
+            });
+            
+            // 重新绑定连接线事件
+            document.querySelectorAll('.svg-connection').forEach(element => {
+                element.addEventListener('click', handleConnectionClick);
+            });
+            
+            document.querySelectorAll('.connection-hit-area').forEach(element => {
+                element.addEventListener('click', handleConnectionClick);
+            });
+        }
+
+        // 设置模式
+        function setMode(mode) {
+            currentMode = mode;
+            
+            document.querySelectorAll('.toolbar .btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            if (mode === 'select') {
+                document.getElementById('selectMode').classList.add('active');
+                canvas.style.cursor = 'default';
+                clearControlPoints();
+            } else if (mode === 'edit') {
+                document.getElementById('editMode').classList.add('active');
+                canvas.style.cursor = 'crosshair';
+                if (selectedConnection) {
+                    showConnectionControlPoints(selectedConnection);
+                }
+            }
+            
+            log(`切换到${mode === 'select' ? '选择' : '编辑'}模式`);
+        }
+
+        // 日志功能
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            logOutput.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+            logOutput.scrollTop = logOutput.scrollHeight;
+            
+            const logs = logOutput.querySelectorAll('div');
+            if (logs.length > 50) {
+                logs[0].remove();
+            }
+        }
+
+        // 更新状态栏
+        function updateStatusBar() {
+            document.getElementById('elementCount').textContent = `${svgElements.length} 个元素`;
+        }
+
+        // 更新浮动工具栏位置
+        function updateFloatingToolbar() {
+            if (selectedElements.size > 0) {
+                const selectedIds = Array.from(selectedElements);
+                let bounds = null;
+                
+                selectedIds.forEach(id => {
+                    const element = document.querySelector(`[data-id="${id}"]`);
+                    if (element) {
+                        const rect = element.getBoundingClientRect();
+                        if (!bounds) {
+                            bounds = {
+                                left: rect.left,
+                                top: rect.top,
+                                right: rect.right,
+                                bottom: rect.bottom
+                            };
+                        } else {
+                            bounds.left = Math.min(bounds.left, rect.left);
+                            bounds.top = Math.min(bounds.top, rect.top);
+                            bounds.right = Math.max(bounds.right, rect.right);
+                            bounds.bottom = Math.max(bounds.bottom, rect.bottom);
+                        }
+                    }
+                });
+                
+                if (bounds) {
+                    const x = bounds.left + (bounds.right - bounds.left) / 2 - floatingToolbar.offsetWidth / 2;
+                    const y = bounds.top - 50;
+                    
+                    floatingToolbar.style.left = `${x}px`;
+                    floatingToolbar.style.top = `${y}px`;
+                    floatingToolbar.classList.add('visible');
+                }
+            } else {
+                floatingToolbar.classList.remove('visible');
+            }
+        }
+
+        // 解析SVG
+        function parseSVG() {
+            const svgCode = document.getElementById('svgInput').value.trim();
+            if (!svgCode) {
+                alert('请输入SVG代码');
+                return;
+            }
+
+            try {
+                saveToHistory();
+                
+                // 清空现有内容（保留defs）
+                const defs = canvas.querySelector('defs');
+                canvas.innerHTML = '';
+                if (defs) {
+                    canvas.appendChild(defs);
+                }
+                svgElements = [];
+                
+                // 解析SVG
+                const parser = new DOMParser();
+                const svgDoc = parser.parseFromString(svgCode, 'image/svg+xml');
+                const svgElement = svgDoc.documentElement;
+                
+                // 检查解析错误
+                if (svgElement.querySelector('parsererror')) {
+                    throw new Error('SVG格式错误');
+                }
+                
+                // 设置画布尺寸
+                const viewBox = svgElement.getAttribute('viewBox');
+                if (viewBox) {
+                    const [x, y, width, height] = viewBox.split(' ').map(Number);
+                    canvas.setAttribute('width', width);
+                    canvas.setAttribute('height', height);
+                    canvas.setAttribute('viewBox', viewBox);
+                } else {
+                    const width = svgElement.getAttribute('width') || '1200';
+                    const height = svgElement.getAttribute('height') || '800';
+                    canvas.setAttribute('width', width);
+                    canvas.setAttribute('height', height);
+                }
+
+                // 直接复制所有子元素，保持原始样式
+                let elementId = 1;
+                Array.from(svgElement.children).forEach(child => {
+                    if (child.tagName.toLowerCase() !== 'defs') {
+                        const clonedElement = child.cloneNode(true);
+                        
+                        // 为元素添加ID和类
+                        const id = `element_${elementId++}`;
+                        clonedElement.setAttribute('data-id', id);
+                        
+                        // 判断元素类型
+                        const tagName = clonedElement.tagName.toLowerCase();
+                        if (tagName === 'line' || tagName === 'path' || tagName === 'polyline') {
+                            clonedElement.classList.add('svg-connection');
+                            
+                            // 为连接线添加点击区域
+                            const hitArea = clonedElement.cloneNode(true);
+                            hitArea.setAttribute('class', 'connection-hit-area');
+                            hitArea.setAttribute('data-id', id);
+                            hitArea.addEventListener('click', handleConnectionClick);
+                            canvas.appendChild(hitArea);
+                            
+                            svgElements.push({
+                                id: id,
+                                type: 'connection',
+                                tagName: tagName,
+                                element: clonedElement
+                            });
+                            
+                            // 添加事件监听到连接线
+                            clonedElement.addEventListener('click', handleConnectionClick);
+                        } else {
+                            clonedElement.classList.add('svg-component');
+                            svgElements.push({
+                                id: id,
+                                type: 'component',
+                                tagName: tagName,
+                                element: clonedElement
+                            });
+                            
+                            // 添加事件监听到组件
+                            clonedElement.addEventListener('mousedown', startDrag);
+                            clonedElement.addEventListener('click', handleElementClick);
+                        }
+                        
+                        canvas.appendChild(clonedElement);
+                    }
+                });
+                
+                updateElementList();
+                updateStatusBar();
+                
+                // 自动适应画布
+                setTimeout(() => {
+                    zoomFit();
+                }, 100);
+                
+                log(`成功解析：${svgElements.length} 个元素`);
+                
+            } catch (error) {
+                alert('SVG解析失败: ' + error.message);
+                log('错误: ' + error.message);
+            }
+        }
+
+        // 开始拖拽
+        function startDrag(e) {
+            if (currentMode !== 'select') return;
+            
+            isDragging = true;
+            dragTarget = e.currentTarget;
+            
+            const rect = canvas.getBoundingClientRect();
+            const matrix = new DOMMatrix(getComputedStyle(dragTarget).transform);
+            
+            dragOffset.x = (e.clientX - rect.left) / scale - matrix.e;
+            dragOffset.y = (e.clientY - rect.top) / scale - matrix.f;
+            
+            e.preventDefault();
+        }
+
+        // 处理元素点击
+        function handleElementClick(e) {
+            if (currentMode === 'select') {
+                selectElement(e);
+            }
+        }
+
+        // 处理连接线点击
+        function handleConnectionClick(e) {
+            e.stopPropagation();
+            
+            const id = e.currentTarget.getAttribute('data-id');
+            const element = svgElements.find(el => el.id === id);
+            
+            if (currentMode === 'select') {
+                clearSelection();
+                // 找到实际的连接线元素（不是hit area）
+                const actualElement = document.querySelector(`.svg-connection[data-id="${id}"]`);
+                if (actualElement) {
+                    actualElement.classList.add('selected');
+                }
+                selectedElements.add(id);
+                updateElementListSelection();
+                updateFloatingToolbar();
+                selectedConnection = element;
+            } else if (currentMode === 'edit') {
+                clearSelection();
+                const actualElement = document.querySelector(`.svg-connection[data-id="${id}"]`);
+                if (actualElement) {
+                    actualElement.classList.add('selected');
+                }
+                selectedElements.add(id);
+                selectedConnection = element;
+                showConnectionControlPoints(element);
+                updateElementListSelection();
+            }
+        }
+
+        // 显示连接线控制点
+        function showConnectionControlPoints(connection) {
+            clearControlPoints();
+            
+            const element = connection.element;
+            const tagName = connection.tagName;
+            
+            if (tagName === 'line') {
+                // 直线的起点和终点
+                const x1 = parseFloat(element.getAttribute('x1'));
+                const y1 = parseFloat(element.getAttribute('y1'));
+                const x2 = parseFloat(element.getAttribute('x2'));
+                const y2 = parseFloat(element.getAttribute('y2'));
+                
+                createControlPoint(x1, y1, 'start', connection);
+                createControlPoint(x2, y2, 'end', connection);
+                
+                // 添加平移控制
+                const midX = (x1 + x2) / 2;
+                const midY = (y1 + y2) / 2;
+                const translateHandle = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                translateHandle.setAttribute('class', 'line-translate-handle');
+                translateHandle.setAttribute('x', midX - 20);
+                translateHandle.setAttribute('y', midY - 20);
+                translateHandle.setAttribute('width', 40);
+                translateHandle.setAttribute('height', 40);
+                translateHandle.setAttribute('data-connection-id', connection.id);
+                translateHandle.addEventListener('mousedown', startLineTranslate);
+                canvas.appendChild(translateHandle);
+                controlPoints.push(translateHandle);
+                
+            } else if (tagName === 'path') {
+                // 路径的控制点
+                const d = element.getAttribute('d');
+                const points = parsePathData(d);
+                
+                points.forEach((point, index) => {
+                    const cp = createControlPoint(point.x, point.y, point.type, connection);
+                    cp.setAttribute('data-index', index);
+                });
+                
+                // 添加平移控制
+                if (points.length > 0) {
+                    let centerX = 0, centerY = 0;
+                    points.forEach(p => {
+                        centerX += p.x;
+                        centerY += p.y;
+                    });
+                    centerX /= points.length;
+                    centerY /= points.length;
+                    
+                    const translateHandle = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                    translateHandle.setAttribute('class', 'line-translate-handle');
+                    translateHandle.setAttribute('x', centerX - 20);
+                    translateHandle.setAttribute('y', centerY - 20);
+                    translateHandle.setAttribute('width', 40);
+                    translateHandle.setAttribute('height', 40);
+                    translateHandle.setAttribute('data-connection-id', connection.id);
+                    translateHandle.addEventListener('mousedown', startLineTranslate);
+                    canvas.appendChild(translateHandle);
+                    controlPoints.push(translateHandle);
+                }
+            }
+        }
+
+        // 解析路径数据
+        function parsePathData(d) {
+            const points = [];
+            const commands = d.match(/[MmLlHhVvCcSsQqTtAaZz][^MmLlHhVvCcSsQqTtAaZz]*/g);
+            
+            if (commands) {
+                let currentX = 0, currentY = 0;
+                
+                commands.forEach(cmd => {
+                    const type = cmd[0];
+                    const coords = cmd.slice(1).trim().split(/[\s,]+/).map(parseFloat);
+                    
+                    switch(type.toUpperCase()) {
+                        case 'M':
+                            currentX = type === 'M' ? coords[0] : currentX + coords[0];
+                            currentY = type === 'M' ? coords[1] : currentY + coords[1];
+                            points.push({ x: currentX, y: currentY, type: 'move' });
+                            break;
+                        case 'L':
+                            currentX = type === 'L' ? coords[0] : currentX + coords[0];
+                            currentY = type === 'L' ? coords[1] : currentY + coords[1];
+                            points.push({ x: currentX, y: currentY, type: 'line' });
+                            break;
+                        case 'Q':
+                            if (type === 'Q') {
+                                points.push({ x: coords[0], y: coords[1], type: 'control' });
+                                currentX = coords[2];
+                                currentY = coords[3];
+                            } else {
+                                points.push({ x: currentX + coords[0], y: currentY + coords[1], type: 'control' });
+                                currentX += coords[2];
+                                currentY += coords[3];
+                            }
+                            points.push({ x: currentX, y: currentY, type: 'end' });
+                            break;
+                        case 'C':
+                            if (type === 'C') {
+                                points.push({ x: coords[0], y: coords[1], type: 'control1' });
+                                points.push({ x: coords[2], y: coords[3], type: 'control2' });
+                                currentX = coords[4];
+                                currentY = coords[5];
+                            } else {
+                                points.push({ x: currentX + coords[0], y: currentY + coords[1], type: 'control1' });
+                                points.push({ x: currentX + coords[2], y: currentY + coords[3], type: 'control2' });
+                                currentX += coords[4];
+                                currentY += coords[5];
+                            }
+                            points.push({ x: currentX, y: currentY, type: 'end' });
+                            break;
+                    }
+                });
+            }
+            
+            return points;
+        }
+
+        // 创建控制点
+        function createControlPoint(x, y, type, connection) {
+            const point = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            point.setAttribute('class', 'control-point');
+            point.setAttribute('cx', x);
+            point.setAttribute('cy', y);
+            point.setAttribute('data-type', type);
+            point.setAttribute('data-connection-id', connection.id);
+            point.addEventListener('mousedown', startControlPointDrag);
+            canvas.appendChild(point);
+            controlPoints.push(point);
+            return point;
+        }
+
+        // 开始控制点拖拽
+        function startControlPointDrag(e) {
+            e.stopPropagation();
+            isDragging = true;
+            dragTarget = e.currentTarget;
+            
+            const rect = canvas.getBoundingClientRect();
+            dragOffset.x = (e.clientX - rect.left) / scale - parseFloat(dragTarget.getAttribute('cx'));
+            dragOffset.y = (e.clientY - rect.top) / scale - parseFloat(dragTarget.getAttribute('cy'));
+            dragOffset.controlPoint = true;
+        }
+
+        // 开始线条平移
+        function startLineTranslate(e) {
+            e.stopPropagation();
+            isDragging = true;
+            lineTranslateMode = true;
+            dragTarget = e.currentTarget;
+            
+            const rect = canvas.getBoundingClientRect();
+            dragOffset.x = (e.clientX - rect.left) / scale;
+            dragOffset.y = (e.clientY - rect.top) / scale;
+            dragOffset.connectionId = dragTarget.getAttribute('data-connection-id');
+        }
+
+        // 选择元素
+        function selectElement(e) {
+            if (!e.ctrlKey && !e.metaKey) {
+                clearSelection();
+            }
+            
+            e.currentTarget.classList.add('selected');
+            const id = e.currentTarget.getAttribute('data-id');
+            selectedElements.add(id);
+            
+            updateElementListSelection();
+            updateFloatingToolbar();
+            
+            e.stopPropagation();
+        }
+
+        // 清除选择
+        function clearSelection() {
+            document.querySelectorAll('.selected').forEach(el => {
+                el.classList.remove('selected');
+            });
+            selectedElements.clear();
+            selectedConnection = null;
+            updateElementListSelection();
+            updateFloatingToolbar();
+        }
+
+        // 清除控制点
+        function clearControlPoints() {
+            controlPoints.forEach(point => {
+                if (point.parentNode) {
+                    point.parentNode.removeChild(point);
+                }
+            });
+            controlPoints = [];
+        }
+
+        // 全选
+        function selectAll() {
+            clearSelection();
+            document.querySelectorAll('.svg-component, .svg-connection').forEach(el => {
+                el.classList.add('selected');
+                const id = el.getAttribute('data-id');
+                selectedElements.add(id);
+            });
+            updateElementListSelection();
+            updateFloatingToolbar();
+            log('已全选所有元素');
+        }
+
+        // 删除选中元素
+        function deleteSelected() {
+            if (selectedElements.size === 0) {
+                alert('请先选择要删除的元素');
+                return;
+            }
+            
+            if (confirm(`确定要删除 ${selectedElements.size} 个选中的元素吗？`)) {
+                saveToHistory();
+                
+                selectedElements.forEach(id => {
+                    // 从DOM中移除
+                    const element = document.querySelector(`[data-id="${id}"]`);
+                    if (element) element.remove();
+                    
+                    // 移除对应的点击区域
+                    const hitArea = document.querySelector(`.connection-hit-area[data-id="${id}"]`);
+                    if (hitArea) hitArea.remove();
+                    
+                    // 从数组中移除
+                    const index = svgElements.findIndex(el => el.id === id);
+                    if (index !== -1) {
+                        svgElements.splice(index, 1);
+                    }
+                });
+                
+                clearSelection();
+                clearControlPoints();
+                updateElementList();
+                updateStatusBar();
+                
+                log(`已删除 ${selectedElements.size} 个元素`);
+            }
+        }
+
+        // 更新元素列表
+        function updateElementList() {
+            componentList.innerHTML = '';
+            
+            svgElements.forEach(element => {
+                const item = document.createElement('div');
+                item.className = 'component-item';
+                item.setAttribute('data-id', element.id);
+                
+                const nameSpan = document.createElement('span');
+                nameSpan.textContent = `${element.tagName} - ${element.id}`;
+                
+                const typeSpan = document.createElement('span');
+                typeSpan.className = 'component-type';
+                typeSpan.textContent = element.type;
+                
+                item.appendChild(nameSpan);
+                item.appendChild(typeSpan);
+                
+                item.addEventListener('click', () => {
+                    const el = document.querySelector(`[data-id="${element.id}"]`);
+                    if (el) {
+                        if (element.type === 'component') {
+                            handleElementClick({ currentTarget: el, ctrlKey: false });
+                        } else {
+                            handleConnectionClick({ currentTarget: el, stopPropagation: () => {} });
+                        }
+                    }
+                });
+                
+                componentList.appendChild(item);
+            });
+        }
+
+        // 更新元素列表选中状态
+        function updateElementListSelection() {
+            document.querySelectorAll('.component-item').forEach(item => {
+                const id = item.getAttribute('data-id');
+                if (selectedElements.has(id)) {
+                    item.classList.add('selected');
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
+        }
+
+        // 鼠标移动处理
+        document.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = Math.round((e.clientX - rect.left - canvasOffset.x) / scale);
+            const y = Math.round((e.clientY - rect.top - canvasOffset.y) / scale);
+            
+            document.getElementById('positionInfo').textContent = `x: ${x}, y: ${y}`;
+            
+            if (isDragging && dragTarget) {
+                if (dragOffset.controlPoint) {
+                    // 控制点拖拽
+                    const newX = (e.clientX - rect.left) / scale - dragOffset.x;
+                    const newY = (e.clientY - rect.top) / scale - dragOffset.y;
+                    
+                    dragTarget.setAttribute('cx', newX);
+                    dragTarget.setAttribute('cy', newY);
+                    
+                    // 更新连接线
+                    const connectionId = dragTarget.getAttribute('data-connection-id');
+                    const connection = svgElements.find(el => el.id === connectionId);
+                    if (connection) {
+                        updateConnectionFromControlPoint(connection, dragTarget);
+                    }
+                } else if (lineTranslateMode) {
+                    // 线条平移
+                    const deltaX = (e.clientX - rect.left) / scale - dragOffset.x;
+                    const deltaY = (e.clientY - rect.top) / scale - dragOffset.y;
+                    
+                    const connection = svgElements.find(el => el.id === dragOffset.connectionId);
+                    if (connection) {
+                        translateConnection(connection, deltaX, deltaY);
+                    }
+                    
+                    dragOffset.x = (e.clientX - rect.left) / scale;
+                    dragOffset.y = (e.clientY - rect.top) / scale;
+                } else {
+                    // 元素拖拽
+                    const newX = (e.clientX - rect.left) / scale - dragOffset.x;
+                    const newY = (e.clientY - rect.top) / scale - dragOffset.y;
+                    
+                    dragTarget.style.transform = `translate(${newX}px, ${newY}px)`;
+                    updateFloatingToolbar();
+                }
+            }
+        });
+
+        // 更新连接线从控制点
+        function updateConnectionFromControlPoint(connection, controlPoint) {
+            const element = connection.element;
+            const type = controlPoint.getAttribute('data-type');
+            const x = parseFloat(controlPoint.getAttribute('cx'));
+            const y = parseFloat(controlPoint.getAttribute('cy'));
+            
+            if (connection.tagName === 'line') {
+                if (type === 'start') {
+                    element.setAttribute('x1', x);
+                    element.setAttribute('y1', y);
+                    const hitArea = document.querySelector(`.connection-hit-area[data-id="${connection.id}"]`);
+                    if (hitArea) {
+                        hitArea.setAttribute('x1', x);
+                        hitArea.setAttribute('y1', y);
+                    }
+                } else if (type === 'end') {
+                    element.setAttribute('x2', x);
+                    element.setAttribute('y2', y);
+                    const hitArea = document.querySelector(`.connection-hit-area[data-id="${connection.id}"]`);
+                    if (hitArea) {
+                        hitArea.setAttribute('x2', x);
+                        hitArea.setAttribute('y2', y);
+                    }
+                }
+                
+                // 更新平移控制位置
+                const x1 = parseFloat(element.getAttribute('x1'));
+                const y1 = parseFloat(element.getAttribute('y1'));
+                const x2 = parseFloat(element.getAttribute('x2'));
+                const y2 = parseFloat(element.getAttribute('y2'));
+                const translateHandle = document.querySelector(`.line-translate-handle[data-connection-id="${connection.id}"]`);
+                if (translateHandle) {
+                    translateHandle.setAttribute('x', (x1 + x2) / 2 - 20);
+                    translateHandle.setAttribute('y', (y1 + y2) / 2 - 20);
+                }
+            } else if (connection.tagName === 'path') {
+                // 更新路径
+                const index = parseInt(controlPoint.getAttribute('data-index'));
+                const d = element.getAttribute('d');
+                const newD = updatePathDataPoint(d, index, x, y);
+                element.setAttribute('d', newD);
+                const hitArea = document.querySelector(`.connection-hit-area[data-id="${connection.id}"]`);
+                if (hitArea) {
+                    hitArea.setAttribute('d', newD);
+                }
+            }
+        }
+
+        // 更新路径数据点
+        function updatePathDataPoint(d, index, newX, newY) {
+            const commands = d.match(/[MmLlHhVvCcSsQqTtAaZz][^MmLlHhVvCcSsQqTtAaZz]*/g);
+            if (!commands) return d;
+            
+            let pointIndex = 0;
+            let result = '';
+            
+            commands.forEach(cmd => {
+                const type = cmd[0];
+                const coords = cmd.slice(1).trim().split(/[\s,]+/).map(parseFloat);
+                let newCmd = type;
+                
+                for (let i = 0; i < coords.length; i += 2) {
+                    if (pointIndex === index) {
+                        newCmd += ` ${newX} ${newY}`;
+                    } else {
+                        newCmd += ` ${coords[i]} ${coords[i + 1]}`;
+                    }
+                    pointIndex++;
+                }
+                
+                result += newCmd + ' ';
+            });
+            
+            return result.trim();
+        }
+
+        // 平移连接
+        function translateConnection(connection, deltaX, deltaY) {
+            const element = connection.element;
+            
+            if (connection.tagName === 'line') {
+                const x1 = parseFloat(element.getAttribute('x1')) + deltaX;
+                const y1 = parseFloat(element.getAttribute('y1')) + deltaY;
+                const x2 = parseFloat(element.getAttribute('x2')) + deltaX;
+                const y2 = parseFloat(element.getAttribute('y2')) + deltaY;
+                
+                element.setAttribute('x1', x1);
+                element.setAttribute('y1', y1);
+                element.setAttribute('x2', x2);
+                element.setAttribute('y2', y2);
+                
+                const hitArea = document.querySelector(`.connection-hit-area[data-id="${connection.id}"]`);
+                if (hitArea) {
+                    hitArea.setAttribute('x1', x1);
+                    hitArea.setAttribute('y1', y1);
+                    hitArea.setAttribute('x2', x2);
+                    hitArea.setAttribute('y2', y2);
+                }
+                
+                // 更新控制点
+                showConnectionControlPoints(connection);
+            } else if (connection.tagName === 'path') {
+                const d = element.getAttribute('d');
+                const newD = translatePathData(d, deltaX, deltaY);
+                element.setAttribute('d', newD);
+                
+                const hitArea = document.querySelector(`.connection-hit-area[data-id="${connection.id}"]`);
+                if (hitArea) {
+                    hitArea.setAttribute('d', newD);
+                }
+                
+                // 更新控制点
+                showConnectionControlPoints(connection);
+            }
+        }
+
+        // 平移路径数据
+        function translatePathData(d, deltaX, deltaY) {
+            return d.replace(/(-?\d+\.?\d*)\s+(-?\d+\.?\d*)/g, (match, x, y) => {
+                return `${parseFloat(x) + deltaX} ${parseFloat(y) + deltaY}`;
+            });
+        }
+
+        // 鼠标释放处理
+        document.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                dragTarget = null;
+                lineTranslateMode = false;
+                dragOffset.controlPoint = false;
+                dragOffset.connectionId = null;
+                saveToHistory();
+            }
+        });
+
+        // 缩放功能
+        function zoomIn() {
+            scale = Math.min(scale * 1.2, 3);
+            updateCanvasTransform();
+            document.getElementById('zoomLevel').textContent = Math.round(scale * 100) + '%';
+        }
+
+        function zoomOut() {
+            scale = Math.max(scale / 1.2, 0.3);
+            updateCanvasTransform();
+            document.getElementById('zoomLevel').textContent = Math.round(scale * 100) + '%';
+        }
+
+        function zoomFit() {
+            const bbox = canvas.getBBox();
+            const containerRect = canvasContainer.getBoundingClientRect();
+            
+            const padding = 50;
+            const scaleX = (containerRect.width - padding * 2) / bbox.width;
+            const scaleY = (containerRect.height - padding * 2) / bbox.height;
+            scale = Math.min(scaleX, scaleY, 1);
+            
+            canvasOffset.x = (containerRect.width - bbox.width * scale) / 2 - bbox.x * scale;
+            canvasOffset.y = (containerRect.height - bbox.height * scale) / 2 - bbox.y * scale;
+            
+            updateCanvasTransform();
+            document.getElementById('zoomLevel').textContent = Math.round(scale * 100) + '%';
+        }
+
+        // 导出SVG
+        function exportSVG() {
+            const svgClone = canvas.cloneNode(true);
+            
+            // 移除UI元素
+            svgClone.querySelectorAll('.control-point, .line-translate-handle, .connection-hit-area').forEach(el => el.remove());
+            
+            // 移除类名和data属性
+            svgClone.querySelectorAll('*').forEach(el => {
+                el.removeAttribute('data-id');
+                el.classList.remove('svg-component', 'svg-connection', 'selected');
+            });
+            
+            // 创建完整的SVG
+            const svgNS = 'http://www.w3.org/2000/svg';
+            const exportSvg = document.createElementNS(svgNS, 'svg');
+            exportSvg.setAttribute('xmlns', svgNS);
+            exportSvg.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
+            
+            // 复制属性
+            Array.from(canvas.attributes).forEach(attr => {
+                if (attr.name !== 'class' && attr.name !== 'style') {
+                    exportSvg.setAttribute(attr.name, attr.value);
+                }
+            });
+            
+            // 复制内容
+            exportSvg.innerHTML = svgClone.innerHTML;
+            
+            // 序列化
+            const serializer = new XMLSerializer();
+            const svgString = '<?xml version="1.0" encoding="UTF-8"?>\n' + serializer.serializeToString(exportSvg);
+            
+            const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'workflow.svg';
+            a.click();
+            URL.revokeObjectURL(url);
+            log('已导出 SVG');
+        }
+
+        // 保存为PNG
+        function savePNG() {
+            const svgData = new XMLSerializer().serializeToString(canvas);
+            const canvas2d = document.createElement('canvas');
+            const ctx = canvas2d.getContext('2d');
+            const img = new Image();
+            
+            img.onload = function() {
+                canvas2d.width = img.width;
+                canvas2d.height = img.height;
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, canvas2d.width, canvas2d.height);
+                ctx.drawImage(img, 0, 0);
+                
+                const link = document.createElement('a');
+                link.download = 'workflow.png';
+                link.href = canvas2d.toDataURL();
+                link.click();
+                log('已保存 PNG');
+            };
+            
+            const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+            const url = URL.createObjectURL(svgBlob);
+            img.src = url;
+        }
+
+        // 画布拖拽
+        let isCanvasDragging = false;
+        let canvasDragStart = { x: 0, y: 0 };
+        
+        canvasContainer.addEventListener('mousedown', (e) => {
+            if (e.target === canvasContainer || e.target === canvasWrapper) {
+                isCanvasDragging = true;
+                canvasDragStart.x = e.clientX - canvasOffset.x;
+                canvasDragStart.y = e.clientY - canvasOffset.y;
+                canvasContainer.style.cursor = 'grabbing';
+            }
+        });
+        
+        document.addEventListener('mousemove', (e) => {
+            if (isCanvasDragging) {
+                canvasOffset.x = e.clientX - canvasDragStart.x;
+                canvasOffset.y = e.clientY - canvasDragStart.y;
+                updateCanvasTransform();
+            }
+        });
+        
+        document.addEventListener('mouseup', () => {
+            if (isCanvasDragging) {
+                isCanvasDragging = false;
+                canvasContainer.style.cursor = 'default';
+            }
+        });
+
+        // 点击画布清除选择
+        canvas.addEventListener('click', (e) => {
+            if (e.target === canvas) {
+                clearSelection();
+                clearControlPoints();
+            }
+        });
+
+        // 键盘快捷键
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Delete' && selectedElements.size > 0) {
+                deleteSelected();
+            } else if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+                e.preventDefault();
+                selectAll();
+            } else if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+                e.preventDefault();
+                undo();
+            } else if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+                e.preventDefault();
+                redo();
+            }
+        });
+
+        // 鼠标滚轮缩放
+        canvasContainer.addEventListener('wheel', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? 0.9 : 1.1;
+                const newScale = Math.max(0.3, Math.min(3, scale * delta));
+                
+                // 缩放到鼠标位置
+                const rect = canvasContainer.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+                
+                canvasOffset.x = mouseX - (mouseX - canvasOffset.x) * (newScale / scale);
+                canvasOffset.y = mouseY - (mouseY - canvasOffset.y) * (newScale / scale);
+                
+                scale = newScale;
+                updateCanvasTransform();
+                document.getElementById('zoomLevel').textContent = Math.round(scale * 100) + '%';
+            }
+        });
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            setMode('select');
+            updateHistoryIndicators();
+            updateStatusBar();
+            initializeCanvas();
+            log('编辑器已就绪');
+            
+            // 初始化第一个历史记录
+            saveToHistory();
+        });
+    </script>
+</body>
+</html>

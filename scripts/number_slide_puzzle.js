@@ -375,27 +375,51 @@ class NumberSlidePuzzle {
         }
     }
     
-    // 自动求解演示
+    // 自动求解演示（增强版）
     async showHint() {
         if (!this.gameStarted || this.isAnimating) return;
         
         this.isAnimating = true;
         this.solveBtn.disabled = true;
-        this.solveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 求解中...';
+        
+        // 根据模式显示不同的提示信息
+        const solvingText = this.size === 3 ? 
+            '<i class="fas fa-spinner fa-spin"></i> 求解中...' :
+            '<i class="fas fa-spinner fa-spin"></i> 复杂求解中，请稍候...';
+        
+        this.solveBtn.innerHTML = solvingText;
+        this.gameStatus.textContent = this.size === 3 ? 
+            '正在计算最优解...' : 
+            '4x4模式较复杂，正在深度搜索中...';
         
         try {
+            // 首先检查是否可解
+            if (!this.isSolvable(this.board)) {
+                this.gameStatus.textContent = '当前状态无解！请重新开始游戏';
+                return;
+            }
+            
+            const startSolveTime = Date.now();
             const solution = await this.solvePuzzle();
+            const solveTime = Date.now() - startSolveTime;
+            
+            console.log(`求解耗时: ${solveTime}ms`);
             
             if (solution && solution.length > 0) {
+                this.gameStatus.textContent = `找到解决方案！共${solution.length}步，开始演示...`;
                 await this.demonstrateSolution(solution);
                 this.gameStatus.textContent = '自动求解完成！';
                 this.handleWin();
             } else {
-                this.gameStatus.textContent = '无法找到解决方案';
+                if (this.size === 4) {
+                    this.gameStatus.textContent = '4x4模式求解超时，建议尝试3x3模式或手动求解';
+                } else {
+                    this.gameStatus.textContent = '无法找到解决方案，请检查游戏状态';
+                }
             }
         } catch (error) {
             console.error('求解过程中出现错误:', error);
-            this.gameStatus.textContent = '求解失败，请重试';
+            this.gameStatus.textContent = '求解过程出现错误，请重试';
         } finally {
             this.isAnimating = false;
             this.solveBtn.disabled = false;
@@ -403,12 +427,22 @@ class NumberSlidePuzzle {
         }
     }
     
-    // A*算法求解数字华容道
+    // A*算法求解数字华容道（优化版）
     async solvePuzzle() {
         const targetState = this.getTargetState();
         const startState = this.boardToString(this.board);
         
         if (startState === targetState) return [];
+        
+        // 检查是否可解
+        if (!this.isSolvable(this.board)) {
+            return null;
+        }
+        
+        // 根据棋盘大小调整搜索参数
+        const maxIterations = this.size === 3 ? 50000 : 200000;
+        const maxTime = this.size === 3 ? 5000 : 30000; // 最大搜索时间(毫秒)
+        const startTime = Date.now();
         
         const openSet = new PriorityQueue();
         const closedSet = new Set();
@@ -421,14 +455,20 @@ class NumberSlidePuzzle {
         openSet.enqueue(startState, fScore.get(startState));
         
         let iterations = 0;
-        const maxIterations = 10000; // 防止无限循环
         
         while (!openSet.isEmpty() && iterations < maxIterations) {
+            // 检查超时
+            if (Date.now() - startTime > maxTime) {
+                console.log(`搜索超时，已搜索${iterations}次`);
+                break;
+            }
+            
             iterations++;
             
             const current = openSet.dequeue().element;
             
             if (current === targetState) {
+                console.log(`找到解决方案，搜索了${iterations}次迭代`);
                 return this.reconstructPath(cameFrom, current);
             }
             
@@ -454,29 +494,135 @@ class NumberSlidePuzzle {
                 }
             }
             
-            // 每100次迭代让出一次控制权
-            if (iterations % 100 === 0) {
+            // 定期让出控制权并清理内存
+            if (iterations % 1000 === 0) {
                 await new Promise(resolve => setTimeout(resolve, 1));
+                
+                // 对于4x4模式，定期清理过深的搜索节点以节省内存
+                if (this.size === 4 && iterations % 10000 === 0) {
+                    this.pruneSearchSpace(closedSet, gScore, fScore, cameFrom);
+                }
             }
         }
         
+        console.log(`搜索结束，共进行${iterations}次迭代，未找到解决方案`);
         return null; // 无解或超时
     }
     
-    // 曼哈顿距离启发式函数
+    // 增强的启发式函数（曼哈顿距离 + 线性冲突）
     heuristic(board) {
-        let distance = 0;
+        let manhattan = 0;
+        let linearConflict = 0;
+        
+        // 计算曼哈顿距离
         for (let i = 0; i < this.size; i++) {
             for (let j = 0; j < this.size; j++) {
                 const value = board[i][j];
                 if (value !== 0) {
                     const targetRow = Math.floor((value - 1) / this.size);
                     const targetCol = (value - 1) % this.size;
-                    distance += Math.abs(i - targetRow) + Math.abs(j - targetCol);
+                    manhattan += Math.abs(i - targetRow) + Math.abs(j - targetCol);
                 }
             }
         }
-        return distance;
+        
+        // 计算线性冲突（同行或同列中的逆序对）
+        for (let i = 0; i < this.size; i++) {
+            // 检查行冲突
+            const rowTiles = [];
+            for (let j = 0; j < this.size; j++) {
+                const value = board[i][j];
+                if (value !== 0 && Math.floor((value - 1) / this.size) === i) {
+                    rowTiles.push({ value, col: j, targetCol: (value - 1) % this.size });
+                }
+            }
+            linearConflict += this.countConflicts(rowTiles, 'col', 'targetCol');
+            
+            // 检查列冲突
+            const colTiles = [];
+            for (let j = 0; j < this.size; j++) {
+                const value = board[j][i];
+                if (value !== 0 && (value - 1) % this.size === i) {
+                    colTiles.push({ value, row: j, targetRow: Math.floor((value - 1) / this.size) });
+                }
+            }
+            linearConflict += this.countConflicts(colTiles, 'row', 'targetRow');
+        }
+        
+        return manhattan + 2 * linearConflict;
+    }
+    
+    // 计算冲突数量
+    countConflicts(tiles, posKey, targetKey) {
+        let conflicts = 0;
+        for (let i = 0; i < tiles.length; i++) {
+            for (let j = i + 1; j < tiles.length; j++) {
+                if (tiles[i][targetKey] > tiles[j][targetKey] && 
+                    tiles[i][posKey] < tiles[j][posKey]) {
+                    conflicts++;
+                }
+            }
+        }
+        return conflicts;
+    }
+    
+    // 检查谜题是否可解
+    isSolvable(board) {
+        const flatBoard = board.flat();
+        const inversions = this.countInversions(flatBoard);
+        
+        if (this.size % 2 === 1) {
+            // 奇数大小：逆序数必须是偶数
+            return inversions % 2 === 0;
+        } else {
+            // 偶数大小：需要考虑空格位置
+            const emptyRowFromBottom = this.size - this.emptyPos.row;
+            if (emptyRowFromBottom % 2 === 1) {
+                return inversions % 2 === 0;
+            } else {
+                return inversions % 2 === 1;
+            }
+        }
+    }
+    
+    // 计算逆序数
+    countInversions(arr) {
+        let inversions = 0;
+        for (let i = 0; i < arr.length; i++) {
+            if (arr[i] === 0) continue;
+            for (let j = i + 1; j < arr.length; j++) {
+                if (arr[j] !== 0 && arr[i] > arr[j]) {
+                    inversions++;
+                }
+            }
+        }
+        return inversions;
+    }
+    
+    // 清理搜索空间（用于4x4模式内存优化）
+    pruneSearchSpace(closedSet, gScore, fScore, cameFrom) {
+        const maxClosedSize = 50000; // 最大闭集大小
+        
+        if (closedSet.size > maxClosedSize) {
+            // 将闭集转为数组并按g值排序，保留较好的状态
+            const closedArray = Array.from(closedSet).map(state => ({
+                state,
+                g: gScore.get(state) || Infinity
+            }));
+            
+            closedArray.sort((a, b) => a.g - b.g);
+            
+            // 清理较差的状态
+            const toRemove = closedArray.slice(maxClosedSize * 0.8);
+            toRemove.forEach(item => {
+                closedSet.delete(item.state);
+                gScore.delete(item.state);
+                fScore.delete(item.state);
+                cameFrom.delete(item.state);
+            });
+            
+            console.log(`清理了${toRemove.length}个搜索状态`);
+        }
     }
     
     // 获取目标状态字符串
@@ -570,11 +716,13 @@ class NumberSlidePuzzle {
         return null;
     }
     
-    // 演示解决方案
+    // 演示解决方案（优化版）
     async demonstrateSolution(solution) {
+        const delay = this.size === 3 ? 800 : 600; // 4x4模式演示稍快一些
+        
         for (const move of solution) {
             await this.moveTile(move.row, move.col);
-            await new Promise(resolve => setTimeout(resolve, 800)); // 演示间隔
+            await new Promise(resolve => setTimeout(resolve, delay));
             this.moves++; // 自动求解也要计算步数
             this.updateDisplay();
         }

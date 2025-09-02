@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="数字华容道 - 经典的滑块拼图游戏，锻炼逻辑思维，支持3x3和4x4两种模式。纯前端实现，无需联网即可畅玩。">
+    <meta name="keywords" content="数字华容道,滑块拼图,益智游戏,逻辑思维,在线游戏,拼图游戏,数字游戏">
+    <meta name="author" content="蔚蓝工具导航站">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../assets/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon/favicon-16x16.png">
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="数字华容道 - 蔚蓝工具导航站">
+    <meta property="og:description" content="经典的数字华容道拼图游戏，锻炼逻辑思维能力。支持多种难度模式，适合各年龄段用户。">
+    <meta property="og:image" content="../tools.png">
+    <meta property="og:url" content="https://your-domain.com/pages/number_slide_puzzle.html">
+    <meta property="og:type" content="website">
+    
+    <!-- Additional SEO Tags -->
+    <meta name="application-name" content="蔚蓝工具导航站">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="canonical" href="https://your-domain.com/pages/number_slide_puzzle.html">
+    
+    <title>数字华容道 - 蔚蓝工具导航站</title>
+    
+    <!-- 引入Font Awesome图标 -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 引入自定义CSS -->
+    <link rel="stylesheet" href="../styles/common.css">
+    <link rel="stylesheet" href="../styles/tools-common.css">
+    <link rel="stylesheet" href="../styles/number_slide_puzzle.css">
+    
+    <!-- Umami 统计脚本延迟加载器 -->
+    <script src="../scripts/umami-loader.js"></script>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-logo">
+            <a href="../index.html">
+                <img src="../assets/favicon/favicon-32x32.png" alt="蔚蓝IT">
+                蔚蓝IT工具导航
+            </a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="../index.html"><i class="fas fa-home"></i> 首页</a></li>
+            <li><a href="../navigation.html"><i class="fas fa-compass"></i> 导航</a></li>
+        </ul>
+        <div class="nav-right">
+            <div class="theme-switch">
+                <input type="checkbox" id="theme-toggle">
+                <label for="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                </label>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <main class="main-content">
+        <div class="container">
+            <header class="page-header">
+                <h1><i class="fas fa-puzzle-piece"></i> 数字华容道</h1>
+                <p>经典的滑块拼图游戏，通过移动数字方块来排列正确的顺序</p>
+            </header>
+
+            <!-- 游戏控制面板 -->
+            <div class="game-controls">
+                <div class="control-group">
+                    <label for="gameMode">游戏模式：</label>
+                    <select id="gameMode">
+                        <option value="3">3x3 (简单)</option>
+                        <option value="4">4x4 (困难)</option>
+                    </select>
+                </div>
+                
+                <div class="control-buttons">
+                    <button id="newGameBtn" class="btn btn-primary">
+                        <i class="fas fa-play"></i> 新游戏
+                    </button>
+                    <button id="shuffleBtn" class="btn btn-secondary">
+                        <i class="fas fa-random"></i> 重新打乱
+                    </button>
+                    <button id="solveBtn" class="btn btn-info">
+                        <i class="fas fa-magic"></i> 自动求解
+                    </button>
+                </div>
+            </div>
+
+            <!-- 游戏状态显示 -->
+            <div class="game-stats">
+                <div class="stat-item">
+                    <i class="fas fa-clock"></i>
+                    <span>时间：<span id="timeDisplay">00:00</span></span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-shoe-prints"></i>
+                    <span>步数：<span id="moveCount">0</span></span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-target"></i>
+                    <span id="gameStatus">点击"新游戏"开始</span>
+                </div>
+            </div>
+
+            <!-- 游戏区域 -->
+            <div class="game-area">
+                <div id="puzzleBoard" class="puzzle-board">
+                    <!-- 游戏方块将通过JavaScript动态生成 -->
+                </div>
+            </div>
+
+            <!-- 游戏说明 -->
+            <div class="game-instructions">
+                <h3><i class="fas fa-question-circle"></i> 游戏说明</h3>
+                <ul>
+                    <li>点击空格旁边的数字方块可以移动它</li>
+                    <li>将所有数字按从小到大的顺序排列（空格在右下角）</li>
+                    <li>3x3模式：数字1-8按顺序排列</li>
+                    <li>4x4模式：数字1-15按顺序排列</li>
+                    <li>尝试用最少的步数和时间完成挑战！</li>
+                </ul>
+            </div>
+
+            <!-- 最佳记录 -->
+            <div class="best-scores">
+                <h3><i class="fas fa-trophy"></i> 最佳记录</h3>
+                <div class="score-table">
+                    <div class="score-row">
+                        <span>3x3模式：</span>
+                        <span id="best3x3">暂无记录</span>
+                    </div>
+                    <div class="score-row">
+                        <span>4x4模式：</span>
+                        <span id="best4x4">暂无记录</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 胜利弹窗 -->
+    <div id="winModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-trophy"></i> 恭喜完成！</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="win-stats">
+                    <div class="win-stat">
+                        <i class="fas fa-clock"></i>
+                        <span>用时：<span id="winTime">--</span></span>
+                    </div>
+                    <div class="win-stat">
+                        <i class="fas fa-shoe-prints"></i>
+                        <span>步数：<span id="winMoves">--</span></span>
+                    </div>
+                </div>
+                <div id="newRecord" class="new-record" style="display: none;">
+                    <i class="fas fa-star"></i> 新记录！
+                </div>
+                <div class="win-actions">
+                    <button id="playAgainBtn" class="btn btn-primary">
+                        <i class="fas fa-redo"></i> 再玩一次
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入JavaScript -->
+    <script src="../scripts/number_slide_puzzle.js"></script>
+</body>
+</html>

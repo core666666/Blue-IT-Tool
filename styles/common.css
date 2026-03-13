@@ -14,6 +14,27 @@
     --card-dark: #1e2538;
     --text-dark: #e2e8f0;
     --text-secondary-dark: #94a3b8;
+    
+    /* 侧边栏变量 */
+    --sidebar-width: 260px;
+    --sidebar-toggle-size: 40px;
+    --sidebar-bg: #ffffff;
+    --sidebar-text: #2c3e50;
+    --sidebar-border: #e2e8f0;
+    --sidebar-hover: #f8fafc;
+    --sidebar-active: #f1f5f9;
+    --sidebar-primary: #4A6CF7;
+    --sidebar-shadow: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] {
+    --sidebar-bg: #1e2538;
+    --sidebar-text: #e2e8f0;
+    --sidebar-border: #2d3548;
+    --sidebar-hover: #252d42;
+    --sidebar-active: #2a3347;
+    --sidebar-primary: #6e89f8;
+    --sidebar-shadow: rgba(0, 0, 0, 0.3);
 }
 
 body {

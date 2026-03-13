@@ -272,34 +272,102 @@ body.sidebar-collapsed {
   background: var(--sidebar-primary);
 }
 
+/* 遮罩层（桌面端隐藏，移动端通过 JS 控制） */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* 移动端汉堡菜单按钮（桌面端不显示） */
+.sidebar-mobile-toggle {
+  display: none;
+}
+
 /* 移动端适配 */
 @media (max-width: 768px) {
   .sidebar {
     width: 100%;
     max-width: 300px;
+    /* 移动端始终作为浮层覆盖，不挤压页面内容 */
   }
 
+  /* 移动端侧边栏收起时滑出到左侧，展开时滑入 */
+  .sidebar.collapsed {
+    transform: translateX(-100%);
+  }
+
+  /* 移动端不推移页面内容 */
   body.sidebar-open {
     margin-left: 0;
   }
 
-  /* 遮罩层 */
-  .sidebar-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 999;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
+  /* 移动端侧边栏打开时禁止 body 滚动 */
+  body.sidebar-mobile-open {
+    overflow: hidden;
   }
 
-  .sidebar:not(.collapsed)~.sidebar-overlay {
+  /* 移动端显示遮罩层 */
+  .sidebar:not(.collapsed) ~ .sidebar-overlay {
     opacity: 1;
     pointer-events: auto;
+  }
+
+  /* 覆盖子页面 CSS 中 body.sidebar-open main 的 margin-left */
+  body.sidebar-open main {
+    margin-left: 0 !important;
+  }
+
+  /* 工具链接触摸目标至少 44px 高 */
+  .sidebar-item {
+    min-height: 44px;
+    padding: 12px 16px;
+  }
+
+  /* 移动端隐藏桌面端展开按钮，改用汉堡菜单 */
+  .sidebar-expand-btn {
+    display: none !important;
+  }
+
+  /* 移动端汉堡菜单按钮 */
+  .sidebar-mobile-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    width: 44px;
+    height: 44px;
+    background: var(--sidebar-bg);
+    border: 1px solid var(--sidebar-border);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px var(--sidebar-shadow);
+    cursor: pointer;
+    z-index: 998;
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .sidebar-mobile-toggle i {
+    color: var(--sidebar-primary);
+    font-size: 1.1rem;
+  }
+
+  .sidebar-mobile-toggle:hover {
+    background: var(--sidebar-hover);
+    box-shadow: 0 4px 12px var(--sidebar-shadow);
+  }
+
+  /* 移动端侧边栏打开时隐藏汉堡按钮（侧边栏本身可关闭） */
+  body.sidebar-mobile-open .sidebar-mobile-toggle {
+    display: none;
   }
 }
 

@@ -7,6 +7,7 @@
 
   const STORAGE_KEY = 'sidebar-collapsed';
   const CONFIG_PATH = '../config/tools.json';
+  const MOBILE_BREAKPOINT = 768;
 
   // 内联备用配置（当 fetch 失败时使用）
   const FALLBACK_CONFIG = {
@@ -46,6 +47,11 @@
     ]
   };
 
+  // 判断当前是否为移动端
+  function isMobile() {
+    return window.innerWidth <= MOBILE_BREAKPOINT;
+  }
+
   // 获取当前页面文件名
   function getCurrentPage() {
     const path = window.location.pathname;
@@ -77,8 +83,9 @@
 
   // 生成侧边栏 HTML
   function generateSidebarHTML(config, currentPage) {
-    const isCollapsed = getSidebarState();
-    
+    // 移动端始终从收起状态开始
+    const isCollapsed = isMobile() ? true : getSidebarState();
+
     let categoriesHTML = '';
     config.categories.forEach(category => {
       categoriesHTML += `<div class="sidebar-category">${category.name}</div>`;
@@ -94,6 +101,9 @@
     });
 
     return `
+      <button class="sidebar-mobile-toggle" id="sidebar-mobile-toggle" aria-label="打开菜单">
+        <i class="fas fa-bars"></i>
+      </button>
       <aside class="sidebar ${isCollapsed ? 'collapsed' : ''}" id="sidebar">
         <div class="sidebar-header">
           <img src="../tools.png" alt="Logo">
@@ -131,8 +141,35 @@
     const expandBtn = document.getElementById('sidebar-expand-btn');
     const overlay = document.getElementById('sidebar-overlay');
     const themeToggle = document.getElementById('sidebar-theme-toggle');
+    const mobileToggle = document.getElementById('sidebar-mobile-toggle');
 
     if (!sidebar) return;
+
+    // 收起侧边栏（同时处理移动端 body 滚动锁定）
+    function collapseSidebar() {
+      sidebar.classList.add('collapsed');
+      if (isMobile()) {
+        document.body.classList.remove('sidebar-mobile-open');
+        document.body.style.overflow = '';
+      } else {
+        setSidebarState(true);
+      }
+      updateBodyClass();
+      updateCollapseBtn(true);
+    }
+
+    // 展开侧边栏（同时处理移动端 body 滚动锁定）
+    function expandSidebar() {
+      sidebar.classList.remove('collapsed');
+      if (isMobile()) {
+        document.body.classList.add('sidebar-mobile-open');
+        document.body.style.overflow = 'hidden';
+      } else {
+        setSidebarState(false);
+      }
+      updateBodyClass();
+      updateCollapseBtn(false);
+    }
 
     // 更新 body class
     function updateBodyClass() {
@@ -151,31 +188,44 @@
     // 收起按钮
     if (collapseBtn) {
       collapseBtn.addEventListener('click', () => {
-        sidebar.classList.add('collapsed');
-        setSidebarState(true);
-        updateBodyClass();
-        updateCollapseBtn(true);
+        collapseSidebar();
       });
     }
 
-    // 展开按钮
+    // 展开按钮（桌面端用）
     if (expandBtn) {
       expandBtn.addEventListener('click', () => {
-        sidebar.classList.remove('collapsed');
-        setSidebarState(false);
-        updateBodyClass();
-        updateCollapseBtn(false);
+        expandSidebar();
+      });
+    }
+
+    // 移动端汉堡菜单按钮
+    if (mobileToggle) {
+      mobileToggle.addEventListener('click', () => {
+        if (sidebar.classList.contains('collapsed')) {
+          expandSidebar();
+        } else {
+          collapseSidebar();
+        }
       });
     }
 
     // 遮罩层点击关闭（移动端）
     if (overlay) {
       overlay.addEventListener('click', () => {
-        sidebar.classList.add('collapsed');
-        setSidebarState(true);
-        updateBodyClass();
+        collapseSidebar();
       });
     }
+
+    // 点击侧边栏链接后，移动端自动收起
+    const sidebarItems = sidebar.querySelectorAll('.sidebar-item');
+    sidebarItems.forEach(item => {
+      item.addEventListener('click', () => {
+        if (isMobile()) {
+          collapseSidebar();
+        }
+      });
+    });
 
     // 更新收起按钮文字
     function updateCollapseBtn(collapsed) {
@@ -191,6 +241,35 @@
         }
       }
     }
+
+    // 监听窗口大小变化，处理桌面/移动端切换
+    let lastWasMobile = isMobile();
+    window.addEventListener('resize', () => {
+      const nowMobile = isMobile();
+      if (nowMobile === lastWasMobile) return;
+      lastWasMobile = nowMobile;
+
+      if (nowMobile) {
+        // 从桌面切换到移动端：强制收起侧边栏，恢复 body 滚动
+        sidebar.classList.add('collapsed');
+        document.body.classList.remove('sidebar-mobile-open');
+        document.body.style.overflow = '';
+        updateBodyClass();
+        updateCollapseBtn(true);
+      } else {
+        // 从移动端切换到桌面：恢复上次的桌面端状态，移除移动端类
+        document.body.classList.remove('sidebar-mobile-open');
+        document.body.style.overflow = '';
+        const wasCollapsed = getSidebarState();
+        if (wasCollapsed) {
+          sidebar.classList.add('collapsed');
+        } else {
+          sidebar.classList.remove('collapsed');
+        }
+        updateBodyClass();
+        updateCollapseBtn(sidebar.classList.contains('collapsed'));
+      }
+    });
 
     // 主题切换
     if (themeToggle) {

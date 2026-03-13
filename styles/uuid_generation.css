@@ -111,3 +111,9 @@ body.dark-mode #jie_guo_nei_rong_copy_btn {
 body.sidebar-open main{
     margin-left: 40px;
 }
+
+@media (max-width: 768px) {
+    body.sidebar-open main {
+        margin-left: 0 !important;
+    }
+}

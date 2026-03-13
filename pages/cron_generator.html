@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="免费在线 Cron 表达式生成器，支持可视化构建、反向解析、中文描述和未来执行时间预览。纯前端实现，无需上传数据。">
+    <meta name="keywords" content="Cron表达式,Quartz Cron,定时任务,表达式生成器,在线工具,执行时间预览,反向解析">
+    <meta name="author" content="蔚蓝工具导航站">
+    <meta name="robots" content="index, follow">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../assets/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon/favicon-16x16.png">
+
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="Cron 表达式生成器 - 蔚蓝工具导航站">
+    <meta property="og:description" content="可视化生成与解析 Quartz Cron 表达式，支持中文描述和未来执行时间预览。">
+    <meta property="og:image" content="../tools.png">
+    <meta property="og:url" content="https://your-domain.com/pages/cron_generator.html">
+    <meta property="og:type" content="website">
+
+    <!-- Additional SEO Tags -->
+    <meta name="application-name" content="蔚蓝工具导航站">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="canonical" href="https://your-domain.com/pages/cron_generator.html">
+
+    <title>Cron 表达式生成器 - 蔚蓝工具导航站</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="../styles/common.css">
+    <link rel="stylesheet" href="../styles/sidebar.css">
+    <link rel="stylesheet" href="../styles/cron_generator.css">
+
+    <!-- Umami 统计脚本延迟加载器 -->
+    <script src="../scripts/umami-loader.js"></script>
+</head>
+
+<body>
+    <!-- 侧边栏由 sidebar.js 动态加载 -->
+
+    <main>
+        <div class="tool-header">
+            <h1>⏰ Cron 表达式生成器</h1>
+            <p>可视化构建 Quartz 6 字段 Cron，支持反向解析、中文描述与未来执行时间预览</p>
+        </div>
+
+        <div class="section templates-section">
+            <h2><i class="fas fa-bolt"></i> 常用模板</h2>
+            <div id="template-chips" class="template-chips"></div>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="section cron-builder-section">
+                <h2><i class="fas fa-sliders-h"></i> 可视化生成器</h2>
+                <div id="cron-builder" class="cron-builder"></div>
+            </div>
+
+            <div class="section expression-display">
+                <h2><i class="fas fa-code"></i> 生成结果</h2>
+                <div class="expression-box-wrap">
+                    <div id="cron-expression" class="expression-box">0 0 0 * * ?</div>
+                    <button id="copy-expression-btn" class="primary-btn" type="button">
+                        <i class="fas fa-copy"></i>
+                        复制
+                    </button>
+                </div>
+                <p id="cron-description" class="description-text">每天 00:00:00 执行</p>
+            </div>
+        </div>
+
+        <div class="section reverse-parse-section">
+            <h2><i class="fas fa-arrow-right-arrow-left"></i> 反向解析</h2>
+            <div class="reverse-controls">
+                <input id="reverse-input" type="text" placeholder="输入6字段Cron表达式，例如：0 */5 * * * ?">
+                <button id="parse-btn" class="secondary-btn" type="button">解析表达式</button>
+            </div>
+            <p id="reverse-description" class="description-text">输入表达式后将显示中文描述</p>
+        </div>
+
+        <div class="section preview-section">
+            <h2><i class="fas fa-calendar-alt"></i> 未来执行时间预览</h2>
+            <div class="preview-controls">
+                <label for="preview-count">预览次数</label>
+                <select id="preview-count">
+                    <option value="5">5 次</option>
+                    <option value="10" selected>10 次</option>
+                    <option value="20">20 次</option>
+                </select>
+            </div>
+            <ul id="preview-list" class="preview-list"></ul>
+        </div>
+
+        <div class="section info-section">
+            <h2><i class="fas fa-circle-info"></i> Cron 语法说明（Quartz 6字段）</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <h4>*（任意值）</h4>
+                    <p>匹配该字段允许范围内的任意值，例如分钟字段 <code>*</code> 表示每分钟。</p>
+                </div>
+                <div class="info-item">
+                    <h4>?（不指定）</h4>
+                    <p>仅用于“日”和“周”字段，表示不对该字段做限制，通常用于两者互斥。</p>
+                </div>
+                <div class="info-item">
+                    <h4>- / , / /</h4>
+                    <p><code>1-5</code> 范围，<code>1,3,5</code> 列表，<code>*/5</code> 步长（每隔5个单位）。</p>
+                </div>
+                <div class="info-item">
+                    <h4>日字段扩展：L / W</h4>
+                    <p><code>L</code> 表示月末最后一天；<code>15W</code> 表示离每月15号最近的工作日。</p>
+                </div>
+                <div class="info-item">
+                    <h4>周字段扩展：L / #</h4>
+                    <p><code>2L</code> 表示当月最后一个周一；<code>2#3</code> 表示当月第3个周一。</p>
+                </div>
+                <div class="info-item">
+                    <h4>周字段数字映射</h4>
+                    <p>1=周日, 2=周一, 3=周二, 4=周三, 5=周四, 6=周五, 7=周六。</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../scripts/sidebar.js"></script>
+    <script src="../scripts/index.js"></script>
+    <script src="../scripts/cron_generator.js"></script>
+</body>
+
+</html>

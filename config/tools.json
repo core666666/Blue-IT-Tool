@@ -44,6 +44,16 @@
           "name": "HTML 预览",
           "path": "html_preview.html",
           "icon": "fa-file-code"
+        },
+        {
+          "name": "代码格式化",
+          "path": "code_formatter.html",
+          "icon": "fa-magic"
+        },
+        {
+          "name": "Cron 生成器",
+          "path": "cron_generator.html",
+          "icon": "fa-calendar-check"
         }
       ]
     },

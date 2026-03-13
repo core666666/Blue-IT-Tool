@@ -1,0 +1,293 @@
+/* 代码格式化工具样式 */
+main {
+    flex: 1;
+    width: 90%;
+    max-width: 1400px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+.tool-header {
+    text-align: center;
+    margin: -40px 0 30px 0;
+}
+
+.tool-header h1 {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.tool-header p {
+    color: var(--text-secondary-light);
+    font-size: 1rem;
+}
+
+body.dark-mode .tool-header p {
+    color: var(--text-secondary-dark);
+}
+
+.content-wrapper {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.section {
+    flex: 1;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(74, 108, 247, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.section:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+.section h2 {
+    color: var(--primary-color);
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.option-group {
+    margin-bottom: 20px;
+}
+
+.option-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-light);
+    margin-bottom: 8px;
+}
+
+body.dark-mode .option-group label {
+    color: var(--text-dark);
+}
+
+textarea {
+    width: 100%;
+    min-height: 380px;
+    padding: 15px;
+    font-size: 14px;
+    line-height: 1.6;
+    font-family: 'Consolas', 'Monaco', monospace;
+    border: 2px solid #edf2f7;
+    border-radius: 12px;
+    resize: vertical;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+textarea:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.15);
+    outline: none;
+}
+
+select {
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 14px;
+    border: 2px solid #edf2f7;
+    border-radius: 10px;
+    background: #fff;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.15);
+    outline: none;
+}
+
+.options-row {
+    display: flex;
+    gap: 20px;
+}
+
+.options-row .option-group {
+    flex: 1;
+}
+
+.button-group {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+button {
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+    min-width: 100px;
+}
+
+.primary-btn {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white;
+    box-shadow: 0 4px 15px rgba(74, 108, 247, 0.3);
+}
+
+.primary-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(74, 108, 247, 0.4);
+}
+
+.secondary-btn {
+    background: #f0f4ff;
+    color: var(--primary-color);
+    border: 1px solid rgba(74, 108, 247, 0.2);
+}
+
+.secondary-btn:hover {
+    background: #e0e8ff;
+    transform: translateY(-2px);
+}
+
+#output-pre {
+    margin: 0;
+    padding: 15px;
+    border: 2px solid #edf2f7;
+    border-radius: 12px;
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: 470px;
+    min-height: 380px;
+    box-sizing: border-box;
+}
+
+#output-code {
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    display: block;
+    white-space: pre;
+}
+
+.info-section {
+    margin-top: 30px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.info-item {
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: 12px;
+    border-left: 4px solid var(--primary-color);
+}
+
+.info-item h4 {
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.info-item p {
+    color: var(--text-secondary-light);
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Prism tomorrow 浅色模式适配 */
+body:not(.dark-mode) #output-pre[class*="language-"] {
+    background: #f8fafc !important;
+    color: #2c3e50;
+}
+
+body:not(.dark-mode) #output-pre .token.comment,
+body:not(.dark-mode) #output-pre .token.prolog,
+body:not(.dark-mode) #output-pre .token.doctype,
+body:not(.dark-mode) #output-pre .token.cdata {
+    color: #708090;
+}
+
+/* 深色模式 */
+body.dark-mode .section {
+    background: var(--card-dark);
+    border-color: rgba(74, 108, 247, 0.2);
+}
+
+body.dark-mode textarea,
+body.dark-mode select {
+    background: #2a2f3d;
+    border-color: #3a4050;
+    color: var(--text-dark);
+}
+
+body.dark-mode .secondary-btn {
+    background: #2a2f3d;
+    color: var(--primary-light);
+    border-color: rgba(74, 108, 247, 0.3);
+}
+
+body.dark-mode .secondary-btn:hover {
+    background: #353b4d;
+}
+
+body.dark-mode .info-item {
+    background: #2a2f3d;
+}
+
+body.dark-mode .info-item p {
+    color: var(--text-secondary-dark);
+}
+
+body.dark-mode #output-pre {
+    border-color: #3a4050;
+}
+
+/* 响应式 */
+@media (max-width: 900px) {
+    .content-wrapper {
+        flex-direction: column;
+    }
+
+    .options-row {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    main {
+        width: 95%;
+        padding: 0 10px;
+    }
+
+    textarea,
+    #output-pre {
+        min-height: 300px;
+    }
+}
+
+@media (max-width: 600px) {
+    .tool-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .button-group {
+        flex-direction: column;
+    }
+
+    button {
+        width: 100%;
+    }
+}

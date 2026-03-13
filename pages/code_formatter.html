@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="免费在线代码格式化工具，支持 JavaScript、CSS、HTML、JSON、SQL、XML、TypeScript 的格式化与压缩，内置语法高亮与一键复制功能。">
+    <meta name="keywords" content="代码格式化,代码压缩,JavaScript格式化,CSS格式化,HTML格式化,JSON格式化,SQL格式化,TypeScript格式化,在线开发工具">
+    <meta name="author" content="蔚蓝工具导航站">
+    <meta name="robots" content="index, follow">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../assets/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon/favicon-16x16.png">
+
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="代码格式化工具 - 蔚蓝工具导航站">
+    <meta property="og:description" content="支持多语言代码美化、压缩与语法高亮，纯前端本地处理，安全高效。">
+    <meta property="og:image" content="../tools.png">
+    <meta property="og:url" content="https://your-domain.com/pages/code_formatter.html">
+    <meta property="og:type" content="website">
+
+    <!-- Additional SEO Tags -->
+    <meta name="application-name" content="蔚蓝工具导航站">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="canonical" href="https://your-domain.com/pages/code_formatter.html">
+
+    <title>代码格式化工具 - 蔚蓝工具导航站</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="../styles/common.css">
+    <link rel="stylesheet" href="../styles/sidebar.css">
+    <link rel="stylesheet" href="../styles/code_formatter.css">
+
+    <!-- Prism Theme -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+
+    <!-- Umami 统计脚本延迟加载器 -->
+    <script src="../scripts/umami-loader.js"></script>
+</head>
+
+<body>
+    <!-- 侧边栏由 sidebar.js 动态加载 -->
+
+    <!-- 主内容 -->
+    <main>
+        <div class="tool-header">
+            <h1><i class="fas fa-magic"></i> 代码格式化工具</h1>
+            <p>支持主流代码语言的一键格式化、压缩与语法高亮显示</p>
+        </div>
+
+        <div class="content-wrapper">
+            <!-- 左侧输入区域 -->
+            <div class="section input-section">
+                <h2>输入</h2>
+
+                <div class="options-row">
+                    <div class="option-group">
+                        <label for="language-select">语言类型</label>
+                        <select id="language-select">
+                            <option value="javascript" selected>JavaScript</option>
+                            <option value="css">CSS</option>
+                            <option value="html">HTML</option>
+                            <option value="json">JSON</option>
+                            <option value="sql">SQL</option>
+                            <option value="xml">XML</option>
+                            <option value="typescript">TypeScript</option>
+                        </select>
+                    </div>
+
+                    <div class="option-group">
+                        <label for="indent-select">缩进方式</label>
+                        <select id="indent-select">
+                            <option value="2" selected>2 空格</option>
+                            <option value="4">4 空格</option>
+                            <option value="8">8 空格</option>
+                            <option value="tab">Tab</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="option-group">
+                    <label for="input-code">代码内容</label>
+                    <textarea id="input-code" placeholder="在此粘贴或输入代码..."></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button id="format-btn" class="primary-btn">格式化</button>
+                    <button id="minify-btn" class="secondary-btn">压缩</button>
+                    <button id="clear-btn" class="secondary-btn">清空</button>
+                </div>
+            </div>
+
+            <!-- 右侧输出区域 -->
+            <div class="section output-section">
+                <h2>输出</h2>
+
+                <div class="option-group">
+                    <label for="output-code">格式化结果</label>
+                    <pre id="output-pre" class="language-javascript"><code id="output-code" class="language-javascript"></code></pre>
+                </div>
+
+                <div class="button-group">
+                    <button id="copy-output-btn" class="primary-btn">复制结果</button>
+                    <button id="copy-input-btn" class="secondary-btn">复制到输入框</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 功能说明 -->
+        <div class="section info-section">
+            <h2>📖 功能说明</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <h4>多语言支持</h4>
+                    <p>支持 JavaScript、CSS、HTML、JSON、SQL、XML、TypeScript 的格式化与压缩处理。</p>
+                </div>
+                <div class="info-item">
+                    <h4>语法高亮</h4>
+                    <p>输出区域内置 Prism.js 语法高亮，便于快速阅读和检查代码结构。</p>
+                </div>
+                <div class="info-item">
+                    <h4>本地处理</h4>
+                    <p>格式化和压缩均在浏览器本地完成，不上传代码内容，保障隐私安全。</p>
+                </div>
+                <div class="info-item">
+                    <h4>便捷复制</h4>
+                    <p>支持一键复制输出结果，或将处理结果直接回填到输入区继续编辑。</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 代码处理依赖库 -->
+    <script src="https://cdn.jsdelivr.net/npm/js-beautify@1.14.0/js/lib/beautify.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-beautify@1.14.0/js/lib/beautify-css.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-beautify@1.14.0/js/lib/beautify-html.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sql-formatter@4.0.2/dist/sql-formatter.min.js"></script>
+
+    <!-- Prism.js -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-css.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-sql.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-markup.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-typescript.min.js"></script>
+
+    <script src="../scripts/sidebar.js"></script>
+    <script src="../scripts/index.js"></script>
+    <script src="../scripts/code_formatter.js"></script>
+</body>
+
+</html>

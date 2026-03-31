@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="动物配对游戏 - 翻牌记忆游戏，找到两张相同的小动物，锻炼3-8岁小朋友的记忆力和专注力。支持简单、普通、困难三种难度，趣味满满！">
+  <meta name="keywords" content="动物配对,翻牌游戏,记忆游戏,儿童游戏,益智游戏,找相同,动物游戏,宝宝游戏">
+  <meta name="author" content="蔚蓝工具导航站">
+  <meta name="robots" content="index, follow">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="../assets/favicon/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon/favicon-16x16.png">
+
+  <!-- Open Graph / Social Media Meta Tags -->
+  <meta property="og:title" content="动物配对游戏 - 蔚蓝工具导航站">
+  <meta property="og:description" content="翻牌记忆游戏，找到两张相同的小动物，适合3-8岁小朋友。锻炼记忆力和专注力！">
+  <meta property="og:image" content="../tools.png">
+  <meta property="og:url" content="https://your-domain.com/pages/animal_matching.html">
+  <meta property="og:type" content="website">
+
+  <!-- Additional SEO Tags -->
+  <meta name="application-name" content="蔚蓝工具导航站">
+  <meta name="theme-color" content="#ffd6e7">
+
+  <title>动物配对游戏 - 蔚蓝工具导航站</title>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="../styles/common.css">
+  <link rel="stylesheet" href="../styles/sidebar.css">
+  <link rel="stylesheet" href="../styles/animal_matching.css">
+
+  <!-- Umami 统计脚本延迟加载器 -->
+  <script src="../scripts/umami-loader.js"></script>
+</head>
+
+<body>
+  <!-- 侧边栏由 sidebar.js 动态注入 -->
+
+  <main class="main-content">
+    <div class="am-page">
+
+      <!-- 页面标题 -->
+      <header class="am-header">
+        <h1>🐾 动物配对</h1>
+        <p>翻开卡片，找到两只一样的小动物！</p>
+      </header>
+
+      <!-- 难度选择 -->
+      <div class="am-difficulty">
+        <button class="am-diff-btn active" data-mode="easy">🌱 简单</button>
+        <button class="am-diff-btn" data-mode="normal">⭐ 普通</button>
+        <button class="am-diff-btn" data-mode="hard">🔥 困难</button>
+      </div>
+
+      <!-- 游戏状态栏 -->
+      <div class="am-stats">
+        <div class="am-stat" title="游戏用时">
+          <span class="stat-icon">⏱️</span>
+          <span class="stat-value" id="am-timer">00:00</span>
+        </div>
+        <div class="am-stat" title="翻牌次数">
+          <span class="stat-icon">🃏</span>
+          <span class="stat-value"><span id="am-attempts">0</span> 次</span>
+        </div>
+      </div>
+
+      <!-- 游戏区域 -->
+      <div class="am-board-wrap">
+        <!-- 开始引导 -->
+        <div class="am-start-overlay" id="am-start-overlay">
+          <span class="start-emoji">🐾</span>
+          <p class="am-start-hint">选好难度，点击开始游戏吧！</p>
+          <button class="am-start-btn" id="am-start-btn">🎮 开始游戏</button>
+        </div>
+        <!-- 卡牌网格（由 JS 生成） -->
+        <div id="am-board" class="am-board"></div>
+      </div>
+
+      <!-- 最佳记录 -->
+      <div class="am-best-records">
+        <h3><i class="fas fa-trophy"></i> 最佳记录</h3>
+        <div class="am-record-row">
+          <span>🌱 简单</span>
+          <span class="am-record-value" id="am-record-easy">暂无记录</span>
+        </div>
+        <div class="am-record-row">
+          <span>⭐ 普通</span>
+          <span class="am-record-value" id="am-record-normal">暂无记录</span>
+        </div>
+        <div class="am-record-row">
+          <span>🔥 困难</span>
+          <span class="am-record-value" id="am-record-hard">暂无记录</span>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- 胜利弹窗 -->
+  <div class="am-win-overlay" id="am-win-overlay" role="dialog" aria-modal="true" aria-label="游戏完成">
+    <div class="am-win-modal">
+      <span class="am-win-emoji">🏆</span>
+      <h2 class="am-win-title">太棒了！</h2>
+      <p class="am-win-subtitle">你找到了所有的小动物！</p>
+      <div class="am-win-stars" id="am-win-stars">⭐⭐⭐</div>
+      <div class="am-new-record" id="am-new-record">🥇 新记录！</div>
+      <div class="am-win-stats">
+        <div class="am-win-stat">
+          <span class="w-icon">⏱️</span>
+          <span class="w-value" id="am-win-time">--</span>
+          <span class="w-label">用时</span>
+        </div>
+        <div class="am-win-stat">
+          <span class="w-icon">🃏</span>
+          <span class="w-value" id="am-win-attempts">--</span>
+          <span class="w-label">翻牌次数</span>
+        </div>
+      </div>
+      <div class="am-win-buttons">
+        <button class="am-win-btn primary" id="am-play-again">🔄 再玩一次</button>
+        <button class="am-win-btn secondary" id="am-change-mode">🎛️ 换难度</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../scripts/sidebar.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
+  <script src="../scripts/animal_matching.js"></script>
+</body>
+</html>

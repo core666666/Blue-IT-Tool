@@ -28,3 +28,5 @@ npm-debug.log*
 *.swp
 *.swo
 *~
+.contral/settings.json
+.theia/settings.json

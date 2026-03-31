@@ -603,6 +603,24 @@ body.dark-mode .tool-card .category-tag {
     background: linear-gradient(90deg, #FF9F43, #FFB12B);
 }
 
+/* 动物配对游戏 - 粉色主题 */
+.tool-card[style*="--card-index: 17"] i {
+    color: #ff6b9d;
+}
+
+.tool-card[style*="--card-index: 17"] .icon-bg {
+    background: linear-gradient(135deg, rgba(255, 107, 157, 0.12) 0%, rgba(255, 154, 158, 0.12) 100%);
+}
+
+.tool-card[style*="--card-index: 17"] .category-tag {
+    background: rgba(255, 107, 157, 0.1);
+    color: #ff6b9d;
+}
+
+.tool-card[style*="--card-index: 17"]::before {
+    background: linear-gradient(90deg, #ff6b9d, #ff9a9e);
+}
+
 /* 生态瓶工程师（增强版）- 青色主题 */
 .tool-card[style*="--card-index: 16"] i {
     color: #26D0CE;

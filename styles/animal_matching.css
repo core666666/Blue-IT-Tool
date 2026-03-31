@@ -1,0 +1,528 @@
+/* ============================================================
+   动物配对游戏 - Animal Matching Game Styles
+   ============================================================ */
+
+/* ---- Page Container -------------------------------------- */
+.am-page {
+  min-height: calc(100vh - 40px);
+  background: linear-gradient(135deg, #ffd6e7 0%, #c2e9fb 50%, #d4f8c4 100%);
+  padding: 20px 16px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ---- Header ---------------------------------------------- */
+.am-header {
+  text-align: center;
+  margin-bottom: 20px;
+  padding-top: 16px;
+}
+
+.am-header h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
+  margin: 0 0 8px;
+  font-family: 'Comic Sans MS', '楷体', cursive;
+}
+
+.am-header p {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.95);
+  margin: 0;
+  font-family: 'Comic Sans MS', '楷体', cursive;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* ---- Difficulty Selection --------------------------------- */
+.am-difficulty {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.am-diff-btn {
+  padding: 10px 24px;
+  border: 3px solid rgba(255, 255, 255, 0.6);
+  border-radius: 30px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-family: 'Comic Sans MS', '楷体', cursive;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  background: rgba(255, 255, 255, 0.65);
+  color: #666;
+}
+
+.am-diff-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+  border-color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.am-diff-btn.active {
+  background: #fff;
+  border-color: transparent;
+  transform: translateY(-2px);
+}
+
+.am-diff-btn[data-mode="easy"].active {
+  color: #2ed573;
+  box-shadow: 0 6px 20px rgba(46, 213, 115, 0.4);
+}
+
+.am-diff-btn[data-mode="normal"].active {
+  color: #ffa502;
+  box-shadow: 0 6px 20px rgba(255, 165, 2, 0.4);
+}
+
+.am-diff-btn[data-mode="hard"].active {
+  color: #ff4757;
+  box-shadow: 0 6px 20px rgba(255, 71, 87, 0.4);
+}
+
+/* ---- Stats Bar ------------------------------------------- */
+.am-stats {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.am-stat {
+  background: rgba(255, 255, 255, 0.88);
+  border-radius: 24px;
+  padding: 9px 22px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Comic Sans MS', '楷体', cursive;
+  font-size: 15px;
+  font-weight: 600;
+  color: #555;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+  min-width: 110px;
+  justify-content: center;
+}
+
+.am-stat .stat-icon {
+  font-size: 20px;
+}
+
+.am-stat .stat-value {
+  font-size: 17px;
+  font-weight: 800;
+  color: #333;
+}
+
+/* ---- Game Board Wrapper ---------------------------------- */
+.am-board-wrap {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 28px;
+  padding: 22px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  margin-bottom: 20px;
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow-x: auto;
+}
+
+/* ---- Start Overlay --------------------------------------- */
+.am-start-overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 20px;
+}
+
+.am-start-overlay .start-emoji {
+  font-size: 80px;
+  animation: am-bounce 1.6s ease-in-out infinite;
+  display: block;
+}
+
+@keyframes am-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-16px); }
+}
+
+.am-start-hint {
+  font-family: 'Comic Sans MS', '楷体', cursive;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 16px;
+  margin: 0;
+  text-align: center;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.am-start-btn {
+  background: linear-gradient(135deg, #ff6b9d, #ff9a9e);
+  color: #fff;
+  border: none;
+  border-radius: 32px;
+  padding: 14px 44px;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: 'Comic Sans MS', '楷体', cursive;
+  box-shadow: 0 6px 22px rgba(255, 107, 157, 0.45);
+  transition: all 0.25s ease;
+  letter-spacing: 0.5px;
+}
+
+.am-start-btn:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 12px 30px rgba(255, 107, 157, 0.55);
+}
+
+.am-start-btn:active {
+  transform: translateY(-1px) scale(1.02);
+}
+
+/* ---- Game Board (card grid) ------------------------------ */
+.am-board {
+  display: grid;
+  gap: 10px;
+  justify-content: center;
+  align-content: start;
+}
+
+/* ---- Cards ----------------------------------------------- */
+.am-card {
+  width: var(--am-card-size, 100px);
+  height: var(--am-card-size, 100px);
+  cursor: pointer;
+  perspective: 700px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.am-card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 18px;
+}
+
+.am-card.flipped .am-card-inner,
+.am-card.matched .am-card-inner {
+  transform: rotateY(180deg);
+}
+
+.am-card-front,
+.am-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+/* Card front = face-down view */
+.am-card-front {
+  background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  font-size: 38px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Card back = face-up view with emoji */
+.am-card-back {
+  background: #fff;
+  transform: rotateY(180deg);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  font-size: var(--am-emoji-size, 52px);
+}
+
+/* Matched card back */
+.am-card.matched .am-card-back {
+  background: linear-gradient(135deg, #d4f8e8, #a8f0c8);
+  box-shadow: 0 6px 18px rgba(46, 213, 115, 0.3);
+}
+
+/* Hover on unflipped card */
+.am-card:not(.matched):not(.flipped):hover .am-card-inner {
+  transform: scale(1.06) translateY(-3px);
+  transition: transform 0.2s ease;
+}
+
+/* Wrong match shake */
+@keyframes am-shake {
+  0%, 100% { transform: rotateY(180deg) translateX(0); }
+  20%       { transform: rotateY(180deg) translateX(-7px); }
+  40%       { transform: rotateY(180deg) translateX(7px); }
+  60%       { transform: rotateY(180deg) translateX(-5px); }
+  80%       { transform: rotateY(180deg) translateX(5px); }
+}
+
+.am-card.wrong .am-card-inner {
+  animation: am-shake 0.45s ease;
+}
+
+/* Matched bounce */
+@keyframes am-matched-bounce {
+  0%   { transform: rotateY(180deg) scale(1); }
+  40%  { transform: rotateY(180deg) scale(1.15); }
+  70%  { transform: rotateY(180deg) scale(0.95); }
+  100% { transform: rotateY(180deg) scale(1); }
+}
+
+.am-card.matched .am-card-inner {
+  animation: am-matched-bounce 0.45s ease forwards;
+}
+
+/* ---- Best Records ---------------------------------------- */
+.am-best-records {
+  background: rgba(255, 255, 255, 0.75);
+  border-radius: 22px;
+  padding: 18px 26px;
+  width: 100%;
+  max-width: 500px;
+  box-sizing: border-box;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.am-best-records h3 {
+  font-family: 'Comic Sans MS', '楷体', cursive;
+  color: #555;
+  margin: 0 0 14px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.am-best-records h3 i {
+  color: #ffa502;
+}
+
+.am-record-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+  font-family: 'Comic Sans MS', '楷体', cursive;
+  font-size: 14px;
+  color: #666;
+}
+
+.am-record-row:last-child {
+  border-bottom: none;
+}
+
+.am-record-value {
+  font-weight: 700;
+  color: #ff6b9d;
+}
+
+/* ---- Win Modal ------------------------------------------- */
+.am-win-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.am-win-overlay.show {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.am-win-modal {
+  background: #fff;
+  border-radius: 32px;
+  padding: 36px 40px;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.2);
+  transform: scale(0.75) translateY(20px);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  font-family: 'Comic Sans MS', '楷体', cursive;
+}
+
+.am-win-overlay.show .am-win-modal {
+  transform: scale(1) translateY(0);
+}
+
+.am-win-emoji {
+  font-size: 72px;
+  display: block;
+  margin-bottom: 6px;
+  animation: am-bounce 1.8s ease-in-out infinite;
+}
+
+.am-win-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: #ff6b9d;
+  margin: 0 0 4px;
+}
+
+.am-win-subtitle {
+  font-size: 14px;
+  color: #aaa;
+  margin: 0 0 18px;
+}
+
+.am-win-stars {
+  font-size: 38px;
+  margin-bottom: 14px;
+  letter-spacing: 4px;
+}
+
+.am-new-record {
+  background: linear-gradient(135deg, #ffd700, #ffb347);
+  color: #fff;
+  border-radius: 20px;
+  padding: 6px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  display: none;
+  margin-bottom: 16px;
+}
+
+.am-new-record.show {
+  display: inline-block;
+}
+
+.am-win-stats {
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+
+.am-win-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.am-win-stat .w-icon  { font-size: 26px; }
+.am-win-stat .w-value { font-size: 22px; font-weight: 800; color: #333; }
+.am-win-stat .w-label { font-size: 12px; color: #aaa; }
+
+.am-win-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.am-win-btn {
+  padding: 12px 26px;
+  border: none;
+  border-radius: 26px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Comic Sans MS', '楷体', cursive;
+  transition: all 0.22s ease;
+}
+
+.am-win-btn.primary {
+  background: linear-gradient(135deg, #ff6b9d, #ff9a9e);
+  color: #fff;
+  box-shadow: 0 5px 18px rgba(255, 107, 157, 0.42);
+}
+
+.am-win-btn.secondary {
+  background: #f2f2f2;
+  color: #777;
+}
+
+.am-win-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+}
+
+.am-win-btn.primary:hover {
+  box-shadow: 0 8px 24px rgba(255, 107, 157, 0.55);
+}
+
+/* ---- Responsive ------------------------------------------ */
+@media (max-width: 600px) {
+  .am-header h1 {
+    font-size: 1.7rem;
+  }
+
+  .am-board-wrap {
+    padding: 14px;
+    border-radius: 20px;
+  }
+
+  .am-board {
+    gap: 8px;
+  }
+
+  .am-best-records {
+    padding: 14px 18px;
+  }
+
+  .am-win-modal {
+    padding: 28px 22px;
+    border-radius: 24px;
+  }
+
+  .am-win-title {
+    font-size: 22px;
+  }
+
+  .am-win-emoji {
+    font-size: 56px;
+  }
+
+  .am-diff-btn {
+    padding: 8px 18px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 360px) {
+  .am-stat {
+    padding: 7px 14px;
+    min-width: 90px;
+    font-size: 13px;
+  }
+
+  .am-stat .stat-value {
+    font-size: 15px;
+  }
+}

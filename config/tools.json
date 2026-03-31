@@ -104,6 +104,11 @@
       "icon": "fa-gamepad",
       "tools": [
         {
+          "name": "动物配对",
+          "path": "animal_matching.html",
+          "icon": "fa-paw"
+        },
+        {
           "name": "数字华容道",
           "path": "number_slide_puzzle.html",
           "icon": "fa-puzzle-piece"

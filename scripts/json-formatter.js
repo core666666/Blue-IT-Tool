@@ -59,6 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const json = JSON.parse(jsonInput.value);
       jsonInput.value = JSON.stringify(json, null, 4);
       jsonEditor.set(json);
+      jsonEditor.expandAll();
       isCollapsed = false;
       collapseBtn.innerHTML = '<i class="fas fa-compress-arrows-alt"></i> 折叠';
     } catch (e) {
@@ -199,6 +200,31 @@ document.addEventListener("DOMContentLoaded", function () {
     document.removeEventListener("mousemove", resize);
     document.removeEventListener("mouseup", stopResize);
   }
+
+  // 左右滚动同步（jsoneditor 真实滚动容器是 .jsoneditor-tree）
+  let isSyncing = false;
+  function getTreeScroller() {
+    return jsonOutputContainer.querySelector('.jsoneditor-tree');
+  }
+
+  jsonInput.addEventListener("scroll", () => {
+    const treeScroller = getTreeScroller();
+    if (isSyncing || !treeScroller) return;
+    isSyncing = true;
+    const ratio = jsonInput.scrollTop / (jsonInput.scrollHeight - jsonInput.clientHeight || 1);
+    treeScroller.scrollTop = ratio * (treeScroller.scrollHeight - treeScroller.clientHeight);
+    isSyncing = false;
+  });
+
+  jsonOutputContainer.addEventListener("scroll", (e) => {
+    const treeScroller = getTreeScroller();
+    if (!treeScroller || e.target !== treeScroller) return;
+    if (isSyncing) return;
+    isSyncing = true;
+    const ratio = treeScroller.scrollTop / (treeScroller.scrollHeight - treeScroller.clientHeight || 1);
+    jsonInput.scrollTop = ratio * (jsonInput.scrollHeight - jsonInput.clientHeight);
+    isSyncing = false;
+  }, true);
 
   // 页面加载时自动进入最大化模式
   document.body.classList.add("maximized");

@@ -101,13 +101,29 @@ function updateHistoryDisplay() {
 
 // 复制密码到剪贴板
 function copyToClipboard() {
-    const text = document.getElementById('password-output').value;
-    navigator.clipboard.writeText(text).then(() => {
-        alert('已复制到剪贴板');
-    }).catch(err => {
-        console.error('复制失败:', err);
-        alert('复制失败');
-    });
+    const el = document.getElementById('password-output');
+    const text = el.value;
+    if (!text) return;
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => showCopied()).catch(() => fallbackCopy(el));
+    } else {
+        fallbackCopy(el);
+    }
+}
+
+function fallbackCopy(el) {
+    el.select();
+    el.setSelectionRange(0, 99999);
+    document.execCommand('copy');
+    showCopied();
+}
+
+function showCopied() {
+    const btn = document.getElementById('copy-btn');
+    const original = btn.textContent;
+    btn.textContent = '已复制 ✓';
+    btn.disabled = true;
+    setTimeout(() => { btn.textContent = original; btn.disabled = false; }, 2000);
 }
 
 // 清空输出

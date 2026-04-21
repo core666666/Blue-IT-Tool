@@ -36,8 +36,15 @@ document.addEventListener("DOMContentLoaded", function () {
     htmlOutput.srcdoc = code;
   }
 
+  // 字数统计（去除空格）
+  const charCount = document.getElementById("char-count");
+  function updateCharCount() {
+    const count = htmlInput.value.replace(/\s/g, "").length;
+    charCount.textContent = count > 0 ? `${count} 字` : "";
+  }
+
   // 自动运行
-  htmlInput.addEventListener("input", runHtml);
+  htmlInput.addEventListener("input", () => { runHtml(); updateCharCount(); });
 
   formatHtmlBtn.addEventListener("click", () => {
     const code = htmlInput.value;

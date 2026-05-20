@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="免费在线JSON比对工具，支持左右JSON对比、结构差异分析、路径级差异展示、格式化后比对与一键复制。纯前端实现，安全可靠。">
+    <meta name="keywords" content="JSON比对,JSON对比,JSON diff,JSON比较,在线工具,开发者工具,JSON校验">
+    <meta name="author" content="蔚蓝工具导航站">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../assets/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon/favicon-16x16.png">
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="JSON 比对工具 - 蔚蓝工具导航站">
+    <meta property="og:description" content="专业的在线JSON对比工具，支持结构差异分析、路径级输出和格式化比对。">
+    <meta property="og:image" content="../tools.png">
+    <meta property="og:url" content="https://your-domain.com/pages/json_compare.html">
+    <meta property="og:type" content="website">
+    
+    <!-- Additional SEO Tags -->
+    <meta name="application-name" content="蔚蓝工具导航站">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="canonical" href="https://your-domain.com/pages/json_compare.html">
+    
+    <title>JSON 比对工具 - 蔚蓝工具导航站</title>
+    
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles/common.css">
+    <link rel="stylesheet" href="../styles/sidebar.css">
+    <link rel="stylesheet" href="../styles/json_compare.css">
+    
+    <script>
+        (function () {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+            window.addEventListener('DOMContentLoaded', function () {
+                document.body.classList.toggle('dark-mode', theme === 'dark');
+            });
+        })();
+    </script>
+    
+    <!-- Umami 统计脚本延迟加载器 -->
+    <script src="../scripts/umami-loader.js"></script>
+</head>
+<body>
+    <main class="json-compare-page">
+        <section class="hero">
+            <div>
+                <h1>JSON 比对工具</h1>
+                <p>左右输入两段 JSON，自动分析结构差异、类型差异和字段增删改。</p>
+            </div>
+            <div class="hero-actions">
+                <button id="compare-btn" class="primary-btn"><i class="fas fa-search"></i> 开始比对</button>
+                <button id="format-btn"><i class="fas fa-align-left"></i> 格式化后比对</button>
+                <button id="swap-btn"><i class="fas fa-right-left"></i> 交换左右</button>
+                <button id="clear-btn"><i class="fas fa-trash"></i> 清空</button>
+            </div>
+        </section>
+
+        <section class="options-bar" aria-label="比对选项">
+            <label class="option-chip">
+                <input type="checkbox" id="sync-format" checked>
+                <span>同步格式化</span>
+            </label>
+            <label class="option-chip">
+                <input type="checkbox" id="ignore-empty" checked>
+                <span>忽略空白差异</span>
+            </label>
+            <label class="option-chip">
+                <input type="checkbox" id="show-equal" checked>
+                <span>显示相同节点</span>
+            </label>
+        </section>
+
+        <section class="compare-grid">
+            <article class="panel">
+                <div class="panel-header">
+                    <h2>左侧 JSON</h2>
+                    <div class="panel-actions">
+                        <button id="left-format-btn"><i class="fas fa-brush"></i> 格式化</button>
+                        <button id="left-copy-btn"><i class="fas fa-copy"></i> 复制</button>
+                    </div>
+                </div>
+                <textarea id="left-json" placeholder='{"name":"Blue-IT","version":1}'></textarea>
+                <div class="panel-footer">
+                    <span id="left-status">等待输入</span>
+                </div>
+            </article>
+
+            <article class="panel">
+                <div class="panel-header">
+                    <h2>右侧 JSON</h2>
+                    <div class="panel-actions">
+                        <button id="right-format-btn"><i class="fas fa-brush"></i> 格式化</button>
+                        <button id="right-copy-btn"><i class="fas fa-copy"></i> 复制</button>
+                    </div>
+                </div>
+                <textarea id="right-json" placeholder='{"name":"Blue-IT","version":2,"tags":["tool"]}'></textarea>
+                <div class="panel-footer">
+                    <span id="right-status">等待输入</span>
+                </div>
+            </article>
+        </section>
+
+        <section class="results-panel">
+            <div class="results-header">
+                <h2>比对结果</h2>
+                <div class="summary" id="summary">
+                    <span class="summary-item same">相同 0</span>
+                    <span class="summary-item changed">修改 0</span>
+                    <span class="summary-item added">新增 0</span>
+                    <span class="summary-item removed">删除 0</span>
+                </div>
+            </div>
+
+            <div id="result-banner" class="result-banner neutral">
+                请输入两侧 JSON 后点击“开始比对”
+            </div>
+
+            <div class="result-list" id="result-list"></div>
+        </section>
+    </main>
+
+    <script src="../scripts/sidebar.js"></script>
+    <script src="../scripts/json_compare.js"></script>
+</body>
+</html>

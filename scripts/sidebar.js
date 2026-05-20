@@ -17,6 +17,7 @@
         "name": "开发工具",
         "tools": [
           { "name": "JSON 格式化", "path": "json_formatter.html", "icon": "fa-code" },
+          { "name": "JSON 比对", "path": "json_compare.html", "icon": "fa-code-compare" },
           { "name": "HTML 预览", "path": "html_preview.html", "icon": "fa-file-code" },
           { "name": "代码格式化", "path": "code_formatter.html", "icon": "fa-magic" },
           { "name": "加密解密", "path": "crypto_tool.html", "icon": "fa-lock" },
@@ -72,6 +73,10 @@
 
   // 加载工具配置
   async function loadToolsConfig() {
+    if (window.location.protocol === 'file:') {
+      return FALLBACK_CONFIG;
+    }
+
     try {
       const response = await fetch(CONFIG_PATH);
       if (!response.ok) throw new Error('Failed to load config');

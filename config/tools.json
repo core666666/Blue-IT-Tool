@@ -11,6 +11,11 @@
           "icon": "fa-brackets-curly"
         },
         {
+          "name": "JSON 比对",
+          "path": "json_compare.html",
+          "icon": "fa-code-compare"
+        },
+        {
           "name": "正则测试器",
           "path": "regex_tester.html",
           "icon": "fa-asterisk"

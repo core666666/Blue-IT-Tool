@@ -40,6 +40,8 @@
       {
         "name": "游戏娱乐",
         "tools": [
+          { "name": "动物配对", "path": "animal_matching.html", "icon": "fa-paw" },
+          { "name": "记忆点亮", "path": "memory_light.html", "icon": "fa-lightbulb" },
           { "name": "数字华容道", "path": "number_slide_puzzle.html", "icon": "fa-puzzle-piece" },
           { "name": "无尽防御", "path": "InfiniteDefense.html", "icon": "fa-shield-alt" },
           { "name": "无尽射击", "path": "InfiniteShooting.html", "icon": "fa-crosshairs" },

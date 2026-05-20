@@ -114,6 +114,11 @@
           "icon": "fa-paw"
         },
         {
+          "name": "记忆点亮",
+          "path": "memory_light.html",
+          "icon": "fa-lightbulb"
+        },
+        {
           "name": "数字华容道",
           "path": "number_slide_puzzle.html",
           "icon": "fa-puzzle-piece"

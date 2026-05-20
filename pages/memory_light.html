@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="记忆点亮游戏 - 观察灯光点亮顺序并按顺序复现，锻炼记忆力、专注力和反应速度。">
+    <meta name="keywords" content="记忆点亮,记忆游戏,Simon Says,益智游戏,儿童游戏,在线游戏,记忆力训练">
+    <meta name="author" content="蔚蓝工具导航站">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="记忆点亮 - 蔚蓝工具导航站">
+    <meta property="og:description" content="观察灯光点亮顺序并按顺序复现，挑战你的记忆力！">
+    <meta property="og:image" content="../tools.png">
+    <meta property="og:type" content="website">
+    <title>记忆点亮 - 蔚蓝工具导航站</title>
+    <link rel="icon" type="image/png" href="../assets/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon/favicon-16x16.png">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles/common.css">
+    <link rel="stylesheet" href="../styles/sidebar.css">
+    <link rel="stylesheet" href="../styles/memory_light.css">
+    <script src="../scripts/umami-loader.js"></script>
+</head>
+<body>
+    <!-- 侧边栏由 sidebar.js 动态加载 -->
+
+    <main class="ml-page">
+        <section class="ml-hero">
+            <div class="ml-badge">记忆挑战 · 轻量小游戏</div>
+            <h1>💡 记忆点亮</h1>
+            <p>观察方块点亮的顺序，然后按原顺序复现。每一关都会更快、更长、更难。</p>
+        </section>
+
+        <section class="ml-panel">
+            <div class="ml-stats">
+                <div class="ml-stat">
+                    <span class="label">关卡</span>
+                    <span class="value" id="levelValue">1</span>
+                </div>
+                <div class="ml-stat">
+                    <span class="label">得分</span>
+                    <span class="value" id="scoreValue">0</span>
+                </div>
+                <div class="ml-stat">
+                    <span class="label">最高关</span>
+                    <span class="value" id="bestLevelValue">1</span>
+                </div>
+                <div class="ml-stat">
+                    <span class="label">最佳分</span>
+                    <span class="value" id="bestScoreValue">0</span>
+                </div>
+            </div>
+
+            <div class="ml-controls">
+                <div class="ml-mode-group" role="tablist" aria-label="难度选择">
+                    <button class="ml-chip active" data-mode="easy">简单</button>
+                    <button class="ml-chip" data-mode="normal">普通</button>
+                    <button class="ml-chip" data-mode="hard">困难</button>
+                </div>
+
+                <div class="ml-actions">
+                    <button class="ml-btn primary" id="startBtn">开始游戏</button>
+                    <button class="ml-btn secondary" id="restartBtn">重新开始</button>
+                </div>
+            </div>
+
+            <div class="ml-tips">
+                <span>提示</span>
+                <ul>
+                    <li>点亮阶段请记住方块闪烁顺序</li>
+                    <li>复现阶段按顺序点击对应方块</li>
+                    <li>每过一关，序列会变长，闪烁节奏也会更快</li>
+                    <li>失误后可以立刻重开挑战最高关</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="ml-game">
+            <div class="ml-hud">
+                <div class="ml-status" id="statusText">准备开始</div>
+            </div>
+
+            <div class="ml-board-wrap">
+                <div class="ml-board" id="board" aria-label="记忆点亮游戏棋盘">
+                    <button class="ml-cell" data-index="0" aria-label="格子 1"></button>
+                    <button class="ml-cell" data-index="1" aria-label="格子 2"></button>
+                    <button class="ml-cell" data-index="2" aria-label="格子 3"></button>
+                    <button class="ml-cell" data-index="3" aria-label="格子 4"></button>
+                    <button class="ml-cell" data-index="4" aria-label="格子 5"></button>
+                    <button class="ml-cell" data-index="5" aria-label="格子 6"></button>
+                    <button class="ml-cell" data-index="6" aria-label="格子 7"></button>
+                    <button class="ml-cell" data-index="7" aria-label="格子 8"></button>
+                    <button class="ml-cell" data-index="8" aria-label="格子 9"></button>
+                </div>
+            </div>
+        </section>
+
+        <section class="ml-footer">
+            <div class="ml-card">
+                <h3>玩法</h3>
+                <p>观察亮灯顺序，然后完整复现即可进入下一关。</p>
+            </div>
+            <div class="ml-card">
+                <h3>节奏</h3>
+                <p>从简单的 3 步开始，随着关卡提升，序列更长、速度更快。</p>
+            </div>
+            <div class="ml-card">
+                <h3>记录</h3>
+                <p>最高关卡和最佳得分会保存在浏览器本地。</p>
+            </div>
+        </section>
+    </main>
+
+    <div class="ml-overlay" id="resultOverlay" aria-hidden="true">
+        <div class="ml-result">
+            <div class="result-emoji" id="resultEmoji">🏆</div>
+            <h2 id="resultTitle">挑战完成</h2>
+            <p id="resultText">你的表现很棒！</p>
+            <div class="result-actions">
+                <button class="ml-btn primary" id="playAgainBtn">再来一局</button>
+                <button class="ml-btn secondary" id="closeResultBtn">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../scripts/sidebar.js"></script>
+    <script src="../scripts/memory_light.js"></script>
+</body>
+</html>

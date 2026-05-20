@@ -124,6 +124,11 @@
           "icon": "fa-crosshairs"
         },
         {
+          "name": "打地鼠",
+          "path": "whack_a_mole.html",
+          "icon": "fa-hammer"
+        },
+        {
           "name": "路径建筑师",
           "path": "patharchitectgame.html",
           "icon": "fa-road"

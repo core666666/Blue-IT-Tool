@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="打地鼠游戏 - 地鼠随机出现，快速点击获取分数，支持冻结、双倍分和炸弹道具，适合儿童和休闲娱乐。">
+    <meta name="keywords" content="打地鼠,小游戏,儿童游戏,休闲游戏,在线游戏,反应游戏">
+    <meta name="author" content="蔚蓝工具导航站">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="打地鼠 - 蔚蓝工具导航站">
+    <meta property="og:description" content="地鼠随机出现，快速点击获取分数，支持冻结、双倍分和炸弹道具。">
+    <meta property="og:image" content="../tools.png">
+    <meta property="og:type" content="website">
+    <title>打地鼠 - 蔚蓝工具导航站</title>
+    <link rel="icon" type="image/png" href="../assets/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon/favicon-16x16.png">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles/common.css">
+    <link rel="stylesheet" href="../styles/sidebar.css">
+    <link rel="stylesheet" href="../styles/whack_a_mole.css">
+    <script src="../scripts/umami-loader.js"></script>
+</head>
+<body>
+    <!-- 侧边栏由 sidebar.js 动态加载 -->
+
+    <main class="wam-page">
+        <section class="wam-hero">
+            <div class="wam-badge">儿童向 · 休闲小游戏</div>
+            <h1>🐹 打地鼠</h1>
+            <p>地鼠会随机从洞里冒出来，快点它们！还能抢到特殊道具。</p>
+        </section>
+
+        <section class="wam-panel">
+            <div class="wam-stats">
+                <div class="wam-stat">
+                    <span class="label">分数</span>
+                    <span class="value" id="score">0</span>
+                </div>
+                <div class="wam-stat">
+                    <span class="label">倒计时</span>
+                    <span class="value" id="timeLeft">60</span>
+                </div>
+                <div class="wam-stat">
+                    <span class="label">连击</span>
+                    <span class="value" id="combo">0</span>
+                </div>
+                <div class="wam-stat">
+                    <span class="label">最高分</span>
+                    <span class="value" id="bestScore">0</span>
+                </div>
+            </div>
+
+            <div class="wam-controls">
+                <button id="startBtn" class="wam-btn primary">开始游戏</button>
+                <button id="restartBtn" class="wam-btn secondary">重新开始</button>
+
+                <div class="difficulty-group">
+                    <button class="wam-chip active" data-speed="normal">普通</button>
+                    <button class="wam-chip" data-speed="fast">快速</button>
+                    <button class="wam-chip" data-speed="crazy">疯狂</button>
+                </div>
+            </div>
+
+            <div class="wam-tips">
+                <span>提示</span>
+                <ul>
+                    <li>普通地鼠得 10 分</li>
+                    <li>金色地鼠双倍分</li>
+                    <li>冰冻地鼠会暂停全场</li>
+                    <li>炸弹地鼠会清空附近地鼠</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="wam-game">
+            <div class="wam-hud">
+                <div class="wam-effect" id="effectText">准备开始</div>
+            </div>
+
+            <div class="wam-board" id="board">
+                <button class="hole" data-hole="0" aria-label="洞 1"></button>
+                <button class="hole" data-hole="1" aria-label="洞 2"></button>
+                <button class="hole" data-hole="2" aria-label="洞 3"></button>
+                <button class="hole" data-hole="3" aria-label="洞 4"></button>
+                <button class="hole" data-hole="4" aria-label="洞 5"></button>
+                <button class="hole" data-hole="5" aria-label="洞 6"></button>
+                <button class="hole" data-hole="6" aria-label="洞 7"></button>
+                <button class="hole" data-hole="7" aria-label="洞 8"></button>
+                <button class="hole" data-hole="8" aria-label="洞 9"></button>
+            </div>
+        </section>
+
+        <section class="wam-footer">
+            <div class="wam-card">
+                <h3>玩法</h3>
+                <p>点击冒头的地鼠来得分，游戏时长 60 秒。</p>
+            </div>
+            <div class="wam-card">
+                <h3>道具</h3>
+                <p>冻结、双倍分、炸弹三种特殊地鼠随机出现。</p>
+            </div>
+            <div class="wam-card">
+                <h3>记录</h3>
+                <p>最高分会保存在浏览器本地。</p>
+            </div>
+        </section>
+    </main>
+
+    <div class="wam-overlay" id="resultOverlay" aria-hidden="true">
+        <div class="wam-result">
+            <div class="result-emoji">🏆</div>
+            <h2>游戏结束</h2>
+            <p id="resultText">你的得分是 0</p>
+            <div class="result-actions">
+                <button class="wam-btn primary" id="playAgainBtn">再来一局</button>
+                <button class="wam-btn secondary" id="closeResultBtn">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../scripts/sidebar.js"></script>
+    <script src="../scripts/whack_a_mole.js"></script>
+</body>
+</html>

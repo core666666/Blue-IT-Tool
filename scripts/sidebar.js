@@ -41,7 +41,8 @@
         "tools": [
           { "name": "数字华容道", "path": "number_slide_puzzle.html", "icon": "fa-puzzle-piece" },
           { "name": "无尽防御", "path": "InfiniteDefense.html", "icon": "fa-shield-alt" },
-          { "name": "无尽射击", "path": "InfiniteShooting.html", "icon": "fa-crosshairs" }
+          { "name": "无尽射击", "path": "InfiniteShooting.html", "icon": "fa-crosshairs" },
+          { "name": "打地鼠", "path": "whack_a_mole.html", "icon": "fa-hammer" }
         ]
       }
     ]

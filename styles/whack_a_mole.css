@@ -241,19 +241,22 @@
     position: absolute;
     left: 50%;
     bottom: -8%;
-    transform: translateX(-50%) scale(0.15);
-    font-size: clamp(48px, 7vw, 72px);
-    line-height: 1;
+    width: 92%;
+    max-width: 260px;
+    height: auto;
+    transform: translateX(-50%) scale(0.18);
+    transform-origin: center bottom;
     transition: transform 0.16s ease, opacity 0.16s ease;
     filter: drop-shadow(2px 4px 0 rgba(0, 0, 0, 0.25));
     opacity: 0;
     user-select: none;
     pointer-events: none;
+    z-index: 2;
 }
 
 .hole.up .mole {
     opacity: 1;
-    transform: translateX(-50%) translateY(-34%) scale(1);
+    transform: translateX(-50%) translateY(-30%) scale(1);
 }
 
 .hole.hit {

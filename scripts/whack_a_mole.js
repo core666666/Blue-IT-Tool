@@ -34,32 +34,32 @@
 
   const MOLE_TYPES = {
     normal: {
-      emoji: '🐹',
       label: '普通地鼠',
       score: 10,
       className: 'normal',
       effect: '',
+      image: '../assets/images/whack_a_mole/normal.png',
     },
     double: {
-      emoji: '✨',
       label: '双倍分',
       score: 20,
       className: 'double',
       effect: '双倍分！',
+      image: '../assets/images/whack_a_mole/double.png',
     },
     freeze: {
-      emoji: '❄️',
       label: '冰冻地鼠',
       score: 15,
       className: 'freeze',
       effect: '全场冻结！',
+      image: '../assets/images/whack_a_mole/freeze.png',
     },
     bomb: {
-      emoji: '💣',
       label: '炸弹地鼠',
       score: 25,
       className: 'bomb',
       effect: '爆炸清场！',
+      image: '../assets/images/whack_a_mole/bomb.png',
     },
   };
 
@@ -278,9 +278,13 @@
 
   function showMole(hole, type) {
     const moleInfo = MOLE_TYPES[type];
-    const mole = document.createElement('span');
+    const mole = document.createElement('img');
     mole.className = `mole ${moleInfo.className}`;
-    mole.textContent = moleInfo.emoji;
+    mole.src = moleInfo.image;
+    mole.alt = moleInfo.label;
+    mole.decoding = 'async';
+    mole.loading = 'eager';
+    mole.draggable = false;
     mole.dataset.type = type;
     hole.dataset.moleType = type;
 

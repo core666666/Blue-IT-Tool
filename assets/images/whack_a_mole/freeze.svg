@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="冰冻地鼠">
+  <defs>
+    <linearGradient id="fur" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#9fe7ff"/>
+      <stop offset="100%" stop-color="#4ab7ea"/>
+    </linearGradient>
+    <linearGradient id="belly" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ecfbff"/>
+      <stop offset="100%" stop-color="#c9f3ff"/>
+    </linearGradient>
+  </defs>
+
+  <ellipse cx="256" cy="424" rx="120" ry="22" fill="#000" opacity="0.18"/>
+  <ellipse cx="168" cy="130" rx="44" ry="56" fill="#8dddf2" transform="rotate(-18 168 130)"/>
+  <ellipse cx="344" cy="130" rx="44" ry="56" fill="#8dddf2" transform="rotate(18 344 130)"/>
+  <ellipse cx="168" cy="130" rx="25" ry="34" fill="#e8fbff" transform="rotate(-18 168 130)"/>
+  <ellipse cx="344" cy="130" rx="25" ry="34" fill="#e8fbff" transform="rotate(18 344 130)"/>
+
+  <path d="M156 172c0-61 44-104 100-104s100 43 100 104v61c0 39-18 71-49 90-16 10-34 15-51 15s-35-5-51-15c-31-19-49-51-49-90v-61z" fill="url(#fur)" stroke="#126c93" stroke-width="10" stroke-linejoin="round"/>
+  <path d="M182 236c0-36 32-66 74-66s74 30 74 66c0 48-29 84-74 84s-74-36-74-84z" fill="url(#belly)" opacity="0.98"/>
+
+  <circle cx="220" cy="190" r="14" fill="#111"/>
+  <circle cx="292" cy="190" r="14" fill="#111"/>
+  <circle cx="214" cy="184" r="4" fill="#fff"/>
+  <circle cx="286" cy="184" r="4" fill="#fff"/>
+  <ellipse cx="256" cy="214" rx="14" ry="11" fill="#2a6680"/>
+  <path d="M256 225c0 0 13 7 21 18" fill="none" stroke="#2a6680" stroke-width="6" stroke-linecap="round"/>
+  <path d="M256 225c0 0-13 7-21 18" fill="none" stroke="#2a6680" stroke-width="6" stroke-linecap="round"/>
+
+  <ellipse cx="206" cy="282" rx="30" ry="24" fill="#8fdcf2" transform="rotate(18 206 282)"/>
+  <ellipse cx="306" cy="282" rx="30" ry="24" fill="#8fdcf2" transform="rotate(-18 306 282)"/>
+  <ellipse cx="206" cy="282" rx="18" ry="12" fill="#ecfbff" transform="rotate(18 206 282)"/>
+  <ellipse cx="306" cy="282" rx="18" ry="12" fill="#ecfbff" transform="rotate(-18 306 282)"/>
+
+  <path d="M190 336c16 24 39 37 66 37s50-13 66-37" fill="none" stroke="#126c93" stroke-width="10" stroke-linecap="round"/>
+  <ellipse cx="216" cy="355" rx="33" ry="27" fill="#79d6f4" stroke="#126c93" stroke-width="8"/>
+  <ellipse cx="296" cy="355" rx="33" ry="27" fill="#79d6f4" stroke="#126c93" stroke-width="8"/>
+  <ellipse cx="216" cy="359" rx="15" ry="11" fill="#ecfbff"/>
+  <ellipse cx="296" cy="359" rx="15" ry="11" fill="#ecfbff"/>
+
+  <path d="M118 272c40-48 88-76 138-84" fill="none" stroke="#bdf0ff" stroke-width="10" stroke-linecap="round" opacity="0.9"/>
+  <path d="M392 272c-40-48-88-76-138-84" fill="none" stroke="#bdf0ff" stroke-width="10" stroke-linecap="round" opacity="0.9"/>
+  <path d="M126 302c38-34 78-54 120-60" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round" opacity="0.8"/>
+  <path d="M386 302c-38-34-78-54-120-60" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round" opacity="0.8"/>
+
+  <circle cx="114" cy="202" r="10" fill="#fff" opacity="0.95"/>
+  <circle cx="398" cy="198" r="8" fill="#fff" opacity="0.95"/>
+  <circle cx="402" cy="260" r="12" fill="#fff" opacity="0.95"/>
+</svg>

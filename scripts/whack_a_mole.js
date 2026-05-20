@@ -38,28 +38,28 @@
       score: 10,
       className: 'normal',
       effect: '',
-      image: '../assets/images/whack_a_mole/normal.png',
+      image: '../assets/images/whack_a_mole/normal.svg',
     },
     double: {
       label: '双倍分',
       score: 20,
       className: 'double',
       effect: '双倍分！',
-      image: '../assets/images/whack_a_mole/double.png',
+      image: '../assets/images/whack_a_mole/double.svg',
     },
     freeze: {
       label: '冰冻地鼠',
       score: 15,
       className: 'freeze',
       effect: '全场冻结！',
-      image: '../assets/images/whack_a_mole/freeze.png',
+      image: '../assets/images/whack_a_mole/freeze.svg',
     },
     bomb: {
       label: '炸弹地鼠',
       score: 25,
       className: 'bomb',
       effect: '爆炸清场！',
-      image: '../assets/images/whack_a_mole/bomb.png',
+      image: '../assets/images/whack_a_mole/bomb.svg',
     },
   };
 

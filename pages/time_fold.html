@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="时间折叠游戏 - 通过回溯时间留下时间回声，利用时间差打开机关并逃离迷宫。">
+    <meta name="keywords" content="时间折叠,创意游戏,解谜游戏,时间回溯,独立小游戏,在线游戏">
+    <meta name="author" content="蔚蓝工具导航站">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="时间折叠 - 蔚蓝工具导航站">
+    <meta property="og:description" content="回溯时间、留下时间回声、踩住机关，完成一次看起来很离谱但很好玩的逃脱。">
+    <meta property="og:image" content="../tools.png">
+    <meta property="og:type" content="website">
+    <title>时间折叠 - 蔚蓝工具导航站</title>
+    <link rel="icon" type="image/png" href="../assets/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon/favicon-16x16.png">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles/common.css">
+    <link rel="stylesheet" href="../styles/sidebar.css">
+    <link rel="stylesheet" href="../styles/time_fold.css">
+    <script src="../scripts/umami-loader.js"></script>
+</head>
+<body>
+    <!-- 侧边栏由 sidebar.js 动态加载 -->
+
+    <main class="tf-page">
+        <section class="tf-hero">
+            <div class="tf-badge">创意解谜 · 时间回溯</div>
+            <h1>⏳ 时间折叠</h1>
+            <p>踩上机关后按下折叠按钮，把自己往回拉几步，同时留下一个时间回声。用时间差把门撑开，然后冲向出口。</p>
+        </section>
+
+        <section class="tf-panel">
+            <div class="tf-stats">
+                <div class="tf-stat">
+                    <span class="label">剩余折叠</span>
+                    <span class="value" id="foldCount">2</span>
+                </div>
+                <div class="tf-stat">
+                    <span class="label">时间回声</span>
+                    <span class="value" id="echoCount">0</span>
+                </div>
+                <div class="tf-stat">
+                    <span class="label">步数</span>
+                    <span class="value" id="stepCount">0</span>
+                </div>
+                <div class="tf-stat">
+                    <span class="label">状态</span>
+                    <span class="value tf-small" id="stateText">准备开始</span>
+                </div>
+            </div>
+
+            <div class="tf-controls">
+                <div class="tf-actions">
+                    <button class="tf-btn primary" id="startBtn">开始挑战</button>
+                    <button class="tf-btn secondary" id="resetBtn">重置关卡</button>
+                </div>
+
+                <div class="tf-fold-box">
+                    <button class="tf-btn fold" id="foldBtn">
+                        <i class="fas fa-rotate-left"></i>
+                        折叠时间
+                    </button>
+                    <p>默认回溯 3 步，留下一个可撑住机关的时间回声。</p>
+                </div>
+            </div>
+
+            <div class="tf-tips">
+                <span>提示</span>
+                <ul>
+                    <li>移动到发光的蓝色机关上，再按“折叠时间”</li>
+                    <li>折叠后你会被拉回几步，但当前位置会留下时间回声</li>
+                    <li>两个机关需要同时被你或时间回声踩住，出口才会打开</li>
+                    <li>用方向键或者下方按钮都可以操作</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="tf-game">
+            <div class="tf-hud">
+                <div class="tf-status" id="statusText">先开始，然后去试试折叠时间</div>
+            </div>
+
+            <div class="tf-board-wrap">
+                <div class="tf-board" id="board" aria-label="时间折叠游戏棋盘"></div>
+            </div>
+
+            <div class="tf-pad" aria-label="移动控制">
+                <button class="tf-pad-btn" data-dir="up" aria-label="向上移动"><i class="fas fa-chevron-up"></i></button>
+                <div class="tf-pad-row">
+                    <button class="tf-pad-btn" data-dir="left" aria-label="向左移动"><i class="fas fa-chevron-left"></i></button>
+                    <button class="tf-pad-btn center" id="foldQuickBtn" aria-label="折叠时间"><i class="fas fa-rotate-left"></i></button>
+                    <button class="tf-pad-btn" data-dir="right" aria-label="向右移动"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <button class="tf-pad-btn" data-dir="down" aria-label="向下移动"><i class="fas fa-chevron-down"></i></button>
+            </div>
+        </section>
+
+        <section class="tf-footer">
+            <div class="tf-card">
+                <h3>玩法</h3>
+                <p>走进机关，折叠时间，把你刚刚站过的位置变成一个短暂的时间回声。</p>
+            </div>
+            <div class="tf-card">
+                <h3>目标</h3>
+                <p>同时压住两个机关，打开出口，再穿过终点完成关卡。</p>
+            </div>
+            <div class="tf-card">
+                <h3>技巧</h3>
+                <p>不要急着冲门，先把回声放在机关上，再利用被折回的几步去走另一条路。</p>
+            </div>
+        </section>
+    </main>
+
+    <div class="tf-overlay" id="resultOverlay" aria-hidden="true">
+        <div class="tf-result">
+            <div class="result-emoji" id="resultEmoji">✨</div>
+            <h2 id="resultTitle">时间稳定</h2>
+            <p id="resultText">你成功撑开了时间缝隙。</p>
+            <div class="result-actions">
+                <button class="tf-btn primary" id="playAgainBtn">再来一局</button>
+                <button class="tf-btn secondary" id="closeResultBtn">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../scripts/sidebar.js"></script>
+    <script src="../scripts/time_fold.js"></script>
+</body>
+</html>

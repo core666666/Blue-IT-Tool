@@ -3,112 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <!-- SEO Meta Tags -->
-    <meta name="description" content="免费在线正则表达式测试工具，支持实时匹配、高亮显示、常用正则模板，帮助开发者快速调试正则表达式。">
-    <meta name="keywords" content="正则表达式,正则测试,regex,正则匹配,在线工具,开发者工具">
+    <meta name="description" content="免费在线正则高亮替换工具，支持实时匹配、高亮显示、替换预览和常用正则模板，帮助开发者快速调试正则表达式。">
+    <meta name="keywords" content="正则表达式,正则测试,regex,正则匹配,在线工具,开发者工具,替换预览">
     <meta name="author" content="蔚蓝工具导航站">
     <meta name="robots" content="index, follow">
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="../assets/favicon/favicon.ico">
     <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon/favicon-16x16.png">
-    
+
     <!-- Open Graph -->
-    <meta property="og:title" content="正则表达式测试器 - 蔚蓝工具导航站">
-    <meta property="og:description" content="在线正则表达式测试工具，实时匹配高亮，支持常用正则模板。">
+    <meta property="og:title" content="正则高亮替换工具 - 蔚蓝工具导航站">
+    <meta property="og:description" content="在线正则高亮替换工具，实时匹配高亮，支持替换预览。">
     <meta property="og:image" content="../tools.png">
     <meta property="og:type" content="website">
-    
-    <title>正则表达式测试器 - 蔚蓝工具导航站</title>
-    
+
+    <title>正则高亮替换工具 - 蔚蓝工具导航站</title>
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- 引入自定义CSS -->
+
+    <!-- 自定义 CSS -->
     <link rel="stylesheet" href="../styles/common.css">
     <link rel="stylesheet" href="../styles/sidebar.css">
     <link rel="stylesheet" href="../styles/regex-tester.css">
-    
+
     <!-- Umami 统计脚本延迟加载器 -->
     <script src="../scripts/umami-loader.js"></script>
 </head>
 <body>
     <!-- 侧边栏由 sidebar.js 动态加载 -->
 
-    <!-- 主内容 -->
     <main class="regex-tester">
         <div class="editor-wrapper">
             <div class="toolbar">
-                <h1>正则表达式测试器</h1>
+                <div class="toolbar-title">
+                    <h1>正则高亮替换工具</h1>
+                    <p>支持高亮匹配、分组查看、替换预览与结果复制</p>
+                </div>
                 <div class="buttons">
                     <button id="clear-btn"><i class="fas fa-trash"></i> 清空</button>
                     <button id="copy-btn"><i class="fas fa-copy"></i> 复制正则</button>
+                    <button id="copy-replaced-btn"><i class="fas fa-clone"></i> 复制替换结果</button>
                     <button id="maximize-btn"><i class="fas fa-expand"></i> 最大化</button>
                     <button id="restore-btn" style="display:none;"><i class="fas fa-compress"></i> 还原</button>
                 </div>
             </div>
-            
+
             <div class="regex-container">
-                <!-- 正则输入区 -->
-                <div class="regex-input-section">
+                <section class="panel regex-input-section">
                     <div class="input-group">
-                        <label>正则表达式</label>
+                        <label for="regex-input">正则表达式</label>
                         <div class="regex-input-wrapper">
                             <span class="regex-delimiter">/</span>
-                            <input type="text" id="regex-input" placeholder="输入正则表达式">
+                            <input type="text" id="regex-input" placeholder="输入正则表达式，例如：([a-z]+)">
                             <span class="regex-delimiter">/</span>
                             <input type="text" id="regex-flags" value="g" placeholder="flags" maxlength="6">
                         </div>
                     </div>
-                    <div class="flags-hint">
+                    <div class="flags-hint" aria-label="常用标志位">
                         <span class="flag-item" data-flag="g" title="全局匹配">g</span>
                         <span class="flag-item" data-flag="i" title="忽略大小写">i</span>
                         <span class="flag-item" data-flag="m" title="多行模式">m</span>
                         <span class="flag-item" data-flag="s" title="点号匹配换行">s</span>
-                        <span class="flag-item" data-flag="u" title="Unicode模式">u</span>
+                        <span class="flag-item" data-flag="u" title="Unicode 模式">u</span>
                     </div>
-                </div>
+                </section>
 
-                <!-- 常用正则模板 -->
-                <div class="templates-section">
+                <section class="panel replace-section">
+                    <div class="input-group">
+                        <label for="replace-input">替换内容</label>
+                        <input type="text" id="replace-input" placeholder="例如：$1、[$&]、$2-$1">
+                    </div>
+                    <div class="replace-actions">
+                        <button id="highlight-btn" class="primary-btn"><i class="fas fa-highlighter"></i> 高亮预览</button>
+                        <button id="replace-btn" class="secondary-btn"><i class="fas fa-wand-magic-sparkles"></i> 执行替换</button>
+                    </div>
+                    <div class="replace-hint">
+                        支持 $1、$2、$&、$`、$' 等替换引用
+                    </div>
+                </section>
+
+                <section class="panel templates-section">
                     <label>常用正则模板</label>
                     <div class="templates-grid">
                         <button class="template-btn" data-regex="1[3-9]\d{9}" data-flags="g">手机号</button>
                         <button class="template-btn" data-regex="\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*" data-flags="gi">邮箱</button>
                         <button class="template-btn" data-regex="^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$" data-flags="gi">URL</button>
-                        <button class="template-btn" data-regex="^(\d{4})-(\d{2})-(\d{2})$" data-flags="g">日期YYYY-MM-DD</button>
+                        <button class="template-btn" data-regex="^(\d{4})-(\d{2})-(\d{2})$" data-flags="g">日期 YYYY-MM-DD</button>
                         <button class="template-btn" data-regex="^#?([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$" data-flags="gi">十六进制颜色</button>
-                        <button class="template-btn" data-regex="^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)$" data-flags="g">IPv4地址</button>
+                        <button class="template-btn" data-regex="^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)$" data-flags="g">IPv4 地址</button>
                         <button class="template-btn" data-regex="^[1-9]\d{5}(18|19|20)\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])\d{3}[\dXx]$" data-flags="g">身份证号</button>
                         <button class="template-btn" data-regex="[\u4e00-\u9fa5]+" data-flags="g">中文字符</button>
                     </div>
-                </div>
+                </section>
 
-                <!-- 测试文本区 -->
-                <div class="test-section">
+                <section class="test-section">
                     <div class="test-input-area">
-                        <label>测试文本</label>
+                        <label for="test-input">测试文本</label>
                         <textarea id="test-input" placeholder="在此输入要测试的文本..."></textarea>
                     </div>
                     <div class="result-area">
-                        <label>匹配结果 <span id="match-count"></span></label>
-                        <div id="result-output"></div>
+                        <label>高亮结果 <span id="match-count"></span></label>
+                        <div id="result-output" class="output-box" aria-live="polite"></div>
                     </div>
-                </div>
+                </section>
 
-                <!-- 匹配详情 -->
-                <div class="match-details-section">
+                <section class="replace-result-section">
+                    <div class="replace-result-header">
+                        <label>替换结果</label>
+                        <span id="replace-count"></span>
+                    </div>
+                    <pre id="replace-output" class="output-box replace-output" aria-live="polite"></pre>
+                </section>
+
+                <section class="match-details-section">
                     <label>匹配详情</label>
                     <div id="match-details"></div>
-                </div>
+                </section>
             </div>
         </div>
     </main>
 
-    <!-- 引入自定义JS -->
     <script src="../scripts/sidebar.js"></script>
     <script src="../scripts/index.js"></script>
     <script src="../scripts/regex-tester.js"></script>

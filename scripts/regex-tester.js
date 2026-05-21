@@ -1,250 +1,401 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const regexInput = document.getElementById("regex-input");
-    const regexFlags = document.getElementById("regex-flags");
-    const testInput = document.getElementById("test-input");
-    const resultOutput = document.getElementById("result-output");
-    const matchCount = document.getElementById("match-count");
-    const matchDetails = document.getElementById("match-details");
-    const clearBtn = document.getElementById("clear-btn");
-    const copyBtn = document.getElementById("copy-btn");
-    const maximizeBtn = document.getElementById("maximize-btn");
-    const restoreBtn = document.getElementById("restore-btn");
-    const templateBtns = document.querySelectorAll(".template-btn");
-    const flagItems = document.querySelectorAll(".flag-item");
+  const regexInput = document.getElementById("regex-input");
+  const regexFlags = document.getElementById("regex-flags");
+  const replaceInput = document.getElementById("replace-input");
+  const testInput = document.getElementById("test-input");
 
-    // 防抖函数
-    function debounce(fn, delay) {
-        let timer = null;
-        return function (...args) {
-            if (timer) clearTimeout(timer);
-            timer = setTimeout(() => fn.apply(this, args), delay);
-        };
+  const resultOutput = document.getElementById("result-output");
+  const replaceOutput = document.getElementById("replace-output");
+  const matchCount = document.getElementById("match-count");
+  const replaceCount = document.getElementById("replace-count");
+  const matchDetails = document.getElementById("match-details");
+
+  const clearBtn = document.getElementById("clear-btn");
+  const copyBtn = document.getElementById("copy-btn");
+  const copyReplacedBtn = document.getElementById("copy-replaced-btn");
+  const highlightBtn = document.getElementById("highlight-btn");
+  const replaceBtn = document.getElementById("replace-btn");
+  const maximizeBtn = document.getElementById("maximize-btn");
+  const restoreBtn = document.getElementById("restore-btn");
+  const templateBtns = document.querySelectorAll(".template-btn");
+  const flagItems = document.querySelectorAll(".flag-item");
+
+  const FLAG_ORDER = "dgimsuvy";
+  let latestReplacedText = "";
+  let updateTimer = null;
+
+  function debounceUpdate() {
+    if (updateTimer) {
+      clearTimeout(updateTimer);
     }
 
-    // 执行正则匹配
-    function executeRegex() {
-        const pattern = regexInput.value;
-        const flags = regexFlags.value;
-        const text = testInput.value;
+    updateTimer = setTimeout(updateAll, 120);
+  }
 
-        // 清空结果
-        resultOutput.innerHTML = "";
-        matchDetails.innerHTML = "";
-        matchCount.textContent = "";
+  function sanitizeFlags(flags) {
+    const uniqueFlags = new Set((flags || "").split("").filter(Boolean));
+    return FLAG_ORDER.split("").filter((flag) => uniqueFlags.has(flag)).join("");
+  }
 
-        if (!pattern) {
-            resultOutput.textContent = text;
-            matchDetails.innerHTML = '<div class="no-match">请输入正则表达式</div>';
-            return;
-        }
+  function buildRegex() {
+    const pattern = regexInput.value.trim();
 
-        if (!text) {
-            matchDetails.innerHTML = '<div class="no-match">请输入测试文本</div>';
-            return;
-        }
-
-        try {
-            const regex = new RegExp(pattern, flags);
-            const matches = [];
-            let match;
-
-            // 收集所有匹配
-            if (flags.includes("g")) {
-                while ((match = regex.exec(text)) !== null) {
-                    matches.push({
-                        value: match[0],
-                        index: match.index,
-                        groups: match.slice(1)
-                    });
-                    // 防止无限循环
-                    if (match.index === regex.lastIndex) {
-                        regex.lastIndex++;
-                    }
-                }
-            } else {
-                match = regex.exec(text);
-                if (match) {
-                    matches.push({
-                        value: match[0],
-                        index: match.index,
-                        groups: match.slice(1)
-                    });
-                }
-            }
-
-            // 显示匹配数量
-            matchCount.textContent = `(${matches.length} 个匹配)`;
-
-            // 高亮显示结果
-            if (matches.length > 0) {
-                let highlightedText = "";
-                let lastIndex = 0;
-
-                matches.forEach((m) => {
-                    // 添加未匹配部分
-                    highlightedText += escapeHtml(text.slice(lastIndex, m.index));
-                    // 添加高亮匹配部分
-                    highlightedText += `<span class="match-highlight">${escapeHtml(m.value)}</span>`;
-                    lastIndex = m.index + m.value.length;
-                });
-
-                // 添加剩余部分
-                highlightedText += escapeHtml(text.slice(lastIndex));
-                resultOutput.innerHTML = highlightedText;
-
-                // 显示匹配详情
-                renderMatchDetails(matches);
-            } else {
-                resultOutput.textContent = text;
-                matchDetails.innerHTML = '<div class="no-match">没有找到匹配项</div>';
-            }
-        } catch (e) {
-            resultOutput.innerHTML = `<div class="regex-error">正则表达式错误: ${e.message}</div>`;
-            matchDetails.innerHTML = "";
-            matchCount.textContent = "";
-        }
+    if (!pattern) {
+      throw new Error("请输入正则表达式");
     }
 
-    // 渲染匹配详情
-    function renderMatchDetails(matches) {
-        let html = "";
-
-        matches.forEach((m, index) => {
-            html += `
-                <div class="match-item">
-                    <div class="match-item-header">
-                        <span>匹配 #${index + 1}</span>
-                        <span>位置: ${m.index} - ${m.index + m.value.length}</span>
-                    </div>
-                    <div class="match-item-value">${escapeHtml(m.value)}</div>
-                    ${m.groups.length > 0 ? renderGroups(m.groups) : ""}
-                </div>
-            `;
-        });
-
-        matchDetails.innerHTML = html;
-    }
-
-    // 渲染捕获组
-    function renderGroups(groups) {
-        let html = '<div class="match-groups">';
-        groups.forEach((g, i) => {
-            html += `
-                <div class="group-item">
-                    <span class="group-label">组 ${i + 1}:</span>
-                    <span class="group-value">${g !== undefined ? escapeHtml(g) : "(未匹配)"}</span>
-                </div>
-            `;
-        });
-        html += "</div>";
-        return html;
-    }
-
-    // HTML 转义
-    function escapeHtml(text) {
-        const div = document.createElement("div");
-        div.textContent = text;
-        return div.innerHTML;
-    }
-
-    // 更新 flag 按钮状态
-    function updateFlagButtons() {
-        const currentFlags = regexFlags.value;
-        flagItems.forEach((item) => {
-            const flag = item.dataset.flag;
-            if (currentFlags.includes(flag)) {
-                item.classList.add("active");
-            } else {
-                item.classList.remove("active");
-            }
-        });
-    }
-
-    // 防抖后的执行函数
-    const debouncedExecuteRegex = debounce(executeRegex, 150);
-
-    // 事件监听
-    regexInput.addEventListener("input", debouncedExecuteRegex);
-    regexFlags.addEventListener("input", () => {
-        updateFlagButtons();
-        debouncedExecuteRegex();
-    });
-    testInput.addEventListener("input", debouncedExecuteRegex);
-
-    // Flag 按钮点击
-    flagItems.forEach((item) => {
-        item.addEventListener("click", () => {
-            const flag = item.dataset.flag;
-            let currentFlags = regexFlags.value;
-
-            if (currentFlags.includes(flag)) {
-                currentFlags = currentFlags.replace(flag, "");
-            } else {
-                currentFlags += flag;
-            }
-
-            regexFlags.value = currentFlags;
-            updateFlagButtons();
-            executeRegex();
-        });
-    });
-
-    // 模板按钮点击
-    templateBtns.forEach((btn) => {
-        btn.addEventListener("click", () => {
-            regexInput.value = btn.dataset.regex;
-            regexFlags.value = btn.dataset.flags || "g";
-            updateFlagButtons();
-            executeRegex();
-        });
-    });
-
-    // 清空按钮
-    clearBtn.addEventListener("click", () => {
-        regexInput.value = "";
-        regexFlags.value = "g";
-        testInput.value = "";
-        resultOutput.innerHTML = "";
-        matchDetails.innerHTML = '<div class="no-match">请输入正则表达式和测试文本</div>';
-        matchCount.textContent = "";
-        updateFlagButtons();
-    });
-
-    // 复制正则
-    copyBtn.addEventListener("click", () => {
-        const pattern = regexInput.value;
-        const flags = regexFlags.value;
-        const fullRegex = `/${pattern}/${flags}`;
-
-        navigator.clipboard.writeText(fullRegex).then(
-            () => alert("已复制: " + fullRegex),
-            () => alert("复制失败")
-        );
-    });
-
-    // 最大化功能
-    maximizeBtn.addEventListener("click", () => {
-        document.body.classList.add("maximized");
-        maximizeBtn.style.display = "none";
-        restoreBtn.style.display = "inline-block";
-    });
-
-    restoreBtn.addEventListener("click", () => {
-        document.body.classList.remove("maximized");
-        maximizeBtn.style.display = "inline-block";
-        restoreBtn.style.display = "none";
-    });
-
-    // ESC 键恢复
-    document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && document.body.classList.contains("maximized")) {
-            document.body.classList.remove("maximized");
-            maximizeBtn.style.display = "inline-block";
-            restoreBtn.style.display = "none";
-        }
-    });
-
-    // 初始化
+    const flags = sanitizeFlags(regexFlags.value);
+    regexFlags.value = flags || "g";
     updateFlagButtons();
-    matchDetails.innerHTML = '<div class="no-match">请输入正则表达式和测试文本</div>';
+
+    return new RegExp(pattern, regexFlags.value);
+  }
+
+  function createTextBox(message, className) {
+    const box = document.createElement("div");
+    box.className = className;
+    box.textContent = message;
+    return box;
+  }
+
+  function clearElement(element) {
+    while (element.firstChild) {
+      element.removeChild(element.firstChild);
+    }
+  }
+
+  function setInfoState() {
+    clearElement(resultOutput);
+    clearElement(replaceOutput);
+    clearElement(matchDetails);
+    resultOutput.appendChild(createTextBox("请输入正则表达式和测试文本", "no-match"));
+    replaceOutput.textContent = "";
+    matchCount.textContent = "";
+    replaceCount.textContent = "";
+    latestReplacedText = "";
+  }
+
+  function setErrorState(message) {
+    clearElement(resultOutput);
+    clearElement(replaceOutput);
+    clearElement(matchDetails);
+    resultOutput.appendChild(createTextBox(`正则表达式错误：${message}`, "regex-error"));
+    replaceOutput.textContent = "";
+    matchCount.textContent = "";
+    replaceCount.textContent = "";
+    latestReplacedText = "";
+  }
+
+  function collectMatches(text, regex) {
+    const matches = [];
+    const useGlobal = regex.global;
+    let match;
+
+    if (useGlobal) {
+      while ((match = regex.exec(text)) !== null) {
+        matches.push({
+          value: match[0],
+          index: match.index,
+          end: match.index + match[0].length,
+          groups: match.slice(1),
+        });
+
+        if (match[0] === "") {
+          regex.lastIndex += 1;
+        }
+      }
+    } else {
+      match = regex.exec(text);
+      if (match) {
+        matches.push({
+          value: match[0],
+          index: match.index,
+          end: match.index + match[0].length,
+          groups: match.slice(1),
+        });
+      }
+    }
+
+    return matches;
+  }
+
+  function renderHighlightedText(text, matches) {
+    clearElement(resultOutput);
+
+    if (!text) {
+      resultOutput.appendChild(createTextBox("请输入测试文本", "no-match"));
+      return;
+    }
+
+    if (matches.length === 0) {
+      resultOutput.appendChild(document.createTextNode(text));
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    let lastIndex = 0;
+
+    matches.forEach((match) => {
+      if (match.index > lastIndex) {
+        fragment.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+      }
+
+      const highlight = document.createElement("span");
+      highlight.className = "match-highlight";
+      highlight.textContent = match.value;
+      fragment.appendChild(highlight);
+
+      lastIndex = match.end;
+    });
+
+    if (lastIndex < text.length) {
+      fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+    }
+
+    resultOutput.appendChild(fragment);
+  }
+
+  function renderGroups(groups) {
+    const groupsWrapper = document.createElement("div");
+    groupsWrapper.className = "match-groups";
+
+    groups.forEach((group, index) => {
+      const row = document.createElement("div");
+      row.className = "group-item";
+
+      const label = document.createElement("span");
+      label.className = "group-label";
+      label.textContent = `组 ${index + 1}:`;
+
+      const value = document.createElement("span");
+      value.className = "group-value";
+      value.textContent = group !== undefined ? group : "(未匹配)";
+
+      row.appendChild(label);
+      row.appendChild(value);
+      groupsWrapper.appendChild(row);
+    });
+
+    return groupsWrapper;
+  }
+
+  function renderMatchDetails(matches) {
+    clearElement(matchDetails);
+
+    if (matches.length === 0) {
+      matchDetails.appendChild(createTextBox("没有找到匹配项", "no-match"));
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+
+    matches.forEach((match, index) => {
+      const item = document.createElement("div");
+      item.className = "match-item";
+
+      const header = document.createElement("div");
+      header.className = "match-item-header";
+
+      const title = document.createElement("span");
+      title.textContent = `匹配 #${index + 1}`;
+
+      const position = document.createElement("span");
+      position.textContent = `位置: ${match.index} - ${match.end}`;
+
+      const value = document.createElement("div");
+      value.className = "match-item-value";
+      value.textContent = match.value;
+
+      header.appendChild(title);
+      header.appendChild(position);
+      item.appendChild(header);
+      item.appendChild(value);
+
+      if (match.groups.length > 0) {
+        item.appendChild(renderGroups(match.groups));
+      }
+
+      fragment.appendChild(item);
+    });
+
+    matchDetails.appendChild(fragment);
+  }
+
+  function updateCounts(matches, replacedText) {
+    matchCount.textContent = `(${matches.length} 个匹配)`;
+    replaceCount.textContent = replacedText ? `(${replacedText.length} 字符)` : "";
+  }
+
+  function updateReplacementOutput(text, regex) {
+    if (!text) {
+      latestReplacedText = "";
+      replaceOutput.textContent = "";
+      return;
+    }
+
+    const replacement = replaceInput.value;
+    try {
+      latestReplacedText = text.replace(regex, replacement);
+      replaceOutput.textContent = latestReplacedText;
+    } catch (error) {
+      latestReplacedText = "";
+      replaceOutput.textContent = `替换失败：${error.message}`;
+    }
+  }
+
+  function updateAll() {
+    const text = testInput.value;
+    const pattern = regexInput.value.trim();
+
+    clearElement(matchDetails);
+    matchCount.textContent = "";
+    replaceCount.textContent = "";
+
+    if (!pattern) {
+      setInfoState();
+      return;
+    }
+
+    if (!text) {
+      clearElement(resultOutput);
+      clearElement(replaceOutput);
+      resultOutput.appendChild(createTextBox("请输入测试文本", "no-match"));
+      replaceOutput.textContent = "";
+      matchDetails.appendChild(createTextBox("请输入测试文本", "no-match"));
+      latestReplacedText = "";
+      return;
+    }
+
+    try {
+      const regex = buildRegex();
+      const matches = collectMatches(text, regex);
+
+      renderHighlightedText(text, matches);
+      renderMatchDetails(matches);
+      updateReplacementOutput(text, regex);
+      updateCounts(matches, latestReplacedText);
+    } catch (error) {
+      setErrorState(error.message);
+    }
+  }
+
+  function updateFlagButtons() {
+    const currentFlags = sanitizeFlags(regexFlags.value);
+    flagItems.forEach((item) => {
+      item.classList.toggle("active", currentFlags.includes(item.dataset.flag));
+    });
+  }
+
+  async function copyToClipboard(text, successMessage, failMessage) {
+    if (!text) {
+      alert(failMessage);
+      return false;
+    }
+
+    try {
+      if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+        await navigator.clipboard.writeText(text);
+        alert(successMessage);
+        return true;
+      }
+
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.style.position = "fixed";
+      textarea.style.left = "-9999px";
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      const copied = document.execCommand("copy");
+      document.body.removeChild(textarea);
+
+      alert(copied ? successMessage : failMessage);
+      return copied;
+    } catch (error) {
+      alert(failMessage);
+      return false;
+    }
+  }
+
+  function clearAll() {
+    regexInput.value = "";
+    regexFlags.value = "g";
+    replaceInput.value = "";
+    testInput.value = "";
+    latestReplacedText = "";
+
+    updateFlagButtons();
+    setInfoState();
+  }
+
+  function toggleMaximized(isMaximized) {
+    document.body.classList.toggle("maximized", isMaximized);
+    maximizeBtn.style.display = isMaximized ? "none" : "inline-block";
+    restoreBtn.style.display = isMaximized ? "inline-block" : "none";
+  }
+
+  regexInput.addEventListener("input", debounceUpdate);
+  regexFlags.addEventListener("input", () => {
+    regexFlags.value = sanitizeFlags(regexFlags.value);
+    updateFlagButtons();
+    debounceUpdate();
+  });
+  replaceInput.addEventListener("input", debounceUpdate);
+  testInput.addEventListener("input", debounceUpdate);
+
+  flagItems.forEach((item) => {
+    item.addEventListener("click", () => {
+      const flag = item.dataset.flag;
+      const currentFlags = sanitizeFlags(regexFlags.value);
+
+      if (currentFlags.includes(flag)) {
+        regexFlags.value = currentFlags.replace(flag, "");
+      } else {
+        regexFlags.value = sanitizeFlags(currentFlags + flag);
+      }
+
+      if (!regexFlags.value) {
+        regexFlags.value = "g";
+      }
+
+      updateFlagButtons();
+      updateAll();
+    });
+  });
+
+  templateBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      regexInput.value = btn.dataset.regex || "";
+      regexFlags.value = btn.dataset.flags || "g";
+      updateFlagButtons();
+      updateAll();
+    });
+  });
+
+  clearBtn.addEventListener("click", clearAll);
+
+  copyBtn.addEventListener("click", () => {
+    const pattern = regexInput.value.trim();
+    const flags = sanitizeFlags(regexFlags.value) || "g";
+    copyToClipboard(`/${pattern}/${flags}`, "已复制正则", "复制失败");
+  });
+
+  copyReplacedBtn.addEventListener("click", () => {
+    copyToClipboard(latestReplacedText, "已复制替换结果", "暂无可复制的替换结果");
+  });
+
+  highlightBtn.addEventListener("click", updateAll);
+  replaceBtn.addEventListener("click", updateAll);
+
+  maximizeBtn.addEventListener("click", () => toggleMaximized(true));
+  restoreBtn.addEventListener("click", () => toggleMaximized(false));
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && document.body.classList.contains("maximized")) {
+      toggleMaximized(false);
+    }
+  });
+
+  updateFlagButtons();
+  setInfoState();
 });

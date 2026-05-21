@@ -16,7 +16,7 @@
           "icon": "fa-code-compare"
         },
         {
-          "name": "正则测试器",
+          "name": "正则高亮替换",
           "path": "regex_tester.html",
           "icon": "fa-asterisk"
         },

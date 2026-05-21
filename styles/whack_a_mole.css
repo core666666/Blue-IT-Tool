@@ -219,7 +219,7 @@
     background:
         radial-gradient(circle at 50% 55%, #000 0 31%, transparent 32%),
         radial-gradient(circle at 50% 50%, #5f381f 0 55%, #2b160c 56% 100%);
-    overflow: hidden;
+    overflow: visible;
     cursor: pointer;
     box-shadow: inset 0 8px 0 rgba(255, 255, 255, 0.08), 4px 4px 0 #111;
     display: flex;
@@ -240,11 +240,11 @@
 .mole {
     position: absolute;
     left: 50%;
-    bottom: -8%;
-    width: 92%;
+    bottom: 4%;
+    width: 80%;
     max-width: 260px;
     height: auto;
-    transform: translateX(-50%) scale(0.18);
+    transform: translateX(-50%) scale(0.84);
     transform-origin: center bottom;
     transition: transform 0.16s ease, opacity 0.16s ease;
     filter: drop-shadow(2px 4px 0 rgba(0, 0, 0, 0.25));
@@ -256,7 +256,7 @@
 
 .hole.up .mole {
     opacity: 1;
-    transform: translateX(-50%) translateY(-30%) scale(1);
+    transform: translateX(-50%) translateY(0) scale(0.96);
 }
 
 .hole.hit {

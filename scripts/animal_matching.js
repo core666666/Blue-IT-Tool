@@ -8,17 +8,19 @@
   /* ---- 游戏配置 -------------------------------------------- */
 
   const ALL_ANIMALS = [
-    { emoji: '🐼', name: '熊猫' },
-    { emoji: '🐶', name: '小狗' },
-    { emoji: '🐱', name: '小猫' },
-    { emoji: '🐸', name: '青蛙' },
-    { emoji: '🐯', name: '老虎' },
-    { emoji: '🦊', name: '狐狸' },
-    { emoji: '🐰', name: '兔子' },
-    { emoji: '🦁', name: '狮子' },
-    { emoji: '🐨', name: '考拉' },
-    { emoji: '🐮', name: '奶牛' },
+    { key: 'panda', name: '熊猫', row: 0, col: 0 },
+    { key: 'dog', name: '小狗', row: 0, col: 1 },
+    { key: 'cat', name: '小猫', row: 0, col: 2 },
+    { key: 'frog', name: '青蛙', row: 0, col: 3 },
+    { key: 'tiger', name: '老虎', row: 0, col: 4 },
+    { key: 'fox', name: '狐狸', row: 1, col: 0 },
+    { key: 'rabbit', name: '兔子', row: 1, col: 1 },
+    { key: 'lion', name: '狮子', row: 1, col: 2 },
+    { key: 'koala', name: '考拉', row: 1, col: 3 },
+    { key: 'cow', name: '奶牛', row: 1, col: 4 },
   ];
+
+  const ANIMAL_SPRITE_SRC = '../assets/images/animal_matching/animal-pack.svg';
 
   // pairs: 配对数量, cols: 列数, rows: 行数
   // cardSize: 默认卡牌像素大小, emojiSize: emoji大小
@@ -150,7 +152,16 @@
     const selected = shuffle(ALL_ANIMALS).slice(0, cfg.pairs);
     const pairs = [...selected, ...selected];
     return shuffle(pairs).map(function (animal, idx) {
-      return { id: idx, emoji: animal.emoji, name: animal.name, flipped: false, matched: false, el: null };
+      return {
+        id: idx,
+        key: animal.key,
+        name: animal.name,
+        row: animal.row,
+        col: animal.col,
+        flipped: false,
+        matched: false,
+        el: null,
+      };
     });
   }
 
@@ -158,22 +169,25 @@
 
   function renderBoard(mode) {
     const cfg = MODES[mode];
-    const { cardSize, emojiSize } = calcResponsiveCardSize(mode);
+    const { cardSize } = calcResponsiveCardSize(mode);
 
     boardEl.innerHTML = '';
     boardEl.style.gridTemplateColumns = 'repeat(' + cfg.cols + ', ' + cardSize + 'px)';
     boardEl.style.setProperty('--am-card-size', cardSize + 'px');
-    boardEl.style.setProperty('--am-emoji-size', emojiSize + 'px');
 
     state.cards.forEach(function (card) {
       const cardEl = document.createElement('div');
       cardEl.className = 'am-card';
       cardEl.setAttribute('role', 'button');
-      cardEl.setAttribute('aria-label', '翻开卡片');
+      cardEl.setAttribute('aria-label', '翻开 ' + card.name + ' 卡片');
       cardEl.innerHTML = [
         '<div class="am-card-inner">',
         '  <div class="am-card-front">❓</div>',
-        '  <div class="am-card-back">' + card.emoji + '</div>',
+        '  <div class="am-card-back">',
+        '    <div class="am-animal-sprite" aria-hidden="true">',
+        '      <img class="am-animal-sprite-image" src="' + ANIMAL_SPRITE_SRC + '" alt="" style="--am-sprite-row:' + card.row + ';--am-sprite-col:' + card.col + ';" />',
+        '    </div>',
+        '  </div>',
         '</div>',
       ].join('');
 
@@ -207,7 +221,7 @@
     const c1 = state.flippedCards[0];
     const c2 = state.flippedCards[1];
 
-    if (c1.emoji === c2.emoji) {
+    if (c1.key === c2.key) {
       // 配对成功
       setTimeout(function () {
         c1.matched = true;

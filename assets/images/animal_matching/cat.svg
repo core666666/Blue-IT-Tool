@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="小猫">
+  <defs>
+    <style>
+      .outline{stroke:#6a3a58;stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
+      .eye{fill:#6a3a58}
+      .shine{fill:#fff}
+      .blush{fill:#ffb8c8}
+    </style>
+  </defs>
+  <ellipse cx="128" cy="214" rx="56" ry="14" fill="#000" opacity=".12"/>
+  <path d="M68 76l22-34 18 40" fill="#ffd8e7" class="outline"/>
+  <path d="M188 76l-22-34-18 40" fill="#ffd8e7" class="outline"/>
+  <circle cx="128" cy="128" r="82" fill="#ffeaf2" class="outline"/>
+  <path d="M84 138c0-26 18-42 44-42h0c26 0 44 16 44 42v18c0 22-20 38-44 38s-44-16-44-38v-18z" fill="#fff" opacity=".8"/>
+  <circle cx="100" cy="120" r="10" class="eye"/>
+  <circle cx="156" cy="120" r="10" class="eye"/>
+  <circle cx="96" cy="116" r="3" class="shine"/>
+  <circle cx="152" cy="116" r="3" class="shine"/>
+  <path d="M128 142l-10 10h20z" fill="#ff9bb4"/>
+  <path d="M128 152c0 0 10 8 17 16" fill="none" stroke="#ff9bb4" stroke-width="6" stroke-linecap="round"/>
+  <path d="M128 152c0 0-10 8-17 16" fill="none" stroke="#ff9bb4" stroke-width="6" stroke-linecap="round"/>
+  <ellipse cx="84" cy="156" rx="14" ry="10" class="blush"/>
+  <ellipse cx="172" cy="156" rx="14" ry="10" class="blush"/>
+  <path d="M84 184c20 10 36 14 44 14s24-4 44-14" fill="none" class="outline"/>
+</svg>

@@ -251,12 +251,39 @@
   color: rgba(255, 255, 255, 0.9);
 }
 
-/* Card back = face-up view with emoji */
+/* Card back = face-up view */
 .am-card-back {
-  background: #fff;
+  background: linear-gradient(135deg, #fffdf8 0%, #fff2fb 100%);
   transform: rotateY(180deg);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  position: relative;
+  overflow: hidden;
   font-size: var(--am-emoji-size, 52px);
+}
+
+/* 动物精灵图 */
+.am-animal-sprite {
+  position: absolute;
+  inset: 8%;
+  overflow: hidden;
+  border-radius: 18px;
+}
+
+.am-animal-sprite-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 500%;
+  height: 200%;
+  max-width: none;
+  max-height: none;
+  image-rendering: auto;
+  transform:
+    translate(calc(var(--am-sprite-col, 0) * -20%), calc(var(--am-sprite-row, 0) * -50%))
+    scale(0.78);
+  transform-origin: top left;
+  user-select: none;
+  pointer-events: none;
 }
 
 /* Matched card back */

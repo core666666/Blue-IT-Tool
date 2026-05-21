@@ -38,7 +38,7 @@
       score: 10,
       className: 'normal',
       effect: '',
-      image: '../assets/images/whack_a_mole/normal.svg',
+      image: '../assets/images/whack_a_mole/normal.png',
     },
     double: {
       label: '双倍分',

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="设计模式指挥官 - 通过软考场景题训练常见设计模式，理解单例、工厂、策略、观察者等模式在游戏中的落地方式。">
+    <meta name="keywords" content="设计模式,软考,游戏,单例模式,工厂模式,策略模式,观察者模式,状态模式">
+    <meta name="author" content="蔚蓝工具导航站">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="设计模式指挥官 - 蔚蓝工具导航站">
+    <meta property="og:description" content="通过场景题训练常见设计模式，结合游戏开发理解软考知识点。">
+    <meta property="og:image" content="../tools.png">
+    <meta property="og:type" content="website">
+    <title>设计模式指挥官 - 蔚蓝工具导航站</title>
+    <link rel="icon" type="image/png" href="../assets/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon/favicon-16x16.png">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles/common.css">
+    <link rel="stylesheet" href="../styles/sidebar.css">
+    <link rel="stylesheet" href="../styles/design_pattern_quest.css">
+    <script src="../scripts/umami-loader.js"></script>
+</head>
+<body>
+    <main class="dpq-page">
+        <section class="dpq-hero">
+            <div class="dpq-badge">软考 · 设计模式训练</div>
+            <h1>🧠 设计模式指挥官</h1>
+            <p>把单例、工厂、策略、观察者等模式直接放进游戏场景。每一题都对应一个真实开发情境，适合边玩边背、边做边理解。</p>
+        </section>
+
+        <section class="dpq-dashboard">
+            <div class="dpq-stats">
+                <div class="dpq-stat">
+                    <span class="label">得分</span>
+                    <span class="value" id="scoreValue">0</span>
+                </div>
+                <div class="dpq-stat">
+                    <span class="label">最佳</span>
+                    <span class="value" id="bestScoreValue">0</span>
+                </div>
+                <div class="dpq-stat">
+                    <span class="label">生命</span>
+                    <span class="value" id="livesValue">3</span>
+                </div>
+                <div class="dpq-stat">
+                    <span class="label">关卡</span>
+                    <span class="value" id="roundValue">1</span>
+                </div>
+                <div class="dpq-stat">
+                    <span class="label">连击</span>
+                    <span class="value" id="streakValue">0</span>
+                </div>
+                <div class="dpq-stat">
+                    <span class="label">剩余时间</span>
+                    <span class="value" id="timeValue">12</span>
+                </div>
+            </div>
+
+            <div class="dpq-bar">
+                <div class="dpq-bar-head">
+                    <span>本题倒计时</span>
+                    <strong id="statusPill">等待开始</strong>
+                </div>
+                <div class="dpq-progress" aria-hidden="true">
+                    <div class="dpq-progress-fill" id="timeFill"></div>
+                </div>
+            </div>
+
+            <div class="dpq-controls">
+                <button class="dpq-btn primary" id="startBtn">开始试炼</button>
+                <button class="dpq-btn secondary" id="restartBtn">重新开始</button>
+                <div class="dpq-note">
+                    规则：每题 4 个选项，答对加分，答错扣命。
+                </div>
+            </div>
+        </section>
+
+        <section class="dpq-main">
+            <div class="dpq-stage">
+                <div class="dpq-stage-head">
+                    <div>
+                        <div class="dpq-stage-kicker">当前任务</div>
+                        <h2 id="roundTitle">第 1 关</h2>
+                    </div>
+                    <div class="dpq-stage-hint" id="roundHint">点击开始按钮进入试炼</div>
+                </div>
+
+                <p class="dpq-prompt" id="roundPrompt">你还没有开始游戏。</p>
+
+                <div class="dpq-options" id="optionList"></div>
+
+                <div class="dpq-feedback" id="feedbackBox">点击开始按钮，进入设计模式试炼。</div>
+            </div>
+
+            <aside class="dpq-reference">
+                <div class="dpq-reference-head">
+                    <h3>模式速查卡</h3>
+                    <p>先看说明，再做题，慢慢形成条件反射。</p>
+                </div>
+                <div class="dpq-cards" id="patternCards"></div>
+            </aside>
+        </section>
+
+        <section class="dpq-footer">
+            <div class="dpq-foot-card">
+                <h3>适合谁</h3>
+                <p>准备软考、面试，或者想把设计模式真正用进项目的人。</p>
+            </div>
+            <div class="dpq-foot-card">
+                <h3>怎么练</h3>
+                <p>先记住“场景关键词”，再看选项里的模式名称，建立快速判断能力。</p>
+            </div>
+            <div class="dpq-foot-card">
+                <h3>项目思路</h3>
+                <p>后续可以扩展为“关卡制复习系统”，把更多模式和类图题接进去。</p>
+            </div>
+        </section>
+    </main>
+
+    <div class="dpq-overlay" id="resultOverlay" aria-hidden="true">
+        <div class="dpq-result">
+            <div class="result-emoji" id="resultEmoji">🏁</div>
+            <h2 id="resultTitle">试炼结束</h2>
+            <p id="resultText">你的结果会显示在这里。</p>
+            <div class="dpq-summary" id="summaryBox"></div>
+            <div class="result-actions">
+                <button class="dpq-btn primary" id="playAgainBtn">再来一局</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../scripts/sidebar.js"></script>
+    <script src="../scripts/design_pattern_quest.js"></script>
+</body>
+</html>

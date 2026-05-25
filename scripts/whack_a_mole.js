@@ -32,6 +32,14 @@
     },
   };
 
+  const LEVEL_CONFIG = [
+    { name: '第 1 关', targetScore: 80, spawnBoost: 0, visibilityBoost: 0, specialBias: 0.02, comboCap: 20, timeBonus: 4 },
+    { name: '第 2 关', targetScore: 140, spawnBoost: -70, visibilityBoost: -60, specialBias: 0.04, comboCap: 24, timeBonus: 5 },
+    { name: '第 3 关', targetScore: 210, spawnBoost: -120, visibilityBoost: -120, specialBias: 0.06, comboCap: 28, timeBonus: 6 },
+    { name: '第 4 关', targetScore: 290, spawnBoost: -170, visibilityBoost: -170, specialBias: 0.08, comboCap: 32, timeBonus: 7 },
+    { name: '第 5 关', targetScore: 380, spawnBoost: -230, visibilityBoost: -220, specialBias: 0.10, comboCap: 36, timeBonus: 0 },
+  ];
+
   const MOLE_TYPES = {
     normal: {
       label: '普通地鼠',
@@ -72,12 +80,17 @@
     combo: 0,
     lastHitAt: 0,
     difficulty: 'normal',
+    level: 1,
+    levelScore: 0,
+    levelTarget: LEVEL_CONFIG[0].targetScore,
+    levelLabel: LEVEL_CONFIG[0].name,
     spawnTimer: null,
     countdownTimer: null,
     currentMoles: new Map(),
     freezeUntil: 0,
     doubleUntil: 0,
     lastSpawnAt: 0,
+    completed: false,
   };
 
   let boardEl;
@@ -85,6 +98,8 @@
   let timeLeftEl;
   let comboEl;
   let bestScoreEl;
+  let levelEl;
+  let progressEl;
   let effectTextEl;
   let resultOverlayEl;
   let resultTextEl;
@@ -100,6 +115,8 @@
     timeLeftEl = document.getElementById('timeLeft');
     comboEl = document.getElementById('combo');
     bestScoreEl = document.getElementById('bestScore');
+    levelEl = document.getElementById('level');
+    progressEl = document.getElementById('progress');
     effectTextEl = document.getElementById('effectText');
     resultOverlayEl = document.getElementById('resultOverlay');
     resultTextEl = document.getElementById('resultText');
@@ -112,6 +129,8 @@
     const storedBest = Number(localStorage.getItem(STORAGE_KEY) || '0');
     state.bestScore = Number.isFinite(storedBest) ? storedBest : 0;
     bestScoreEl.textContent = String(state.bestScore);
+    updateLevelUI();
+    updateProgressUI();
   }
 
   function bindEvents() {
@@ -154,8 +173,13 @@
     resetState();
     state.running = true;
     state.ended = false;
+    state.completed = false;
     state.timeLeft = GAME_DURATION;
     state.score = 0;
+    state.level = 1;
+    state.levelScore = 0;
+    state.levelTarget = LEVEL_CONFIG[0].targetScore;
+    state.levelLabel = LEVEL_CONFIG[0].name;
     state.combo = 0;
     state.lastHitAt = 0;
     state.freezeUntil = 0;
@@ -166,6 +190,8 @@
     hideResult();
     clearBoard();
     effectTextEl.textContent = '游戏开始！快点地鼠！';
+    updateLevelUI();
+    updateProgressUI();
 
     startCountdown();
     startSpawning();
@@ -190,7 +216,7 @@
   }
 
   function resumeTimers() {
-    if (state.timeLeft <= 0 || state.ended) return;
+    if (state.timeLeft <= 0 || state.ended || state.completed) return;
     state.running = true;
     startCountdown();
     startSpawning();
@@ -223,7 +249,7 @@
       updateUI();
 
       if (state.timeLeft <= 0) {
-        endGame();
+        endGame(false);
       }
     }, 1000);
   }
@@ -231,9 +257,8 @@
   function startSpawning() {
     if (state.spawnTimer) clearInterval(state.spawnTimer);
 
-    const config = DIFFICULTY_CONFIG[state.difficulty];
     const tick = () => {
-      if (!state.running || state.timeLeft <= 0) return;
+      if (!state.running || state.timeLeft <= 0 || state.completed) return;
 
       const now = Date.now();
       if (now < state.freezeUntil) {
@@ -241,7 +266,7 @@
         return;
       }
 
-      const spawnDelay = randomBetween(config.spawnMin, config.spawnMax);
+      const spawnDelay = getSpawnDelay();
       if (now - state.lastSpawnAt < spawnDelay) return;
 
       spawnRandomMole();
@@ -249,6 +274,28 @@
     };
 
     state.spawnTimer = setInterval(tick, 120);
+  }
+
+  function getCurrentLevelConfig() {
+    return LEVEL_CONFIG[Math.min(state.level - 1, LEVEL_CONFIG.length - 1)];
+  }
+
+  function getSpawnDelay() {
+    const difficulty = DIFFICULTY_CONFIG[state.difficulty];
+    const levelConfig = getCurrentLevelConfig();
+
+    const minDelay = Math.max(280, difficulty.spawnMin + levelConfig.spawnBoost);
+    const maxDelay = Math.max(minDelay + 120, difficulty.spawnMax + levelConfig.spawnBoost);
+    return randomBetween(minDelay, maxDelay);
+  }
+
+  function getVisibleTime() {
+    const difficulty = DIFFICULTY_CONFIG[state.difficulty];
+    const levelConfig = getCurrentLevelConfig();
+
+    const minTime = Math.max(350, difficulty.moleVisibleMin + levelConfig.visibilityBoost);
+    const maxTime = Math.max(minTime + 120, difficulty.moleVisibleMax + levelConfig.visibilityBoost);
+    return randomBetween(minTime, maxTime);
   }
 
   function spawnRandomMole() {
@@ -268,11 +315,14 @@
   }
 
   function chooseMoleType() {
+    const levelConfig = getCurrentLevelConfig();
     const roll = Math.random();
+    const specialBias = levelConfig.specialBias;
+    const difficultyBoost = state.difficulty === 'crazy' ? 0.03 : state.difficulty === 'fast' ? 0.015 : 0;
 
-    if (roll < 0.07) return 'bomb';
-    if (roll < 0.18) return 'freeze';
-    if (roll < 0.33) return 'double';
+    if (roll < 0.06 + specialBias + difficultyBoost) return 'bomb';
+    if (roll < 0.18 + specialBias + difficultyBoost) return 'freeze';
+    if (roll < 0.34 + specialBias) return 'double';
     return 'normal';
   }
 
@@ -292,12 +342,7 @@
     hole.classList.add('up');
     applyHoleStyle(hole, type);
 
-    const visibleTime = randomBetween(
-      DIFFICULTY_CONFIG[state.difficulty].moleVisibleMin,
-      DIFFICULTY_CONFIG[state.difficulty].moleVisibleMax
-    );
-
-    const hideTimer = setTimeout(() => hideMole(hole, false), visibleTime);
+    const hideTimer = setTimeout(() => hideMole(hole, false), getVisibleTime());
     state.currentMoles.set(hole, {
       mole,
       type,
@@ -327,7 +372,7 @@
   }
 
   function handleHoleClick(hole) {
-    if (!state.running || state.timeLeft <= 0) return;
+    if (!state.running || state.timeLeft <= 0 || state.completed) return;
     if (!hole.classList.contains('up')) return;
 
     const moleState = state.currentMoles.get(hole);
@@ -340,11 +385,13 @@
     hole.classList.add('hit');
 
     const isDoubleActive = Date.now() < state.doubleUntil;
+    const levelConfig = getCurrentLevelConfig();
     const baseScore = moleInfo.score + DIFFICULTY_CONFIG[state.difficulty].hitBonus;
-    const comboBonus = Math.min(state.combo * 2, 20);
+    const comboBonus = Math.min(state.combo * 2, levelConfig.comboCap);
     const earnedScore = Math.max(1, baseScore + comboBonus) * (isDoubleActive ? 2 : 1);
 
     state.score += earnedScore;
+    state.levelScore += earnedScore;
     state.combo += 1;
     state.lastHitAt = Date.now();
 
@@ -359,14 +406,16 @@
     }
 
     updateUI();
+    updateProgressUI();
     toast(`命中 ${moleInfo.label} +${earnedScore}`);
 
     setTimeout(() => hideMole(hole, true), 160);
     spawnReplacementAfterHit();
+    checkLevelAdvance();
   }
 
   function spawnReplacementAfterHit() {
-    if (!state.running || state.timeLeft <= 0) return;
+    if (!state.running || state.timeLeft <= 0 || state.completed) return;
     setTimeout(() => {
       if (state.running && Date.now() >= state.freezeUntil) {
         spawnRandomMole();
@@ -419,11 +468,14 @@
       clearTimeout(moleState.hideTimer);
       if (targetHole !== hole) {
         state.score += 5;
+        state.levelScore += 5;
       }
       setTimeout(() => hideMole(targetHole, true), 100);
     });
 
     updateUI();
+    updateProgressUI();
+    checkLevelAdvance();
   }
 
   function getNeighbourHoles(index) {
@@ -473,7 +525,41 @@
     }
   }
 
-  function endGame() {
+  function checkLevelAdvance() {
+    while (state.levelScore >= state.levelTarget && state.level < LEVEL_CONFIG.length && state.running && !state.completed) {
+      advanceLevel();
+    }
+
+    if (state.levelScore >= state.levelTarget && state.level >= LEVEL_CONFIG.length && state.running && !state.completed) {
+      finishChallenge();
+    }
+  }
+
+  function advanceLevel() {
+    const currentIndex = state.level - 1;
+    const currentConfig = LEVEL_CONFIG[currentIndex];
+    state.level += 1;
+    state.levelScore = 0;
+    state.levelTarget = LEVEL_CONFIG[state.level - 1].targetScore;
+
+    const bonus = currentConfig.timeBonus || 0;
+    if (bonus > 0) {
+      state.timeLeft = Math.min(99, state.timeLeft + bonus);
+    }
+
+    effectTextEl.textContent = `${currentConfig.name} 通过！进入 ${LEVEL_CONFIG[state.level - 1].name}`;
+    updateLevelUI();
+    updateProgressUI();
+    updateUI();
+    toast(`${currentConfig.name} 通过！+${bonus}秒`);
+  }
+
+  function finishChallenge() {
+    state.completed = true;
+    endGame(true);
+  }
+
+  function endGame(completed = false) {
     if (state.ended) return;
 
     state.ended = true;
@@ -485,6 +571,7 @@
 
     clearBoard();
     updateUI();
+    updateProgressUI();
 
     if (state.score > state.bestScore) {
       state.bestScore = state.score;
@@ -492,7 +579,13 @@
       bestScoreEl.textContent = String(state.bestScore);
     }
 
-    resultTextEl.textContent = `你的得分是 ${state.score}${state.score === state.bestScore ? '，刷新了最佳记录！' : ''}`;
+    if (completed) {
+      resultTextEl.textContent = `恭喜通关！你完成了全部 ${LEVEL_CONFIG.length} 关，最终得分 ${state.score}。${state.score === state.bestScore ? '并刷新了最佳记录！' : ''}`;
+      effectTextEl.textContent = '挑战完成！';
+    } else {
+      resultTextEl.textContent = `你的得分是 ${state.score}${state.score === state.bestScore ? '，刷新了最佳记录！' : ''}`;
+    }
+
     showResult();
   }
 
@@ -506,11 +599,30 @@
     resultOverlayEl.setAttribute('aria-hidden', 'true');
   }
 
+  function updateLevelUI() {
+    if (levelEl) {
+      levelEl.textContent = String(state.level);
+    }
+
+    if (progressEl) {
+      const levelName = LEVEL_CONFIG[Math.min(state.level - 1, LEVEL_CONFIG.length - 1)].name;
+      progressEl.textContent = `${levelName} / ${state.levelScore}/${state.levelTarget}`;
+    }
+  }
+
+  function updateProgressUI() {
+    if (!progressEl) return;
+    const progressPercent = Math.min(100, Math.round((state.levelScore / state.levelTarget) * 100));
+    const levelName = LEVEL_CONFIG[Math.min(state.level - 1, LEVEL_CONFIG.length - 1)].name;
+    progressEl.textContent = `${levelName} ${progressPercent}% (${state.levelScore}/${state.levelTarget})`;
+  }
+
   function updateUI() {
     scoreEl.textContent = String(state.score);
     timeLeftEl.textContent = String(Math.max(0, state.timeLeft));
     comboEl.textContent = String(state.combo);
     bestScoreEl.textContent = String(state.bestScore);
+    updateLevelUI();
   }
 
   function toast(message) {
@@ -538,6 +650,7 @@
     bindEvents();
     effectTextEl.textContent = '准备开始';
     updateUI();
+    updateProgressUI();
   }
 
   document.addEventListener('DOMContentLoaded', init);

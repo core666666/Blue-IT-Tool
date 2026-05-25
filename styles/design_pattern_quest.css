@@ -1,0 +1,579 @@
+/* 设计模式指挥官样式 */
+
+.dpq-page {
+    min-height: 100vh;
+    padding: 24px 16px 40px;
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.6), transparent 34%),
+        linear-gradient(180deg, #fff6d8 0%, #dff6ff 50%, #f2e7ff 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    box-sizing: border-box;
+}
+
+.dpq-hero {
+    width: min(1180px, 100%);
+    text-align: center;
+    padding: 18px 16px 8px;
+}
+
+.dpq-badge {
+    display: inline-block;
+    padding: 8px 14px;
+    border: 3px solid #111;
+    background: #ffdf5d;
+    color: #111;
+    font-weight: 900;
+    font-size: 14px;
+    border-radius: 999px;
+    box-shadow: 4px 4px 0 #111;
+    margin-bottom: 14px;
+}
+
+.dpq-hero h1 {
+    margin: 0;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    line-height: 1.1;
+    color: #111;
+    text-shadow: 3px 3px 0 rgba(255, 255, 255, 0.8);
+}
+
+.dpq-hero p {
+    margin: 10px auto 0;
+    max-width: 780px;
+    color: #333;
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+.dpq-dashboard {
+    width: min(1180px, 100%);
+    border: 4px solid #111;
+    background: #fff;
+    box-shadow: 8px 8px 0 #111;
+    border-radius: 22px;
+    padding: 18px;
+}
+
+.dpq-stats {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.dpq-stat {
+    border: 3px solid #111;
+    background: #fff8f0;
+    border-radius: 16px;
+    padding: 12px 10px;
+    text-align: center;
+    box-shadow: 4px 4px 0 #111;
+}
+
+.dpq-stat .label {
+    display: block;
+    font-size: 13px;
+    color: #444;
+    margin-bottom: 8px;
+    font-weight: 700;
+}
+
+.dpq-stat .value {
+    display: block;
+    font-size: 28px;
+    font-weight: 900;
+    color: #111;
+    line-height: 1;
+}
+
+.dpq-bar {
+    border: 3px solid #111;
+    border-radius: 18px;
+    background: #f9fbff;
+    padding: 12px 14px;
+    box-shadow: 4px 4px 0 #111;
+    margin-bottom: 16px;
+}
+
+.dpq-bar-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    font-weight: 800;
+    color: #111;
+    margin-bottom: 10px;
+}
+
+#statusPill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 3px solid #111;
+    background: #ffef79;
+    box-shadow: 3px 3px 0 #111;
+    font-size: 13px;
+    text-align: center;
+}
+
+.dpq-progress {
+    height: 18px;
+    border: 3px solid #111;
+    border-radius: 999px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.dpq-progress-fill {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #7cff6b 0%, #ffe66d 50%, #ff8f70 100%);
+    transition: width 0.2s linear;
+}
+
+.dpq-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+.dpq-btn {
+    border: 3px solid #111;
+    border-radius: 14px;
+    padding: 12px 18px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    box-shadow: 4px 4px 0 #111;
+    font-size: 16px;
+}
+
+.dpq-btn:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 6px 6px 0 #111;
+}
+
+.dpq-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 #111;
+}
+
+.dpq-btn.primary {
+    background: #7cff6b;
+    color: #111;
+}
+
+.dpq-btn.secondary {
+    background: #fff;
+    color: #111;
+}
+
+.dpq-note {
+    flex: 1;
+    min-width: 240px;
+    border: 3px dashed #111;
+    border-radius: 14px;
+    background: #fffef5;
+    padding: 12px 14px;
+    color: #333;
+    font-weight: 700;
+    line-height: 1.6;
+}
+
+.dpq-main {
+    width: min(1180px, 100%);
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.9fr);
+    gap: 14px;
+}
+
+.dpq-stage,
+.dpq-reference {
+    border: 4px solid #111;
+    border-radius: 24px;
+    background: #fff;
+    box-shadow: 8px 8px 0 #111;
+    padding: 18px;
+}
+
+.dpq-stage-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.dpq-stage-kicker {
+    display: inline-block;
+    margin-bottom: 8px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 2px solid #111;
+    background: #ffef79;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.dpq-stage h2 {
+    margin: 0;
+    font-size: 28px;
+    line-height: 1.2;
+    color: #111;
+}
+
+.dpq-stage-hint {
+    border: 3px solid #111;
+    border-radius: 14px;
+    background: #f9fbff;
+    padding: 10px 12px;
+    font-weight: 800;
+    color: #333;
+    box-shadow: 3px 3px 0 #111;
+    min-width: 170px;
+    text-align: center;
+}
+
+.dpq-prompt {
+    margin: 0 0 14px;
+    padding: 16px;
+    border: 3px solid #111;
+    border-radius: 18px;
+    background: #fff8f0;
+    color: #111;
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1.7;
+}
+
+.dpq-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.dpq-option {
+    border: 3px solid #111;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 4px 4px 0 #111;
+    padding: 14px 14px 12px;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.dpq-option:hover:not(.disabled) {
+    transform: translate(-1px, -1px);
+    box-shadow: 6px 6px 0 #111;
+    background: #fffef2;
+}
+
+.dpq-option:active:not(.disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 #111;
+}
+
+.dpq-option.disabled {
+    cursor: default;
+    opacity: 0.95;
+}
+
+.dpq-option.correct {
+    background: #d6ffca;
+}
+
+.dpq-option.wrong {
+    background: #ffd3d3;
+}
+
+.dpq-option-name {
+    font-weight: 900;
+    font-size: 18px;
+    color: #111;
+}
+
+.dpq-option-tag {
+    display: inline-block;
+    width: fit-content;
+    border: 2px solid #111;
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 13px;
+    font-weight: 800;
+    background: #f3f4f6;
+    color: #111;
+}
+
+.dpq-feedback {
+    margin-top: 14px;
+    border: 3px solid #111;
+    border-radius: 18px;
+    background: #f9fbff;
+    padding: 14px 16px;
+    min-height: 68px;
+    box-shadow: 4px 4px 0 #111;
+    color: #333;
+    font-size: 15px;
+    line-height: 1.7;
+    font-weight: 700;
+}
+
+.dpq-reference-head h3 {
+    margin: 0;
+    font-size: 20px;
+    color: #111;
+}
+
+.dpq-reference-head p {
+    margin: 8px 0 0;
+    color: #444;
+    line-height: 1.7;
+    font-size: 14px;
+}
+
+.dpq-cards {
+    display: grid;
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.dpq-card {
+    border: 3px solid #111;
+    border-radius: 18px;
+    background:
+        linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.9)),
+        linear-gradient(135deg, color-mix(in srgb, var(--card-color) 28%, #ffffff), #ffffff);
+    box-shadow: 4px 4px 0 #111;
+    padding: 14px 14px 12px;
+}
+
+.dpq-card-title {
+    font-weight: 900;
+    font-size: 18px;
+    color: #111;
+    margin-bottom: 6px;
+}
+
+.dpq-card-tag {
+    display: inline-block;
+    border: 2px solid #111;
+    border-radius: 999px;
+    background: var(--card-color);
+    color: #111;
+    font-weight: 900;
+    font-size: 13px;
+    padding: 4px 10px;
+    margin-bottom: 10px;
+}
+
+.dpq-card p {
+    margin: 0;
+    color: #333;
+    line-height: 1.65;
+    font-size: 14px;
+}
+
+.dpq-footer {
+    width: min(1180px, 100%);
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.dpq-foot-card {
+    border: 3px solid #111;
+    background: #fff;
+    border-radius: 18px;
+    padding: 14px 16px;
+    box-shadow: 4px 4px 0 #111;
+}
+
+.dpq-foot-card h3 {
+    margin: 0 0 8px;
+    font-size: 16px;
+    color: #111;
+}
+
+.dpq-foot-card p {
+    margin: 0;
+    color: #444;
+    line-height: 1.7;
+    font-size: 14px;
+}
+
+.dpq-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+}
+
+.dpq-overlay.show {
+    display: flex;
+}
+
+.dpq-result {
+    width: min(520px, 100%);
+    border: 4px solid #111;
+    background: #fff;
+    border-radius: 24px;
+    box-shadow: 10px 10px 0 #111;
+    text-align: center;
+    padding: 28px 22px;
+}
+
+.result-emoji {
+    font-size: 64px;
+    margin-bottom: 8px;
+}
+
+.dpq-result h2 {
+    margin: 0 0 10px;
+    font-size: 28px;
+    color: #111;
+}
+
+.dpq-result p {
+    margin: 0 0 16px;
+    font-size: 16px;
+    color: #333;
+    line-height: 1.6;
+}
+
+.dpq-summary {
+    margin: 14px 0 18px;
+}
+
+.dpq-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.dpq-summary-item {
+    border: 3px solid #111;
+    border-radius: 16px;
+    background: #f9fbff;
+    box-shadow: 3px 3px 0 #111;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.dpq-summary-item strong {
+    font-size: 14px;
+    color: #111;
+}
+
+.dpq-summary-item span {
+    font-weight: 800;
+    color: #444;
+    font-size: 13px;
+}
+
+.result-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 980px) {
+    .dpq-stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .dpq-main {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 720px) {
+    .dpq-page {
+        padding: 16px 12px 32px;
+    }
+
+    .dpq-dashboard,
+    .dpq-stage,
+    .dpq-reference,
+    .dpq-hero {
+        box-shadow: 6px 6px 0 #111;
+        border-radius: 18px;
+    }
+
+    .dpq-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .dpq-options {
+        grid-template-columns: 1fr;
+    }
+
+    .dpq-stage-head {
+        flex-direction: column;
+    }
+
+    .dpq-stage-hint {
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+    }
+
+    .dpq-footer {
+        grid-template-columns: 1fr;
+    }
+
+    .dpq-note {
+        width: 100%;
+    }
+
+    .dpq-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .dpq-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .dpq-summary-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 420px) {
+    .dpq-stat .value {
+        font-size: 24px;
+    }
+
+    .dpq-stage h2,
+    .dpq-result h2 {
+        font-size: 24px;
+    }
+
+    .dpq-prompt {
+        font-size: 16px;
+    }
+
+    .dpq-card-title,
+    .dpq-option-name {
+        font-size: 16px;
+    }
+}

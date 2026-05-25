@@ -45,7 +45,8 @@
           { "name": "数字华容道", "path": "number_slide_puzzle.html", "icon": "fa-puzzle-piece" },
           { "name": "无尽防御", "path": "InfiniteDefense.html", "icon": "fa-shield-alt" },
           { "name": "无尽射击", "path": "InfiniteShooting.html", "icon": "fa-crosshairs" },
-          { "name": "打地鼠", "path": "whack_a_mole.html", "icon": "fa-hammer" }
+          { "name": "打地鼠", "path": "whack_a_mole.html", "icon": "fa-hammer" },
+          { "name": "设计模式指挥官", "path": "design_pattern_quest.html", "icon": "fa-chess" }
         ]
       }
     ]

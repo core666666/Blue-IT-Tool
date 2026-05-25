@@ -139,6 +139,11 @@
           "icon": "fa-hammer"
         },
         {
+          "name": "设计模式指挥官",
+          "path": "design_pattern_quest.html",
+          "icon": "fa-chess"
+        },
+        {
           "name": "路径建筑师",
           "path": "patharchitectgame.html",
           "icon": "fa-road"

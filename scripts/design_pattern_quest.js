@@ -5,6 +5,21 @@
   const ROUND_TIME = 15;
   const MAX_LIVES = 3;
   const SCORE_PER_CORRECT = 10;
+  const HINT_CHARGES = 2;
+  const FREEZE_CHARGES = 1;
+  const SHIELD_CHARGES = 1;
+  const DOUBLE_CHARGES = 1;
+  const FREEZE_DURATION = 3000;
+  const BOSS_INTERVAL = 5;
+  const BOSS_BONUS = 15;
+  const BOSS_LIFE_PENALTY = 2;
+
+  const STREAK_REWARDS = [
+    { threshold: 3, type: 'hint', amount: 1, label: '3 连胜奖励：提示卡 +1' },
+    { threshold: 5, type: 'shield', amount: 1, label: '5 连胜奖励：护盾卡 +1' },
+    { threshold: 8, type: 'double', amount: 1, label: '8 连胜奖励：双倍分 +1' },
+    { threshold: 10, type: 'freeze', amount: 1, label: '10 连胜奖励：冻结卡 +1' },
+  ];
 
   const PATTERNS = {
     simple_factory: {
@@ -176,33 +191,6 @@
       desc: '把对对象结构的操作从对象本身分离出来。'
     },
   };
-
-  const PATTERN_ORDER = [
-    'simple_factory',
-    'factory_method',
-    'abstract_factory',
-    'builder',
-    'prototype',
-    'singleton',
-    'adapter',
-    'bridge',
-    'composite',
-    'decorator',
-    'facade',
-    'flyweight',
-    'proxy',
-    'chain_of_responsibility',
-    'command',
-    'interpreter',
-    'iterator',
-    'mediator',
-    'memento',
-    'observer',
-    'state',
-    'strategy',
-    'template_method',
-    'visitor',
-  ];
 
   const QUESTIONS = [
     {
@@ -383,9 +371,20 @@
     timeLeft: ROUND_TIME,
     streak: 0,
     roundOrder: [],
+    mistakes: [],
     timerId: null,
+    freezeTimeoutId: null,
     locked: false,
     finished: false,
+    hintCharges: HINT_CHARGES,
+    freezeCharges: FREEZE_CHARGES,
+    shieldCharges: SHIELD_CHARGES,
+    doubleCharges: DOUBLE_CHARGES,
+    shieldActive: false,
+    doubleActive: false,
+    hintUsedThisRound: false,
+    rewardedMilestones: new Set(),
+    bossCleared: 0,
   };
 
   let scoreEl;
@@ -402,12 +401,17 @@
   let feedbackEl;
   let startBtnEl;
   let restartBtnEl;
+  let hintBtnEl;
+  let freezeBtnEl;
+  let shieldBtnEl;
+  let doubleBtnEl;
   let playAgainBtnEl;
   let resultOverlayEl;
   let resultTitleEl;
   let resultTextEl;
   let resultEmojiEl;
   let summaryEl;
+  let reviewBoxEl;
   let patternCardsEl;
   let statusPillEl;
 
@@ -426,12 +430,17 @@
     feedbackEl = document.getElementById('feedbackBox');
     startBtnEl = document.getElementById('startBtn');
     restartBtnEl = document.getElementById('restartBtn');
+    hintBtnEl = document.getElementById('hintBtn');
+    freezeBtnEl = document.getElementById('freezeBtn');
+    shieldBtnEl = document.getElementById('shieldBtn');
+    doubleBtnEl = document.getElementById('doubleBtn');
     playAgainBtnEl = document.getElementById('playAgainBtn');
     resultOverlayEl = document.getElementById('resultOverlay');
     resultTitleEl = document.getElementById('resultTitle');
     resultTextEl = document.getElementById('resultText');
     resultEmojiEl = document.getElementById('resultEmoji');
     summaryEl = document.getElementById('summaryBox');
+    reviewBoxEl = document.getElementById('reviewBox');
     patternCardsEl = document.getElementById('patternCards');
     statusPillEl = document.getElementById('statusPill');
 
@@ -442,6 +451,10 @@
   function bindEvents() {
     startBtnEl.addEventListener('click', startGame);
     restartBtnEl.addEventListener('click', restartGame);
+    hintBtnEl.addEventListener('click', useHint);
+    freezeBtnEl.addEventListener('click', useFreeze);
+    shieldBtnEl.addEventListener('click', activateShield);
+    doubleBtnEl.addEventListener('click', activateDouble);
     playAgainBtnEl.addEventListener('click', () => {
       hideResult();
       startGame();
@@ -455,37 +468,71 @@
     state.lives = MAX_LIVES;
     state.score = 0;
     state.streak = 0;
+    state.mistakes = [];
     state.locked = false;
     state.finished = false;
+    state.hintCharges = HINT_CHARGES;
+    state.freezeCharges = FREEZE_CHARGES;
+    state.shieldCharges = SHIELD_CHARGES;
+    state.doubleCharges = DOUBLE_CHARGES;
+    state.shieldActive = false;
+    state.doubleActive = false;
+    state.hintUsedThisRound = false;
+    state.rewardedMilestones = new Set();
+    state.bossCleared = 0;
     renderRound();
     startTimer();
     updateUI();
     hideResult();
-    setStatus('24种设计模式学习试炼已开始');
+    setStatus('设计模式试炼已开始');
   }
 
   function restartGame() {
     stopTimer();
+    clearFreezeTimeout();
     startGame();
   }
 
   function resetGame() {
     stopTimer();
+    clearFreezeTimeout();
     clearOptionButtons();
-    feedbackEl.textContent = '点击开始按钮，进入 24 种设计模式学习试炼。';
+    feedbackEl.textContent = '点击开始按钮，进入设计模式软考单选题试炼。';
+  }
+
+  function isBossRound(roundNumber) {
+    return roundNumber > 0 && roundNumber % BOSS_INTERVAL === 0;
+  }
+
+  function getCurrentQuestion() {
+    return QUESTIONS[state.roundOrder[state.roundIndex]];
+  }
+
+  function getRoundNumber() {
+    return state.roundIndex + 1;
   }
 
   function renderRound() {
-    const question = QUESTIONS[state.roundOrder[state.roundIndex]];
-    const roundNo = state.roundIndex + 1;
-    roundTitleEl.textContent = `第 ${roundNo} 关`;
-    roundPromptEl.textContent = question.prompt;
-    roundHintEl.textContent = question.title;
-    feedbackEl.textContent = '请选择最合适的设计模式。';
+    const question = getCurrentQuestion();
+    const roundNo = getRoundNumber();
+    const bossRound = isBossRound(roundNo);
+
+    roundTitleEl.textContent = bossRound ? `Boss 试炼 · 第 ${roundNo} 关` : `第 ${roundNo} 关 · 软考单选题`;
+    roundPromptEl.innerHTML = `
+      <span class="dpq-exam-chip ${bossRound ? 'boss' : ''}">${bossRound ? 'BOSS 试炼' : '单选题'}</span>
+      <strong class="dpq-exam-title">${question.title}</strong>
+      <span class="dpq-exam-stem">${question.prompt}</span>
+      <span class="dpq-exam-note">${bossRound ? 'Boss 题奖励更高，失误惩罚更重。' : '请从 4 个选项中选出最符合题意的一项。'}</span>
+    `;
+    roundHintEl.textContent = bossRound ? 'Boss 试炼：高奖励高风险' : '考点：设计模式场景判断';
+    feedbackEl.textContent = bossRound
+      ? 'Boss 试炼已开启，答对会获得额外奖励。'
+      : '请先抓住题干里的场景关键词，再选择最符合题意的模式。';
     state.timeLeft = ROUND_TIME;
     state.locked = false;
+    state.hintUsedThisRound = false;
     renderOptions(question.options);
-    renderPatternCards(question);
+    renderPatternCards(question, bossRound);
     updateUI();
   }
 
@@ -503,26 +550,41 @@
     });
   }
 
-  function renderPatternCards(question) {
+  function renderPatternCards(question, bossRound) {
     const keys = Array.from(new Set([...question.options, question.answer]));
-    patternCardsEl.innerHTML = keys.map((key) => {
+    const cards = bossRound
+      ? [{ name: 'Boss 试炼', group: '机制', tag: '奖励更高', color: '#111', desc: 'Boss 关会放大你的收益，也会放大你的失误。' }]
+      : [];
+
+    cards.push(...keys.map((key) => {
       const pattern = PATTERNS[key];
-      return `
-        <article class="dpq-card" style="--card-color:${pattern.color}">
-          <div class="dpq-card-title">${pattern.name}</div>
-          <div class="dpq-card-tag">${pattern.group} · ${pattern.tag}</div>
-          <p>${pattern.desc}</p>
-        </article>
-      `;
-    }).join('');
+      return {
+        name: pattern.name,
+        group: pattern.group,
+        tag: pattern.tag,
+        color: pattern.color,
+        desc: pattern.desc,
+      };
+    }));
+
+    patternCardsEl.innerHTML = cards.map((card) => `
+      <article class="dpq-card ${card.name === 'Boss 试炼' ? 'boss-card' : ''}" style="--card-color:${card.color}">
+        <div class="dpq-card-title">${card.name}</div>
+        <div class="dpq-card-tag">${card.group} · ${card.tag}</div>
+        <p>${card.desc}</p>
+      </article>
+    `).join('');
   }
 
   function answerQuestion(selectedKey, buttonEl) {
     if (state.locked || state.finished) return;
     state.locked = true;
     stopTimer();
+    clearFreezeTimeout();
 
-    const question = QUESTIONS[state.roundOrder[state.roundIndex]];
+    const question = getCurrentQuestion();
+    const roundNo = getRoundNumber();
+    const bossRound = isBossRound(roundNo);
     const isCorrect = selectedKey === question.answer;
     const correctPattern = PATTERNS[question.answer];
 
@@ -536,15 +598,27 @@
 
     if (isCorrect) {
       state.streak += 1;
-      const bonus = Math.min(5, state.streak);
-      state.score += SCORE_PER_CORRECT + bonus;
-      feedbackEl.textContent = `正确！${correctPattern.name} +${SCORE_PER_CORRECT + bonus} 分。${question.explain}`;
-      setStatus('答对了，继续下一题');
+      if (bossRound) state.bossCleared += 1;
+
+      const rewardMessages = grantStreakRewards();
+      const comboBonus = Math.min(5, state.streak);
+      const bossBonus = bossRound ? BOSS_BONUS + state.streak : 0;
+      let points = SCORE_PER_CORRECT + comboBonus + bossBonus;
+
+      if (state.doubleActive) {
+        points *= 2;
+        state.doubleActive = false;
+      }
+
+      state.score += points;
+      const rewardText = rewardMessages.length > 0 ? ` ${rewardMessages.join(' ')}` : '';
+      const doubleText = bossRound ? ` Boss 奖励 +${bossBonus} 分。` : '';
+      const comboText = comboBonus > 0 ? ` 连击加成 +${comboBonus} 分。` : '';
+
+      feedbackEl.textContent = `正确！${correctPattern.name} +${points} 分。${doubleText}${comboText}${question.explain}${rewardText}`;
+      setStatus(bossRound ? 'Boss 试炼：通关成功' : '软考单选题：作答正确');
     } else {
-      state.lives -= 1;
-      state.streak = 0;
-      feedbackEl.textContent = `答错了。正确答案是 ${correctPattern.name}。${question.explain}`;
-      setStatus('本回合失误，扣除一条生命');
+      handleWrongAnswer(question, selectedKey, correctPattern, bossRound);
     }
 
     updateUI();
@@ -565,6 +639,112 @@
     }, 1100);
   }
 
+  function handleWrongAnswer(question, selectedKey, correctPattern, bossRound) {
+    const shieldProtected = consumeShield();
+
+    if (!shieldProtected) {
+      const penalty = bossRound ? BOSS_LIFE_PENALTY : 1;
+      state.lives -= penalty;
+      state.streak = 0;
+      state.mistakes.push({
+        title: question.title,
+        prompt: question.prompt,
+        selected: PATTERNS[selectedKey] ? PATTERNS[selectedKey].name : '未作答',
+        correct: correctPattern.name,
+        explain: question.explain,
+        reason: bossRound ? `Boss 失误 -${penalty} 生命` : '答错'
+      });
+      feedbackEl.textContent = `答错了。正确答案是 ${correctPattern.name}。${question.explain}`;
+      setStatus(bossRound ? 'Boss 试炼：失误受罚' : '软考单选题：本题作答错误');
+      return;
+    }
+
+    feedbackEl.textContent = `护盾生效！本次失误没有扣命，连击也被保留。正确答案是 ${correctPattern.name}。${question.explain}`;
+    setStatus('护盾已触发');
+  }
+
+  function grantStreakRewards() {
+    const messages = [];
+
+    STREAK_REWARDS.forEach((reward) => {
+      if (state.streak >= reward.threshold && !state.rewardedMilestones.has(reward.threshold)) {
+        state.rewardedMilestones.add(reward.threshold);
+        if (reward.type === 'hint') state.hintCharges += reward.amount;
+        if (reward.type === 'shield') state.shieldCharges += reward.amount;
+        if (reward.type === 'double') state.doubleCharges += reward.amount;
+        if (reward.type === 'freeze') state.freezeCharges += reward.amount;
+        messages.push(reward.label);
+      }
+    });
+
+    return messages;
+  }
+
+  function useHint() {
+    if (state.locked || state.finished || state.hintCharges <= 0 || state.hintUsedThisRound) return;
+
+    const question = getCurrentQuestion();
+    const candidates = Array.from(optionListEl.querySelectorAll('.dpq-option'))
+      .filter((btn) => btn.dataset.pattern !== question.answer && !btn.disabled);
+
+    if (candidates.length === 0) return;
+
+    const target = candidates[Math.floor(Math.random() * candidates.length)];
+    target.disabled = true;
+    target.classList.add('disabled', 'hinted');
+    state.hintCharges -= 1;
+    state.hintUsedThisRound = true;
+
+    feedbackEl.textContent = `提示已使用：已排除一个干扰项。抓住关键词“${PATTERNS[question.answer].tag}”来判断答案。`;
+    setStatus('提示卡已触发');
+    updateUI();
+  }
+
+  function useFreeze() {
+    if (state.locked || state.finished || state.freezeCharges <= 0) return;
+
+    state.freezeCharges -= 1;
+    clearFreezeTimeout();
+    stopTimer();
+    feedbackEl.textContent = '冻结卡已发动：倒计时暂停 3 秒。';
+    setStatus('冻结中');
+    updateUI();
+
+    state.freezeTimeoutId = window.setTimeout(() => {
+      state.freezeTimeoutId = null;
+      if (!state.finished && !state.locked) {
+        setStatus('冻结结束');
+        startTimer();
+      }
+    }, FREEZE_DURATION);
+  }
+
+  function activateShield() {
+    if (state.locked || state.finished || state.shieldActive || state.shieldCharges <= 0) return;
+
+    state.shieldCharges -= 1;
+    state.shieldActive = true;
+    feedbackEl.textContent = '护盾已激活：下一次失误将被抵消。';
+    setStatus('护盾已激活');
+    updateUI();
+  }
+
+  function activateDouble() {
+    if (state.locked || state.finished || state.doubleActive || state.doubleCharges <= 0) return;
+
+    state.doubleCharges -= 1;
+    state.doubleActive = true;
+    feedbackEl.textContent = '双倍分已激活：下一次答对将获得双倍收益。';
+    setStatus('双倍分已激活');
+    updateUI();
+  }
+
+  function consumeShield() {
+    if (!state.shieldActive) return false;
+    state.shieldActive = false;
+    return true;
+  }
+
   function startTimer() {
     stopTimer();
     updateProgress();
@@ -574,30 +754,57 @@
       state.timeLeft -= 1;
       updateProgress();
       if (state.timeLeft <= 0) {
-        state.lives -= 1;
-        state.streak = 0;
-        feedbackEl.textContent = '时间到！本题判定失败。';
-        updateUI();
-        Array.from(optionListEl.querySelectorAll('.dpq-option')).forEach((btn) => {
-          btn.classList.add('disabled');
-        });
-        stopTimer();
-
-        window.setTimeout(() => {
-          if (state.lives <= 0) {
-            endGame(false);
-            return;
-          }
-          state.roundIndex += 1;
-          if (state.roundIndex >= QUESTIONS.length) {
-            endGame(true);
-            return;
-          }
-          renderRound();
-          startTimer();
-        }, 900);
+        handleTimeout();
       }
     }, 1000);
+  }
+
+  function handleTimeout() {
+    clearFreezeTimeout();
+    const question = getCurrentQuestion();
+    const correctPattern = PATTERNS[question.answer];
+    const roundNo = getRoundNumber();
+    const bossRound = isBossRound(roundNo);
+    const shieldProtected = consumeShield();
+
+    if (!shieldProtected) {
+      const penalty = bossRound ? BOSS_LIFE_PENALTY : 1;
+      state.lives -= penalty;
+      state.streak = 0;
+      state.mistakes.push({
+        title: question.title,
+        prompt: question.prompt,
+        selected: '超时未作答',
+        correct: correctPattern.name,
+        explain: question.explain,
+        reason: bossRound ? `Boss 超时 -${penalty} 生命` : '超时'
+      });
+      feedbackEl.textContent = '时间到！本题判定失败。';
+      setStatus(bossRound ? 'Boss 试炼：超时失误' : '软考单选题：超时');
+    } else {
+      feedbackEl.textContent = `护盾生效！本次超时没有扣命。正确答案是 ${correctPattern.name}。`;
+      setStatus('护盾已触发');
+    }
+
+    updateUI();
+    Array.from(optionListEl.querySelectorAll('.dpq-option')).forEach((btn) => {
+      btn.classList.add('disabled');
+    });
+    stopTimer();
+
+    window.setTimeout(() => {
+      if (state.lives <= 0) {
+        endGame(false);
+        return;
+      }
+      state.roundIndex += 1;
+      if (state.roundIndex >= QUESTIONS.length) {
+        endGame(true);
+        return;
+      }
+      renderRound();
+      startTimer();
+    }, 900);
   }
 
   function stopTimer() {
@@ -607,8 +814,16 @@
     }
   }
 
+  function clearFreezeTimeout() {
+    if (state.freezeTimeoutId) {
+      clearTimeout(state.freezeTimeoutId);
+      state.freezeTimeoutId = null;
+    }
+  }
+
   function endGame(completed) {
     stopTimer();
+    clearFreezeTimeout();
     state.finished = true;
     state.locked = true;
 
@@ -626,27 +841,61 @@
     if (completed) {
       resultEmojiEl.textContent = '🏆';
       resultTitleEl.textContent = '学习完成';
-      resultTextEl.textContent = `你完成了全部 24 题练习，最终得分 ${state.score}，完成率约 ${accuracy}%。`;
+      resultTextEl.textContent = `你完成了全部 ${total} 题练习，最终得分 ${state.score}，完成率约 ${accuracy}%。Boss 关击破 ${state.bossCleared} 次。`;
     } else {
       resultEmojiEl.textContent = '💥';
       resultTitleEl.textContent = '本轮结束';
-      resultTextEl.textContent = `你在第 ${state.roundIndex + 1} 关止步，最终得分 ${state.score}。`;
+      resultTextEl.textContent = `你在第 ${state.roundIndex + 1} 关止步，最终得分 ${state.score}，已击破 Boss ${state.bossCleared} 次。`;
     }
 
     summaryEl.innerHTML = buildSummary();
+    reviewBoxEl.innerHTML = buildReviewList();
     showResult();
-    setStatus(completed ? '24种模式已全部覆盖' : '可以重新开始继续学习');
+    setStatus(completed ? '设计模式试炼已全部覆盖' : '可以重新开始继续学习');
   }
 
   function buildSummary() {
-    const groups = ['补充', '创建型', '结构型', '行为型'];
+    const groupOrder = ['补充', '创建型', '结构型', '行为型'];
+    const bossRounds = Math.floor(QUESTIONS.length / BOSS_INTERVAL);
 
     return `
       <div class="dpq-summary-grid">
-        ${groups.map((group) => {
+        ${groupOrder.map((group) => {
           const count = QUESTIONS.filter((q) => PATTERNS[q.answer].group === group).length;
           return `<div class="dpq-summary-item"><strong>${group}</strong><span>${count} 题</span></div>`;
         }).join('')}
+      </div>
+      <div class="dpq-summary-grid dpq-summary-grid-secondary">
+        <div class="dpq-summary-item"><strong>Boss 关</strong><span>${bossRounds} 个</span></div>
+        <div class="dpq-summary-item"><strong>提示卡</strong><span>${state.hintCharges} 张</span></div>
+        <div class="dpq-summary-item"><strong>冻结卡</strong><span>${state.freezeCharges} 张</span></div>
+        <div class="dpq-summary-item"><strong>护盾/双倍</strong><span>${state.shieldCharges}/${state.doubleCharges}</span></div>
+      </div>
+    `;
+  }
+
+  function buildReviewList() {
+    if (!state.mistakes.length) {
+      return '<div class="dpq-review-empty">这局没有错题，太强了，直接满分通关！</div>';
+    }
+
+    return `
+      <div class="dpq-review-grid">
+        ${state.mistakes.map((item, index) => `
+          <article class="dpq-review-item">
+            <div class="dpq-review-top">
+              <strong>错题 ${index + 1}</strong>
+              <span>${item.reason}</span>
+            </div>
+            <h4>${item.title}</h4>
+            <p class="dpq-review-prompt">${item.prompt}</p>
+            <div class="dpq-review-meta">
+              <div><b>你的答案</b><span>${item.selected}</span></div>
+              <div><b>正确答案</b><span>${item.correct}</span></div>
+            </div>
+            <p class="dpq-review-explain">${item.explain}</p>
+          </article>
+        `).join('')}
       </div>
     `;
   }
@@ -673,12 +922,32 @@
     streakEl.textContent = String(state.streak);
     timeEl.textContent = String(Math.max(0, state.timeLeft));
     updateProgress();
+    updatePowerupButtons();
 
     if (state.lives <= 1) {
       livesEl.parentElement.classList.add('danger');
     } else {
       livesEl.parentElement.classList.remove('danger');
     }
+  }
+
+  function updatePowerupButtons() {
+    hintBtnEl.textContent = state.hintCharges > 0 ? `提示卡（${state.hintCharges}）` : '提示卡已用完';
+    freezeBtnEl.textContent = state.freezeCharges > 0 ? `冻结卡（${state.freezeCharges}）` : '冻结卡已用完';
+    shieldBtnEl.textContent = state.shieldActive ? '护盾卡（生效中）' : (state.shieldCharges > 0 ? `护盾卡（${state.shieldCharges}）` : '护盾卡已用完');
+    doubleBtnEl.textContent = state.doubleActive ? '双倍分（生效中）' : (state.doubleCharges > 0 ? `双倍分（${state.doubleCharges}）` : '双倍分已用完');
+
+    hintBtnEl.disabled = state.hintCharges <= 0 || state.locked || state.finished;
+    freezeBtnEl.disabled = state.freezeCharges <= 0 || state.locked || state.finished;
+    shieldBtnEl.disabled = state.shieldCharges <= 0 || state.locked || state.finished || state.shieldActive;
+    doubleBtnEl.disabled = state.doubleCharges <= 0 || state.locked || state.finished || state.doubleActive;
+
+    hintBtnEl.classList.toggle('ready', state.hintCharges > 0 && !state.locked && !state.finished);
+    freezeBtnEl.classList.toggle('ready', state.freezeCharges > 0 && !state.locked && !state.finished);
+    shieldBtnEl.classList.toggle('active', state.shieldActive);
+    shieldBtnEl.classList.toggle('ready', state.shieldCharges > 0 && !state.locked && !state.finished && !state.shieldActive);
+    doubleBtnEl.classList.toggle('active', state.doubleActive);
+    doubleBtnEl.classList.toggle('ready', state.doubleCharges > 0 && !state.locked && !state.finished && !state.doubleActive);
   }
 
   function updateProgress() {
@@ -705,6 +974,7 @@
     updateUI();
     setStatus('等待开始');
     summaryEl.innerHTML = buildSummary();
+    reviewBoxEl.innerHTML = buildReviewList();
   }
 
   document.addEventListener('DOMContentLoaded', init);

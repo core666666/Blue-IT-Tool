@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="算法学习训练场 - 通过软考算法场景题训练时间复杂度、排序、查找、递归、贪心、动态规划与图算法。">
+    <meta name="keywords" content="算法,软考,游戏,时间复杂度,排序,查找,递归,贪心,动态规划,图算法">
+    <meta name="author" content="蔚蓝工具导航站">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="算法学习训练场 - 蔚蓝工具导航站">
+    <meta property="og:description" content="通过场景题训练算法知识点，适合先学后练。">
+    <meta property="og:image" content="../tools.png">
+    <meta property="og:type" content="website">
+    <title>算法学习训练场 - 蔚蓝工具导航站</title>
+    <link rel="icon" type="image/png" href="../assets/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon/favicon-16x16.png">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles/common.css">
+    <link rel="stylesheet" href="../styles/sidebar.css">
+    <link rel="stylesheet" href="../styles/algorithm_learning_arena.css">
+    <script src="../scripts/umami-loader.js"></script>
+</head>
+<body>
+    <main class="ala-page">
+        <section class="ala-hero">
+            <div class="ala-badge">软考 · 算法学习初版</div>
+            <h1>🧠 算法学习训练场</h1>
+            <p>先看场景理解算法，再用轻量练习巩固。把时间复杂度、排序、查找、递归、贪心、动态规划和图算法放进同一套闯关练习里。</p>
+        </section>
+
+        <section class="ala-dashboard">
+            <div class="ala-stats">
+                <div class="ala-stat">
+                    <span class="label">得分</span>
+                    <span class="value" id="scoreValue">0</span>
+                </div>
+                <div class="ala-stat">
+                    <span class="label">最佳</span>
+                    <span class="value" id="bestScoreValue">0</span>
+                </div>
+                <div class="ala-stat">
+                    <span class="label">生命</span>
+                    <span class="value" id="livesValue">3</span>
+                </div>
+                <div class="ala-stat">
+                    <span class="label">关卡</span>
+                    <span class="value" id="roundValue">1</span>
+                </div>
+                <div class="ala-stat">
+                    <span class="label">连击</span>
+                    <span class="value" id="streakValue">0</span>
+                </div>
+                <div class="ala-stat">
+                    <span class="label">剩余时间</span>
+                    <span class="value" id="timeValue">12</span>
+                </div>
+            </div>
+
+            <div class="ala-bar">
+                <div class="ala-bar-head">
+                    <span>本题倒计时</span>
+                    <strong id="statusPill">等待开始</strong>
+                </div>
+                <div class="ala-progress" aria-hidden="true">
+                    <div class="ala-progress-fill" id="timeFill"></div>
+                </div>
+            </div>
+
+            <div class="ala-controls">
+                <button class="ala-btn primary" id="startBtn">开始学习</button>
+                <button class="ala-btn secondary" id="restartBtn">重新开始</button>
+                <button class="ala-btn secondary" id="hintBtn">提示卡（3）</button>
+                <button class="ala-btn secondary" id="lightningBtn">闪电模式：关</button>
+                <div class="ala-note">
+                    规则：每题 4 个选项，答对加分，答错扣命。提示卡可排除干扰项，闪电模式会奖励快速作答。
+                </div>
+            </div>
+        </section>
+
+        <section class="ala-collection">
+            <div class="ala-collection-head">
+                <div>
+                    <div class="ala-stage-kicker">知识图鉴</div>
+                    <h2>已收集算法卡片</h2>
+                </div>
+                <div class="ala-collection-count" id="collectionProgress">0/23</div>
+            </div>
+            <div class="ala-collection-bar" aria-hidden="true">
+                <div class="ala-collection-fill" id="collectionFill"></div>
+            </div>
+            <div class="ala-collection-list" id="collectionList"></div>
+        </section>
+
+        <section class="ala-footer">
+        </section>
+
+        <section class="ala-main">
+            <div class="ala-stage">
+                <div class="ala-stage-head">
+                    <div>
+                        <div class="ala-stage-kicker">当前任务</div>
+                        <h2 id="roundTitle">第 1 关</h2>
+                    </div>
+                    <div class="ala-stage-hint" id="roundHint">点击开始按钮进入训练</div>
+                </div>
+
+                <p class="ala-prompt" id="roundPrompt">你还没有开始训练。</p>
+
+                <div class="ala-options" id="optionList"></div>
+
+                <div class="ala-feedback" id="feedbackBox">点击开始按钮，进入算法学习训练场。</div>
+            </div>
+
+            <aside class="ala-reference">
+                <div class="ala-reference-head">
+                    <h3>算法速查卡</h3>
+                    <p>先看关键词，再做题，会更容易判断考点。</p>
+                </div>
+                <div class="ala-cards" id="algorithmCards"></div>
+            </aside>
+        </section>
+
+        <section class="ala-footer">
+            <div class="ala-foot-card">
+                <h3>适合谁</h3>
+                <p>准备软考、面试，或者想先学懂算法再刷题的人。</p>
+            </div>
+            <div class="ala-foot-card">
+                <h3>怎么学</h3>
+                <p>先抓住“场景关键词”，再把它和算法思想对应起来。</p>
+            </div>
+            <div class="ala-foot-card">
+                <h3>后续扩展</h3>
+                <p>可以继续加图形化动画、拖拽练习、真题模式和错题本。</p>
+            </div>
+        </section>
+    </main>
+
+    <div class="ala-overlay" id="resultOverlay" aria-hidden="true">
+        <div class="ala-result">
+            <div class="result-emoji" id="resultEmoji">🏁</div>
+            <h2 id="resultTitle">训练结束</h2>
+            <p id="resultText">你的结果会显示在这里。</p>
+            <div class="ala-summary" id="summaryBox"></div>
+            <div class="result-actions">
+                <button class="ala-btn primary" id="playAgainBtn">再来一局</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../scripts/sidebar.js"></script>
+    <script src="../scripts/algorithm_learning_arena.js"></script>
+</body>
+</html>

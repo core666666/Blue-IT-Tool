@@ -1,11 +1,11 @@
-/* 设计模式指挥官样式 */
+/* 算法学习训练场样式 */
 
-.dpq-page {
+.ala-page {
     min-height: 100vh;
     padding: 24px 16px 40px;
     background:
-        radial-gradient(circle at top, rgba(255, 255, 255, 0.6), transparent 34%),
-        linear-gradient(180deg, #fff6d8 0%, #dff6ff 50%, #f2e7ff 100%);
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.58), transparent 36%),
+        linear-gradient(180deg, #fff7d6 0%, #e7f7ff 46%, #f2e7ff 100%);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -13,17 +13,17 @@
     box-sizing: border-box;
 }
 
-.dpq-hero {
+.ala-hero {
     width: min(1180px, 100%);
     text-align: center;
     padding: 18px 16px 8px;
 }
 
-.dpq-badge {
+.ala-badge {
     display: inline-block;
     padding: 8px 14px;
     border: 3px solid #111;
-    background: #ffdf5d;
+    background: #ffe66d;
     color: #111;
     font-weight: 900;
     font-size: 14px;
@@ -32,7 +32,7 @@
     margin-bottom: 14px;
 }
 
-.dpq-hero h1 {
+.ala-hero h1 {
     margin: 0;
     font-size: clamp(2rem, 4vw, 3.5rem);
     line-height: 1.1;
@@ -40,15 +40,15 @@
     text-shadow: 3px 3px 0 rgba(255, 255, 255, 0.8);
 }
 
-.dpq-hero p {
+.ala-hero p {
     margin: 10px auto 0;
-    max-width: 780px;
+    max-width: 840px;
     color: #333;
     font-size: 16px;
     line-height: 1.7;
 }
 
-.dpq-dashboard {
+.ala-dashboard {
     width: min(1180px, 100%);
     border: 4px solid #111;
     background: #fff;
@@ -57,14 +57,14 @@
     padding: 18px;
 }
 
-.dpq-stats {
+.ala-stats {
     display: grid;
     grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: 12px;
     margin-bottom: 16px;
 }
 
-.dpq-stat {
+.ala-stat {
     border: 3px solid #111;
     background: #fff8f0;
     border-radius: 16px;
@@ -73,7 +73,11 @@
     box-shadow: 4px 4px 0 #111;
 }
 
-.dpq-stat .label {
+.ala-stat.danger {
+    background: #ffe1e1;
+}
+
+.ala-stat .label {
     display: block;
     font-size: 13px;
     color: #444;
@@ -81,7 +85,7 @@
     font-weight: 700;
 }
 
-.dpq-stat .value {
+.ala-stat .value {
     display: block;
     font-size: 28px;
     font-weight: 900;
@@ -89,7 +93,7 @@
     line-height: 1;
 }
 
-.dpq-bar {
+.ala-bar {
     border: 3px solid #111;
     border-radius: 18px;
     background: #f9fbff;
@@ -98,7 +102,7 @@
     margin-bottom: 16px;
 }
 
-.dpq-bar-head {
+.ala-bar-head {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -121,7 +125,7 @@
     text-align: center;
 }
 
-.dpq-progress {
+.ala-progress {
     height: 18px;
     border: 3px solid #111;
     border-radius: 999px;
@@ -129,28 +133,21 @@
     background: #fff;
 }
 
-.dpq-progress-fill {
+.ala-progress-fill {
     width: 100%;
     height: 100%;
     background: linear-gradient(90deg, #7cff6b 0%, #ffe66d 50%, #ff8f70 100%);
     transition: width 0.2s linear;
 }
 
-.dpq-controls {
+.ala-controls {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 12px;
 }
 
-.dpq-powerups {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 10px;
-    width: 100%;
-}
-
-.dpq-btn {
+.ala-btn {
     border: 3px solid #111;
     border-radius: 14px;
     padding: 12px 18px;
@@ -161,51 +158,29 @@
     font-size: 16px;
 }
 
-.dpq-btn:hover {
+.ala-btn:hover {
     transform: translate(-1px, -1px);
     box-shadow: 6px 6px 0 #111;
 }
 
-.dpq-btn:active {
+.ala-btn:active {
     transform: translate(2px, 2px);
     box-shadow: 2px 2px 0 #111;
 }
 
-.dpq-btn.primary {
+.ala-btn.primary {
     background: #7cff6b;
     color: #111;
 }
 
-.dpq-btn.secondary {
+.ala-btn.secondary {
     background: #fff;
     color: #111;
 }
 
-.dpq-btn.powerup {
-    background: #ffef79;
-    color: #111;
-    font-size: 14px;
-    padding: 10px 12px;
-}
-
-.dpq-btn.powerup.ready {
-    background: #d6ffca;
-}
-
-.dpq-btn.powerup.active {
-    background: #7dd3fc;
-}
-
-.dpq-btn.powerup:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: 3px 3px 0 #111;
-}
-
-.dpq-note {
+.ala-note {
     flex: 1;
-    min-width: 240px;
+    min-width: 260px;
     border: 3px dashed #111;
     border-radius: 14px;
     background: #fffef5;
@@ -215,15 +190,15 @@
     line-height: 1.6;
 }
 
-.dpq-main {
+.ala-main {
     width: min(1180px, 100%);
     display: grid;
     grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.9fr);
     gap: 14px;
 }
 
-.dpq-stage,
-.dpq-reference {
+.ala-stage,
+.ala-reference {
     border: 4px solid #111;
     border-radius: 24px;
     background: #fff;
@@ -231,7 +206,7 @@
     padding: 18px;
 }
 
-.dpq-stage-head {
+.ala-stage-head {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -239,7 +214,7 @@
     margin-bottom: 14px;
 }
 
-.dpq-stage-kicker {
+.ala-stage-kicker {
     display: inline-block;
     margin-bottom: 8px;
     padding: 4px 10px;
@@ -250,14 +225,14 @@
     font-weight: 900;
 }
 
-.dpq-stage h2 {
+.ala-stage h2 {
     margin: 0;
     font-size: 28px;
     line-height: 1.2;
     color: #111;
 }
 
-.dpq-stage-hint {
+.ala-stage-hint {
     border: 3px solid #111;
     border-radius: 14px;
     background: #f9fbff;
@@ -269,7 +244,7 @@
     text-align: center;
 }
 
-.dpq-prompt {
+.ala-prompt {
     margin: 0 0 14px;
     padding: 16px;
     border: 3px solid #111;
@@ -281,59 +256,13 @@
     line-height: 1.7;
 }
 
-.dpq-exam-chip {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: fit-content;
-    margin-bottom: 10px;
-    padding: 4px 10px;
-    border: 2px solid #111;
-    border-radius: 999px;
-    background: #ffef79;
-    font-size: 12px;
-    font-weight: 900;
-    color: #111;
-}
-
-.dpq-exam-chip.boss {
-    background: #111;
-    color: #fff;
-}
-
-.dpq-exam-title {
-    display: block;
-    margin-bottom: 10px;
-    font-size: 20px;
-    line-height: 1.5;
-    font-weight: 900;
-    color: #111;
-}
-
-.dpq-exam-stem {
-    display: block;
-    font-size: 17px;
-    line-height: 1.8;
-    font-weight: 800;
-    color: #222;
-}
-
-.dpq-exam-note {
-    display: block;
-    margin-top: 10px;
-    font-size: 13px;
-    line-height: 1.6;
-    font-weight: 700;
-    color: #555;
-}
-
-.dpq-options {
+.ala-options {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
 }
 
-.dpq-option {
+.ala-option {
     border: 3px solid #111;
     border-radius: 18px;
     background: #fff;
@@ -347,37 +276,37 @@
     transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
 
-.dpq-option:hover:not(.disabled) {
+.ala-option:hover:not(.disabled) {
     transform: translate(-1px, -1px);
     box-shadow: 6px 6px 0 #111;
     background: #fffef2;
 }
 
-.dpq-option:active:not(.disabled) {
+.ala-option:active:not(.disabled) {
     transform: translate(2px, 2px);
     box-shadow: 2px 2px 0 #111;
 }
 
-.dpq-option.disabled {
+.ala-option.disabled {
     cursor: default;
     opacity: 0.95;
 }
 
-.dpq-option.correct {
+.ala-option.correct {
     background: #d6ffca;
 }
 
-.dpq-option.wrong {
+.ala-option.wrong {
     background: #ffd3d3;
 }
 
-.dpq-option-name {
+.ala-option-name {
     font-weight: 900;
     font-size: 18px;
     color: #111;
 }
 
-.dpq-option-tag {
+.ala-option-tag {
     display: inline-block;
     width: fit-content;
     border: 2px solid #111;
@@ -389,7 +318,7 @@
     color: #111;
 }
 
-.dpq-feedback {
+.ala-feedback {
     margin-top: 14px;
     border: 3px solid #111;
     border-radius: 18px;
@@ -403,26 +332,26 @@
     font-weight: 700;
 }
 
-.dpq-reference-head h3 {
+.ala-reference-head h3 {
     margin: 0;
     font-size: 20px;
     color: #111;
 }
 
-.dpq-reference-head p {
+.ala-reference-head p {
     margin: 8px 0 0;
     color: #444;
     line-height: 1.7;
     font-size: 14px;
 }
 
-.dpq-cards {
+.ala-cards {
     display: grid;
     gap: 12px;
     margin-top: 14px;
 }
 
-.dpq-card {
+.ala-card {
     border: 3px solid #111;
     border-radius: 18px;
     background:
@@ -432,25 +361,14 @@
     padding: 14px 14px 12px;
 }
 
-.dpq-card.boss-card {
-    background: linear-gradient(180deg, #222, #111);
-    color: #fff;
-}
-
-.dpq-card.boss-card .dpq-card-title,
-.dpq-card.boss-card .dpq-card-tag,
-.dpq-card.boss-card p {
-    color: #fff;
-}
-
-.dpq-card-title {
+.ala-card-title {
     font-weight: 900;
     font-size: 18px;
     color: #111;
     margin-bottom: 6px;
 }
 
-.dpq-card-tag {
+.ala-card-tag {
     display: inline-block;
     border: 2px solid #111;
     border-radius: 999px;
@@ -462,21 +380,21 @@
     margin-bottom: 10px;
 }
 
-.dpq-card p {
+.ala-card p {
     margin: 0;
     color: #333;
     line-height: 1.65;
     font-size: 14px;
 }
 
-.dpq-footer {
+.ala-footer {
     width: min(1180px, 100%);
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 12px;
 }
 
-.dpq-foot-card {
+.ala-foot-card {
     border: 3px solid #111;
     background: #fff;
     border-radius: 18px;
@@ -484,20 +402,20 @@
     box-shadow: 4px 4px 0 #111;
 }
 
-.dpq-foot-card h3 {
+.ala-foot-card h3 {
     margin: 0 0 8px;
     font-size: 16px;
     color: #111;
 }
 
-.dpq-foot-card p {
+.ala-foot-card p {
     margin: 0;
     color: #444;
     line-height: 1.7;
     font-size: 14px;
 }
 
-.dpq-overlay {
+.ala-overlay {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.55);
@@ -508,11 +426,11 @@
     padding: 20px;
 }
 
-.dpq-overlay.show {
+.ala-overlay.show {
     display: flex;
 }
 
-.dpq-result {
+.ala-result {
     width: min(520px, 100%);
     border: 4px solid #111;
     background: #fff;
@@ -527,34 +445,30 @@
     margin-bottom: 8px;
 }
 
-.dpq-result h2 {
+.ala-result h2 {
     margin: 0 0 10px;
     font-size: 28px;
     color: #111;
 }
 
-.dpq-result p {
+.ala-result p {
     margin: 0 0 16px;
     font-size: 16px;
     color: #333;
     line-height: 1.6;
 }
 
-.dpq-summary {
+.ala-summary {
     margin: 14px 0 18px;
 }
 
-.dpq-summary-grid {
+.ala-summary-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
 }
 
-.dpq-summary-grid-secondary {
-    margin-top: 10px;
-}
-
-.dpq-summary-item {
+.ala-summary-item {
     border: 3px solid #111;
     border-radius: 16px;
     background: #f9fbff;
@@ -566,133 +480,15 @@
     gap: 10px;
 }
 
-.dpq-summary-item strong {
+.ala-summary-item strong {
     font-size: 14px;
     color: #111;
 }
 
-.dpq-summary-item span {
+.ala-summary-item span {
     font-weight: 800;
     color: #444;
     font-size: 13px;
-}
-
-.dpq-review {
-    margin-top: 6px;
-    text-align: left;
-}
-
-.dpq-review-head {
-    margin-bottom: 12px;
-}
-
-.dpq-review-head h3 {
-    margin: 0;
-    font-size: 20px;
-    color: #111;
-}
-
-.dpq-review-head p {
-    margin: 8px 0 0;
-    color: #444;
-    line-height: 1.6;
-    font-size: 14px;
-}
-
-.dpq-review-grid {
-    display: grid;
-    gap: 12px;
-}
-
-.dpq-review-empty {
-    border: 3px dashed #111;
-    border-radius: 16px;
-    background: #fffef5;
-    padding: 14px 16px;
-    color: #111;
-    font-weight: 800;
-    line-height: 1.7;
-}
-
-.dpq-review-item {
-    border: 3px solid #111;
-    border-radius: 18px;
-    background: #f9fbff;
-    box-shadow: 4px 4px 0 #111;
-    padding: 14px 14px 12px;
-}
-
-.dpq-review-top {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.dpq-review-top strong {
-    font-size: 15px;
-    color: #111;
-}
-
-.dpq-review-top span {
-    display: inline-block;
-    border: 2px solid #111;
-    border-radius: 999px;
-    background: #ffef79;
-    padding: 3px 10px;
-    font-size: 12px;
-    font-weight: 900;
-    color: #111;
-}
-
-.dpq-review-item h4 {
-    margin: 0 0 8px;
-    font-size: 16px;
-    color: #111;
-    line-height: 1.4;
-}
-
-.dpq-review-prompt {
-    margin: 0 0 12px;
-    color: #333;
-    font-size: 14px;
-    line-height: 1.7;
-}
-
-.dpq-review-meta {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-.dpq-review-meta div {
-    border: 2px solid #111;
-    border-radius: 14px;
-    background: #fff;
-    padding: 10px 12px;
-}
-
-.dpq-review-meta b {
-    display: block;
-    margin-bottom: 6px;
-    font-size: 13px;
-    color: #111;
-}
-
-.dpq-review-meta span {
-    color: #333;
-    font-weight: 800;
-    line-height: 1.5;
-}
-
-.dpq-review-explain {
-    margin: 0;
-    color: #333;
-    font-size: 14px;
-    line-height: 1.7;
-    font-weight: 700;
 }
 
 .result-actions {
@@ -703,89 +499,85 @@
 }
 
 @media (max-width: 980px) {
-    .dpq-stats {
+    .ala-stats {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
-    .dpq-main {
+    .ala-main {
         grid-template-columns: 1fr;
     }
 }
 
 @media (max-width: 720px) {
-    .dpq-page {
+    .ala-page {
         padding: 16px 12px 32px;
     }
 
-    .dpq-powerups {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .dpq-dashboard,
-    .dpq-stage,
-    .dpq-reference,
-    .dpq-hero {
+    .ala-dashboard,
+    .ala-stage,
+    .ala-reference,
+    .ala-hero {
         box-shadow: 6px 6px 0 #111;
         border-radius: 18px;
     }
 
-    .dpq-stats {
+    .ala-stats {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .dpq-options {
+    .ala-options {
         grid-template-columns: 1fr;
     }
 
-    .dpq-stage-head {
+    .ala-stage-head {
         flex-direction: column;
     }
 
-    .dpq-stage-hint {
+    .ala-stage-hint {
         width: 100%;
         min-width: 0;
         box-sizing: border-box;
     }
 
-    .dpq-footer {
+    .ala-footer {
         grid-template-columns: 1fr;
     }
 
-    .dpq-note {
+    .ala-note {
         width: 100%;
     }
 
-    .dpq-btn {
+    .ala-btn {
         width: 100%;
         justify-content: center;
     }
 
-    .dpq-controls {
+    .ala-controls {
         flex-direction: column;
         align-items: stretch;
     }
 
-    .dpq-summary-grid {
+    .ala-summary-grid {
         grid-template-columns: 1fr;
     }
 }
 
 @media (max-width: 420px) {
-    .dpq-stat .value {
+    .ala-stat .value {
         font-size: 24px;
     }
 
-    .dpq-stage h2,
-    .dpq-result h2 {
+    .ala-stage h2,
+    .ala-result h2 {
         font-size: 24px;
     }
 
-    .dpq-prompt {
+    .ala-prompt {
         font-size: 16px;
     }
 
-    .dpq-card-title,
-    .dpq-option-name {
+    .ala-card-title,
+    .ala-option-name {
         font-size: 16px;
     }
 }

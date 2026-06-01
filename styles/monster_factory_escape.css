@@ -1,0 +1,800 @@
+/* 逃离怪兽工厂样式 */
+
+.mfe-page {
+    min-height: 100vh;
+    padding: 24px 16px 40px;
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.65), transparent 34%),
+        linear-gradient(180deg, #fff3c7 0%, #ffd9b5 42%, #dff5e6 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    box-sizing: border-box;
+}
+
+.mfe-screen {
+    width: min(1200px, 100%);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.mfe-screen[hidden] {
+    display: none !important;
+}
+
+.mfe-hero,
+.mfe-panel,
+.mfe-hud,
+.mfe-board-panel,
+.mfe-side-panel {
+    border: 4px solid #111;
+    border-radius: 24px;
+    background: #fff;
+    box-shadow: 8px 8px 0 #111;
+}
+
+.mfe-home {
+    padding-bottom: 6px;
+}
+
+.mfe-hero {
+    padding: 24px 22px 22px;
+    text-align: center;
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.55), transparent 34%),
+        linear-gradient(180deg, #fff7d8 0%, #ffe2c2 50%, #dff7e1 100%);
+}
+
+.mfe-badge,
+.mfe-kicker {
+    display: inline-block;
+    padding: 8px 14px;
+    border: 3px solid #111;
+    background: #ffdf5d;
+    color: #111;
+    font-weight: 900;
+    font-size: 14px;
+    border-radius: 999px;
+    box-shadow: 4px 4px 0 #111;
+}
+
+.mfe-kicker {
+    margin-bottom: 10px;
+}
+
+.mfe-hero h1 {
+    margin: 14px 0 0;
+    font-size: clamp(2.1rem, 5vw, 4rem);
+    line-height: 1.05;
+    color: #111;
+    text-shadow: 3px 3px 0 rgba(255, 255, 255, 0.8);
+}
+
+.mfe-hero p {
+    margin: 12px auto 0;
+    max-width: 760px;
+    color: #333;
+    font-size: 16px;
+    line-height: 1.75;
+}
+
+.mfe-hero-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+}
+
+.mfe-hero-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.mfe-mini-stat {
+    border: 3px solid #111;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 4px 4px 0 #111;
+    padding: 12px 14px;
+}
+
+.mfe-mini-stat .label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 800;
+    color: #444;
+}
+
+.mfe-mini-stat strong {
+    color: #111;
+    font-size: 15px;
+    line-height: 1.4;
+}
+
+.mfe-panel {
+    padding: 18px;
+    background: #fff;
+}
+
+.mfe-section-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.mfe-section-head h2 {
+    margin: 0;
+    font-size: 28px;
+    line-height: 1.2;
+    color: #111;
+}
+
+.mfe-section-head p {
+    margin: 0;
+    max-width: 420px;
+    color: #444;
+    line-height: 1.7;
+    font-size: 14px;
+}
+
+.mfe-mode-grid,
+.mfe-level-grid {
+    display: grid;
+    gap: 12px;
+}
+
+.mfe-mode-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.mfe-level-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.mfe-mode-card,
+.mfe-level-card,
+.mfe-rule-card,
+.mfe-side-card {
+    border: 3px solid #111;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 4px 4px 0 #111;
+}
+
+.mfe-mode-card,
+.mfe-level-card {
+    padding: 16px 16px 14px;
+    text-align: left;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.mfe-mode-card:hover,
+.mfe-level-card:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 6px 6px 0 #111;
+    background: #fffef4;
+}
+
+.mfe-mode-card.active,
+.mfe-level-card.active {
+    background: #fff1aa;
+}
+
+.mfe-mode-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border: 3px solid #111;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 3px 3px 0 #111;
+    font-size: 24px;
+    margin-bottom: 12px;
+}
+
+.mfe-mode-card strong,
+.mfe-level-card strong {
+    display: block;
+    font-size: 18px;
+    line-height: 1.4;
+    color: #111;
+    margin-bottom: 8px;
+}
+
+.mfe-mode-card p,
+.mfe-level-card p {
+    margin: 0;
+    color: #444;
+    line-height: 1.7;
+    font-size: 14px;
+}
+
+.mfe-level-card small {
+    display: inline-block;
+    margin-top: 10px;
+    color: #111;
+    font-weight: 800;
+    background: #f8f8f8;
+    border: 2px solid #111;
+    border-radius: 999px;
+    padding: 4px 10px;
+}
+
+.level-tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    padding: 4px 10px;
+    border: 2px solid #111;
+    border-radius: 999px;
+    background: #d7f9c8;
+    color: #111;
+    font-weight: 900;
+    font-size: 12px;
+}
+
+.mfe-rules {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.mfe-rule-card {
+    padding: 14px 16px;
+    background: #fff;
+}
+
+.mfe-rule-card h3 {
+    margin: 0 0 8px;
+    font-size: 16px;
+    color: #111;
+}
+
+.mfe-rule-card p {
+    margin: 0;
+    color: #444;
+    line-height: 1.7;
+    font-size: 14px;
+}
+
+.mfe-stage {
+    padding-bottom: 4px;
+}
+
+.mfe-hud {
+    padding: 18px;
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.45), transparent 36%),
+        linear-gradient(180deg, #fff7d8 0%, #ffe3af 55%, #f2ffe7 100%);
+}
+
+.mfe-hud-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    align-items: flex-start;
+}
+
+.mfe-hud-top h2 {
+    margin: 10px 0 0;
+    font-size: 30px;
+    line-height: 1.2;
+    color: #111;
+}
+
+.mfe-hud-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.mfe-hud-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.mfe-stat {
+    border: 3px solid #111;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 4px 4px 0 #111;
+    padding: 12px 10px;
+    text-align: center;
+}
+
+.mfe-stat .label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 800;
+    color: #444;
+}
+
+.mfe-stat strong {
+    display: block;
+    font-size: 26px;
+    line-height: 1;
+    color: #111;
+    font-weight: 900;
+}
+
+.mfe-objective {
+    margin-top: 14px;
+    border: 3px solid #111;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 4px 4px 0 #111;
+    padding: 12px 14px;
+}
+
+.mfe-objective span {
+    display: inline-block;
+    margin-bottom: 8px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #111;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.mfe-objective p {
+    margin: 0;
+    color: #333;
+    line-height: 1.7;
+    font-weight: 700;
+}
+
+.mfe-stage-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
+    gap: 14px;
+}
+
+.mfe-board-panel {
+    padding: 16px;
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.45), transparent 36%),
+        linear-gradient(180deg, #f5fff0 0%, #fdf4dd 100%);
+}
+
+.mfe-board-toolbar {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.mfe-status-pill,
+.mfe-status-meta {
+    border: 3px solid #111;
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: 3px 3px 0 #111;
+    padding: 10px 14px;
+    font-weight: 900;
+    color: #111;
+}
+
+.mfe-status-meta {
+    font-size: 13px;
+    color: #444;
+    font-weight: 800;
+}
+
+.mfe-board {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 8px;
+    aspect-ratio: 1 / 1;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.tile {
+    border: 3px solid #111;
+    border-radius: 14px;
+    min-height: 54px;
+    background: #fff;
+    box-shadow: 3px 3px 0 #111;
+    position: relative;
+    overflow: hidden;
+}
+
+.tile.wall {
+    background:
+        linear-gradient(135deg, #3b3b3b 0%, #191919 100%);
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.08), 3px 3px 0 #111;
+}
+
+.tile.floor {
+    background:
+        repeating-linear-gradient(
+            45deg,
+            #fffef6 0 10px,
+            #f2f2e9 10px 20px
+        );
+}
+
+.tile.key {
+    background:
+        radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.65), transparent 28%),
+        linear-gradient(180deg, #d8ffe0 0%, #9bebac 100%);
+}
+
+.tile.exit {
+    background:
+        radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.55), transparent 28%),
+        linear-gradient(180deg, #fff9b8 0%, #ffcb47 100%);
+}
+
+.tile.exit.locked {
+    background:
+        radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.3), transparent 28%),
+        linear-gradient(180deg, #f0f0f0 0%, #cfcfcf 100%);
+    opacity: 0.85;
+}
+
+.tile::after {
+    content: "";
+    position: absolute;
+    inset: 18%;
+    border-radius: 50%;
+    opacity: 0.12;
+    border: 2px dashed #111;
+}
+
+.tile.key::before,
+.tile.exit::before {
+    content: "";
+    position: absolute;
+    inset: 24%;
+    border-radius: 50%;
+    border: 3px solid rgba(17, 17, 17, 0.55);
+}
+
+.tile.exit.locked::before {
+    inset: 28%;
+    border-radius: 10px;
+    border: 3px solid rgba(17, 17, 17, 0.55);
+}
+
+.mfe-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.mfe-control-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.mfe-control-btn,
+.mfe-btn {
+    border: 3px solid #111;
+    border-radius: 14px;
+    padding: 12px 18px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 #111;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    font-size: 16px;
+}
+
+.mfe-control-btn:hover,
+.mfe-btn:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 6px 6px 0 #111;
+}
+
+.mfe-control-btn:active,
+.mfe-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 #111;
+}
+
+.mfe-control-btn {
+    min-width: 84px;
+    background: #fff;
+    color: #111;
+}
+
+.mfe-control-btn.action {
+    background: #ffdf5d;
+}
+
+.mfe-btn.primary {
+    background: #7cff6b;
+    color: #111;
+}
+
+.mfe-btn.secondary {
+    background: #fff;
+    color: #111;
+}
+
+.mfe-side-panel {
+    padding: 16px;
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.5), transparent 36%),
+        linear-gradient(180deg, #fff6db 0%, #ffe5df 100%);
+    display: grid;
+    gap: 12px;
+    align-content: start;
+}
+
+.mfe-side-card {
+    padding: 14px 14px 12px;
+    background: #fff;
+}
+
+.mfe-side-card h3 {
+    margin: 0 0 10px;
+    font-size: 16px;
+    color: #111;
+}
+
+.mfe-side-card p {
+    margin: 0;
+    color: #444;
+    line-height: 1.7;
+    font-size: 14px;
+}
+
+.mfe-inventory {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.inventory-item {
+    border: 2px solid #111;
+    border-radius: 999px;
+    background: #f8f8f8;
+    padding: 6px 10px;
+    font-size: 13px;
+    font-weight: 800;
+    color: #111;
+}
+
+.mfe-mini-map {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 4px 2px;
+}
+
+.mini-node {
+    width: 22px;
+    height: 22px;
+    border: 3px solid #111;
+    border-radius: 50%;
+    box-shadow: 2px 2px 0 #111;
+    background: #fff;
+}
+
+.mini-node.start {
+    background: #d7f9c8;
+}
+
+.mini-node.active {
+    background: #ffdf5d;
+}
+
+.mini-node.danger {
+    background: #ff9f9f;
+}
+
+.mini-node.exit {
+    background: #9ee7ff;
+}
+
+.mfe-hotkeys {
+    margin: 0;
+    padding-left: 18px;
+    color: #444;
+    line-height: 1.8;
+    font-size: 14px;
+}
+
+.mfe-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2200;
+    padding: 20px;
+}
+
+.mfe-overlay.show {
+    display: flex;
+}
+
+.mfe-result {
+    width: min(460px, 100%);
+    border: 4px solid #111;
+    background: #fff;
+    border-radius: 24px;
+    box-shadow: 10px 10px 0 #111;
+    text-align: center;
+    padding: 28px 22px;
+}
+
+.result-emoji {
+    font-size: 64px;
+    margin-bottom: 8px;
+}
+
+.mfe-result h2 {
+    margin: 0 0 10px;
+    font-size: 28px;
+    color: #111;
+}
+
+.mfe-result p {
+    margin: 0 0 16px;
+    font-size: 16px;
+    color: #333;
+    line-height: 1.6;
+}
+
+.result-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 980px) {
+    .mfe-mode-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .mfe-level-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .mfe-rules {
+        grid-template-columns: 1fr;
+    }
+
+    .mfe-stage-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .mfe-side-panel {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 720px) {
+    .mfe-page {
+        padding: 16px 12px 32px;
+    }
+
+    .mfe-hero,
+    .mfe-panel,
+    .mfe-hud,
+    .mfe-board-panel,
+    .mfe-side-panel {
+        border-radius: 18px;
+        box-shadow: 6px 6px 0 #111;
+    }
+
+    .mfe-hero-stats,
+    .mfe-hud-stats {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .mfe-section-head,
+    .mfe-hud-top,
+    .mfe-board-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .mfe-hud-actions {
+        justify-content: stretch;
+    }
+
+    .mfe-hud-actions .mfe-btn,
+    .mfe-hero-actions .mfe-btn,
+    .mfe-control-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .mfe-level-grid,
+    .mfe-side-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .mfe-board {
+        gap: 6px;
+    }
+
+    .tile {
+        min-height: 42px;
+        border-radius: 12px;
+    }
+
+    .mfe-controls {
+        margin-top: 14px;
+    }
+
+    .mfe-control-row {
+        width: 100%;
+    }
+
+    .mfe-control-btn {
+        flex: 1 1 0;
+    }
+
+    .mfe-side-panel {
+        display: grid;
+    }
+
+    .mfe-mini-stat strong,
+    .mfe-stat strong {
+        font-size: 14px;
+    }
+
+    .mfe-section-head h2,
+    .mfe-hud-top h2,
+    .mfe-result h2 {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 420px) {
+    .mfe-hero h1 {
+        font-size: 2.2rem;
+    }
+
+    .mfe-badge,
+    .mfe-kicker {
+        font-size: 12px;
+    }
+
+    .mfe-hero p,
+    .mfe-section-head p,
+    .mfe-rule-card p,
+    .mfe-mode-card p,
+    .mfe-level-card p,
+    .mfe-result p {
+        font-size: 14px;
+    }
+
+    .mfe-hero-stats,
+    .mfe-hud-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .mfe-board {
+        gap: 5px;
+    }
+}

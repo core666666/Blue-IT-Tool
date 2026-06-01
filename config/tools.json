@@ -6,14 +6,19 @@
       "icon": "fa-code",
       "tools": [
         {
-          "name": "JSON 格式化",
-          "path": "json_formatter.html",
-          "icon": "fa-brackets-curly"
+          "name": "时间折叠",
+          "path": "time_fold.html",
+          "icon": "fa-rotate-left"
         },
         {
-          "name": "JSON 比对",
-          "path": "json_compare.html",
-          "icon": "fa-code-compare"
+          "name": "逃离怪兽工厂",
+          "path": "monster_factory_escape.html",
+          "icon": "fa-person-running"
+        },
+        {
+          "name": "数字华容道",
+          "path": "number_slide_puzzle.html",
+          "icon": "fa-puzzle-piece"
         },
         {
           "name": "正则高亮替换",
@@ -142,6 +147,11 @@
           "name": "设计模式指挥官",
           "path": "design_pattern_quest.html",
           "icon": "fa-chess"
+        },
+        {
+          "name": "算法学习训练场",
+          "path": "algorithm_learning_arena.html",
+          "icon": "fa-brain"
         },
         {
           "name": "路径建筑师",

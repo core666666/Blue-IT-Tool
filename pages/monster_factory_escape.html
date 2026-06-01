@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="逃离怪兽工厂 - 进入失控工厂，收集钥匙、启动机关、躲避怪物，完成关卡逃出生天。">
+    <meta name="keywords" content="逃离怪兽工厂,逃生游戏,闯关游戏,解谜游戏,网页游戏,休闲游戏">
+    <meta name="author" content="蔚蓝工具导航站">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="逃离怪兽工厂 - 蔚蓝工具导航站">
+    <meta property="og:description" content="收集钥匙、启动机关、躲避怪物，在失控工厂中完成逃生。">
+    <meta property="og:image" content="../tools.png">
+    <meta property="og:type" content="website">
+    <title>逃离怪兽工厂 - 蔚蓝工具导航站</title>
+    <link rel="icon" type="image/png" href="../assets/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon/favicon-16x16.png">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles/common.css">
+    <link rel="stylesheet" href="../styles/sidebar.css">
+    <link rel="stylesheet" href="../styles/monster_factory_escape.css">
+    <script src="../scripts/umami-loader.js"></script>
+</head>
+<body>
+    <!-- 侧边栏由 sidebar.js 动态加载 -->
+
+    <main class="mfe-page">
+        <section class="mfe-screen mfe-home is-active" id="homeScreen" aria-label="游戏首页">
+            <div class="mfe-hero">
+                <div class="mfe-badge">逃生闯关 · 卡通惊悚</div>
+                <h1>逃离怪兽工厂</h1>
+                <p>在失控工厂里寻找钥匙、启动机关、躲避怪物，冲向出口。每一关都更危险，但也更刺激。</p>
+
+                <div class="mfe-hero-actions">
+                    <button class="mfe-btn primary" id="startGameBtn" type="button">开始逃生</button>
+                    <button class="mfe-btn secondary" id="selectLevelBtn" type="button">选择关卡</button>
+                </div>
+
+                <div class="mfe-hero-stats">
+                    <div class="mfe-mini-stat">
+                        <span class="label">平均时长</span>
+                        <strong>3 分钟 / 局</strong>
+                    </div>
+                    <div class="mfe-mini-stat">
+                        <span class="label">推荐玩法</span>
+                        <strong>闯关 + 追逐 + 解谜</strong>
+                    </div>
+                    <div class="mfe-mini-stat">
+                        <span class="label">当前进度</span>
+                        <strong id="unlockText">第 1 关已解锁</strong>
+                    </div>
+                </div>
+            </div>
+
+            <section class="mfe-panel mfe-modes">
+                <div class="mfe-section-head">
+                    <div>
+                        <span class="mfe-kicker">模式选择</span>
+                        <h2>选一个方式开始逃生</h2>
+                    </div>
+                    <p>先从故事模式熟悉地图，再去挑战限时和无尽模式。</p>
+                </div>
+
+                <div class="mfe-mode-grid">
+                    <button class="mfe-mode-card active" type="button" data-mode="story">
+                        <span class="mfe-mode-icon">📘</span>
+                        <strong>故事模式</strong>
+                        <p>按关卡推进，逐步解锁工厂深处。</p>
+                    </button>
+
+                    <button class="mfe-mode-card" type="button" data-mode="challenge">
+                        <span class="mfe-mode-icon">⏱️</span>
+                        <strong>限时挑战</strong>
+                        <p>在最短时间内逃出，冲击更高评分。</p>
+                    </button>
+
+                    <button class="mfe-mode-card" type="button" data-mode="endless">
+                        <span class="mfe-mode-icon">♾️</span>
+                        <strong>无尽模式</strong>
+                        <p>怪物不断增强，看看你能撑多久。</p>
+                    </button>
+                </div>
+            </section>
+
+            <section class="mfe-panel mfe-levels">
+                <div class="mfe-section-head">
+                    <div>
+                        <span class="mfe-kicker">关卡预览</span>
+                        <h2>先挑一关开始</h2>
+                    </div>
+                    <p>每一关都有不同目标和追击节奏，越往后越紧张。</p>
+                </div>
+
+                <div class="mfe-level-grid">
+                    <button class="mfe-level-card active" type="button" data-level="1">
+                        <span class="level-tag">第 1 关</span>
+                        <strong>电力失控</strong>
+                        <p>找到 1 张钥匙卡，修复电源，打开主门。</p>
+                        <small>新手 · 1-2 分钟</small>
+                    </button>
+
+                    <button class="mfe-level-card" type="button" data-level="2">
+                        <span class="level-tag">第 2 关</span>
+                        <strong>维修通道</strong>
+                        <p>绕开巡逻怪，收集两把钥匙，打开闸门。</p>
+                        <small>普通 · 2-3 分钟</small>
+                    </button>
+
+                    <button class="mfe-level-card" type="button" data-level="3">
+                        <span class="level-tag">第 3 关</span>
+                        <strong>怪物追击</strong>
+                        <p>启动警报后，躲避加速怪物并找到出口。</p>
+                        <small>困难 · 2-4 分钟</small>
+                    </button>
+
+                    <button class="mfe-level-card" type="button" data-level="4">
+                        <span class="level-tag">第 4 关</span>
+                        <strong>熔炉区域</strong>
+                        <p>利用传送带与喷气口，穿过高危区域。</p>
+                        <small>Boss · 3-5 分钟</small>
+                    </button>
+                </div>
+            </section>
+
+            <section class="mfe-panel mfe-rules">
+                <div class="mfe-rule-card">
+                    <h3>操作说明</h3>
+                    <p>WASD / 方向键移动，E 键互动，Space 使用道具。</p>
+                </div>
+                <div class="mfe-rule-card">
+                    <h3>胜负规则</h3>
+                    <p>收集钥匙并到达出口即可通关；被怪物抓到则失败。</p>
+                </div>
+                <div class="mfe-rule-card">
+                    <h3>道具系统</h3>
+                    <p>闪光弹、加速鞋、隐身喷雾、钥匙卡都能扭转局势。</p>
+                </div>
+            </section>
+        </section>
+
+        <section class="mfe-screen mfe-stage" id="stageScreen" aria-label="游戏关卡页" hidden>
+            <section class="mfe-hud">
+                <div class="mfe-hud-top">
+                    <div>
+                        <span class="mfe-kicker">当前关卡</span>
+                        <h2 id="levelTitle">第 1 关 · 电力失控</h2>
+                    </div>
+                    <div class="mfe-hud-actions">
+                        <button class="mfe-btn secondary" id="pauseBtn" type="button">暂停</button>
+                        <button class="mfe-btn secondary" id="restartBtn" type="button">重开</button>
+                        <button class="mfe-btn secondary" id="backHomeBtn" type="button">返回首页</button>
+                    </div>
+                </div>
+
+                <div class="mfe-hud-stats">
+                    <div class="mfe-stat">
+                        <span class="label">时间</span>
+                        <strong id="timeText">03:00</strong>
+                    </div>
+                    <div class="mfe-stat">
+                        <span class="label">钥匙</span>
+                        <strong id="keyText">0 / 1</strong>
+                    </div>
+                    <div class="mfe-stat">
+                        <span class="label">警报</span>
+                        <strong id="alarmText">低</strong>
+                    </div>
+                    <div class="mfe-stat">
+                        <span class="label">得分</span>
+                        <strong id="scoreText">0</strong>
+                    </div>
+                </div>
+
+                <div class="mfe-objective">
+                    <span>任务</span>
+                    <p id="objectiveText">找到钥匙卡，修复电源，然后前往出口。</p>
+                </div>
+            </section>
+
+            <section class="mfe-stage-layout">
+                <div class="mfe-board-panel">
+                    <div class="mfe-board-toolbar">
+                        <div class="mfe-status-pill" id="statusText">准备开始</div>
+                        <div class="mfe-status-meta" id="metaText">地图：电力失控 / 难度：新手</div>
+                    </div>
+
+                    <div class="mfe-board" id="board" aria-label="怪兽工厂地图">
+                        <div class="tile wall"></div>
+                        <div class="tile wall"></div>
+                        <div class="tile key" data-cell="0"></div>
+                        <div class="tile wall"></div>
+                        <div class="tile exit locked" data-cell="1"></div>
+                        <div class="tile wall"></div>
+                        <div class="tile wall"></div>
+                        <div class="tile floor" data-cell="2"></div>
+                        <div class="tile floor" data-cell="3"></div>
+                        <div class="tile floor" data-cell="4"></div>
+                        <div class="tile floor" data-cell="5"></div>
+                        <div class="tile floor" data-cell="6"></div>
+                        <div class="tile floor" data-cell="7"></div>
+                        <div class="tile floor" data-cell="8"></div>
+                        <div class="tile floor" data-cell="9"></div>
+                        <div class="tile floor" data-cell="10"></div>
+                        <div class="tile floor" data-cell="11"></div>
+                        <div class="tile floor" data-cell="12"></div>
+                        <div class="tile floor" data-cell="13"></div>
+                        <div class="tile floor" data-cell="14"></div>
+                        <div class="tile floor" data-cell="15"></div>
+                        <div class="tile floor" data-cell="16"></div>
+                        <div class="tile floor" data-cell="17"></div>
+                        <div class="tile floor" data-cell="18"></div>
+                        <div class="tile floor" data-cell="19"></div>
+                        <div class="tile floor" data-cell="20"></div>
+                        <div class="tile floor" data-cell="21"></div>
+                        <div class="tile floor" data-cell="22"></div>
+                        <div class="tile floor" data-cell="23"></div>
+                        <div class="tile floor" data-cell="24"></div>
+                        <div class="tile floor" data-cell="25"></div>
+                        <div class="tile floor" data-cell="26"></div>
+                        <div class="tile floor" data-cell="27"></div>
+                        <div class="tile floor" data-cell="28"></div>
+                        <div class="tile floor" data-cell="29"></div>
+                        <div class="tile floor" data-cell="30"></div>
+                        <div class="tile floor" data-cell="31"></div>
+                        <div class="tile floor" data-cell="32"></div>
+                        <div class="tile floor" data-cell="33"></div>
+                        <div class="tile floor" data-cell="34"></div>
+                        <div class="tile floor" data-cell="35"></div>
+                        <div class="tile floor" data-cell="36"></div>
+                        <div class="tile floor" data-cell="37"></div>
+                        <div class="tile floor" data-cell="38"></div>
+                        <div class="tile floor" data-cell="39"></div>
+                        <div class="tile floor" data-cell="40"></div>
+                        <div class="tile floor" data-cell="41"></div>
+                        <div class="tile floor" data-cell="42"></div>
+                        <div class="tile floor" data-cell="43"></div>
+                        <div class="tile floor" data-cell="44"></div>
+                        <div class="tile floor" data-cell="45"></div>
+                        <div class="tile floor" data-cell="46"></div>
+                        <div class="tile floor" data-cell="47"></div>
+                        <div class="tile floor" data-cell="48"></div>
+                    </div>
+
+                    <div class="mfe-controls">
+                        <button class="mfe-control-btn" data-move="up" type="button">↑</button>
+                        <div class="mfe-control-row">
+                            <button class="mfe-control-btn" data-move="left" type="button">←</button>
+                            <button class="mfe-control-btn action" data-action="interact" type="button">E 互动</button>
+                            <button class="mfe-control-btn" data-move="right" type="button">→</button>
+                        </div>
+                        <button class="mfe-control-btn" data-move="down" type="button">↓</button>
+                    </div>
+                </div>
+
+                <aside class="mfe-side-panel">
+                    <section class="mfe-side-card">
+                        <h3>背包</h3>
+                        <div class="mfe-inventory" id="inventoryList">
+                            <span class="inventory-item">闪光弹 x1</span>
+                            <span class="inventory-item">加速鞋 x1</span>
+                            <span class="inventory-item">钥匙卡 x0</span>
+                        </div>
+                    </section>
+
+                    <section class="mfe-side-card">
+                        <h3>怪物提示</h3>
+                        <p id="monsterText">巡逻怪正在右侧通道移动。</p>
+                    </section>
+
+                    <section class="mfe-side-card">
+                        <h3>小地图</h3>
+                        <div class="mfe-mini-map" aria-hidden="true">
+                            <span class="mini-node start"></span>
+                            <span class="mini-node active"></span>
+                            <span class="mini-node danger"></span>
+                            <span class="mini-node exit"></span>
+                        </div>
+                    </section>
+
+                    <section class="mfe-side-card">
+                        <h3>快捷键</h3>
+                        <ul class="mfe-hotkeys">
+                            <li>WASD / 方向键：移动</li>
+                            <li>E：互动 / 开门</li>
+                            <li>Space：使用道具</li>
+                            <li>Shift：冲刺</li>
+                        </ul>
+                    </section>
+                </aside>
+            </section>
+        </section>
+    </main>
+
+    <div class="mfe-overlay" id="resultOverlay" aria-hidden="true">
+        <div class="mfe-result">
+            <div class="result-emoji" id="resultEmoji">🏆</div>
+            <h2 id="resultTitle">通关成功</h2>
+            <p id="resultText">你成功逃出了怪兽工厂。</p>
+            <div class="result-actions">
+                <button class="mfe-btn primary" id="nextLevelBtn" type="button">下一关</button>
+                <button class="mfe-btn secondary" id="retryLevelBtn" type="button">重试关卡</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../scripts/sidebar.js"></script>
+    <script src="../scripts/monster_factory_escape.js"></script>
+</body>
+</html>

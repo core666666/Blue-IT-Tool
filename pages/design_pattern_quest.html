@@ -71,8 +71,14 @@
             <div class="dpq-controls">
                 <button class="dpq-btn primary" id="startBtn">开始试炼</button>
                 <button class="dpq-btn secondary" id="restartBtn">重新开始</button>
+                <div class="dpq-powerups" aria-label="道具栏">
+                    <button class="dpq-btn powerup" id="hintBtn" type="button">提示卡（2）</button>
+                    <button class="dpq-btn powerup" id="freezeBtn" type="button">冻结卡（1）</button>
+                    <button class="dpq-btn powerup" id="shieldBtn" type="button">护盾卡（1）</button>
+                    <button class="dpq-btn powerup" id="doubleBtn" type="button">双倍分（1）</button>
+                </div>
                 <div class="dpq-note">
-                    规则：每题 4 个选项，答对加分，答错扣命。
+                    规则：每题 4 个选项，答对加分，答错扣命。每 5 题会遇到 Boss 试炼，连胜还能解锁额外奖励。
                 </div>
             </div>
         </section>
@@ -125,6 +131,13 @@
             <h2 id="resultTitle">试炼结束</h2>
             <p id="resultText">你的结果会显示在这里。</p>
             <div class="dpq-summary" id="summaryBox"></div>
+            <section class="dpq-review">
+                <div class="dpq-review-head">
+                    <h3>错题回顾</h3>
+                    <p>把做错的题目和正确模式重新过一遍，方便复盘记忆。</p>
+                </div>
+                <div class="dpq-review-list" id="reviewBox"></div>
+            </section>
             <div class="result-actions">
                 <button class="dpq-btn primary" id="playAgainBtn">再来一局</button>
             </div>

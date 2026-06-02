@@ -1,0 +1,171 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="合成塔防 - 放置炮塔、手动升级、抵御一波波怪物进攻的轻策略爽游。">
+  <meta name="keywords" content="合成塔防,塔防游戏,策略游戏,网页游戏,休闲游戏">
+  <meta name="author" content="蔚蓝工具导航站">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="合成塔防 - 蔚蓝工具导航站">
+  <meta property="og:description" content="放置炮塔、手动升级、抵御怪物波次，体验轻策略爽感成长。">
+  <meta property="og:image" content="../tools.png">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#f9d65c">
+  <title>合成塔防 - 蔚蓝工具导航站</title>
+  <link rel="icon" type="image/png" href="../assets/favicon/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon/favicon-16x16.png">
+  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../styles/common.css">
+  <link rel="stylesheet" href="../styles/sidebar.css">
+  <link rel="stylesheet" href="../styles/merge_tower_defense.css">
+  <script src="../scripts/umami-loader.js"></script>
+</head>
+<body>
+  <main class="mtd-page">
+    <header class="mtd-hero">
+      <div class="mtd-badge">轻策略 · 爽感成长 · 塔防守卫</div>
+      <h1>🛡️ 合成塔防</h1>
+      <p>买塔、升级、合成、守住基地。炮塔会自动攻击，也可以点击已建好的塔手动升级，或让相邻同级塔自动合成。</p>
+      <div class="mtd-hero-actions">
+        <button class="mtd-btn primary" id="startBtn">开始游戏</button>
+        <button class="mtd-btn secondary" id="restartBtn">重新开始</button>
+        <button class="mtd-btn secondary" id="nextWaveBtn">手动下一波</button>
+        <button class="mtd-btn secondary" id="pauseBtn">暂停</button>
+        <button class="mtd-btn secondary" id="speedBtn">倍速 x1</button>
+      </div>
+    </header>
+
+    <section class="mtd-panel">
+      <div class="mtd-stats">
+        <div class="mtd-stat">
+          <span class="label">金币</span>
+          <strong id="goldText">180</strong>
+        </div>
+        <div class="mtd-stat">
+          <span class="label">波次</span>
+          <strong id="waveText">1</strong>
+        </div>
+        <div class="mtd-stat">
+          <span class="label">基地</span>
+          <strong id="baseHpText">20</strong>
+        </div>
+        <div class="mtd-stat">
+          <span class="label">战力</span>
+          <strong id="scoreText">0</strong>
+        </div>
+        <div class="mtd-stat">
+          <span class="label">最高</span>
+          <strong id="bestScoreText">0</strong>
+        </div>
+      </div>
+
+      <div class="mtd-controls">
+        <div class="mtd-shop" role="group" aria-label="炮塔商店">
+          <button class="mtd-chip active" data-build="cannon">
+            <span>炮塔</span>
+            <small>50金</small>
+          </button>
+          <button class="mtd-chip" data-build="slow">
+            <span>冰冻塔</span>
+            <small>70金</small>
+          </button>
+          <button class="mtd-chip" data-build="burst">
+            <span>爆裂塔</span>
+            <small>90金</small>
+          </button>
+        </div>
+
+        <div class="mtd-info">
+          <span id="modeText">点击空位放塔，拖不需要，直接点格子即可。</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="mtd-stage">
+      <div class="mtd-board-wrap">
+        <div class="mtd-board-head">
+          <div>
+            <strong>战场地图</strong>
+            <p>每局会随机地图，怪物会沿路径前进，塔只能放在浅色格子上。相同类型且同等级的防御塔相邻时会自动合成，合成后会保留在当前格子并提升等级。</p>
+          </div>
+          <div class="mtd-legend">
+            <span><i class="dot path"></i> 路径</span>
+            <span><i class="dot slot"></i> 建造位</span>
+            <span><i class="dot base"></i> 基地</span>
+          </div>
+        </div>
+        <div class="mtd-board" id="board" aria-label="合成塔防战场"></div>
+      </div>
+
+      <aside class="mtd-side">
+        <div class="mtd-card mtd-wave-intel">
+          <h3>下一波情报</h3>
+          <p id="waveIntelText">开始游戏后显示下一波敌情。</p>
+          <div class="mtd-intel-tags" id="waveIntelTags"></div>
+        </div>
+
+        <div class="mtd-card">
+          <h3>操作</h3>
+          <ul>
+            <li>选择炮塔后，点击建造位放置。</li>
+            <li>相同类型且同等级的防御塔相邻时会自动合成。</li>
+            <li>炮塔击杀怪物可获得金币。</li>
+            <li>每过一波，怪物会更快更硬，并逐步出现分裂、恢复、闪避和首领怪。</li>
+          </ul>
+        </div>
+
+        <div class="mtd-card">
+          <h3>炮塔说明</h3>
+          <div class="mtd-tower-list">
+            <div class="tower-note">
+              <strong>炮塔</strong>
+              <span>均衡输出，适合前期铺场。</span>
+            </div>
+            <div class="tower-note">
+              <strong>冰冻塔</strong>
+              <span>减速控场，给火力塔争取时间。</span>
+            </div>
+            <div class="tower-note">
+              <strong>爆裂塔</strong>
+              <span>范围伤害，适合清理密集怪潮。</span>
+            </div>
+          </div>
+        </div>
+        <div class="mtd-card">
+          <h3>防御塔管理</h3>
+          <p id="selectedTowerText">未选择防御塔。点击已建好的塔可以查看、升级或销毁。</p>
+          <div class="mtd-tower-actions">
+            <button class="mtd-btn primary" id="upgradeTowerBtn" disabled>升级</button>
+            <button class="mtd-btn secondary danger" id="sellTowerBtn" disabled>销毁</button>
+          </div>
+        </div>
+
+        <div class="mtd-card">
+          <h3>提示</h3>
+          <p>观察弹道和怪物类型，优先升级核心火力点，冰冻塔适合压制快怪和首领。</p>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <div class="mtd-overlay" id="resultOverlay" aria-hidden="true">
+    <div class="mtd-result">
+      <div class="result-emoji">🏰</div>
+      <h2 id="resultTitle">游戏结束</h2>
+      <p id="resultText">基地已被攻破。</p>
+      <div class="mtd-result-stats" id="resultStats"></div>
+      <div class="result-actions">
+        <button class="mtd-btn primary" id="playAgainBtn">再来一局</button>
+        <button class="mtd-btn secondary" id="closeResultBtn">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../scripts/sidebar.js"></script>
+  <script src="../scripts/merge_tower_defense.js"></script>
+</body>
+</html>
+

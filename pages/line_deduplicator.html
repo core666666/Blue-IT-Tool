@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="免费在线文本去重工具，支持一行一条数据去重，适合域名、IP、域名:IP 等列表数据清洗。自动统计总数量、重复数量和去重后数量，支持一键复制结果。">
+    <meta name="keywords" content="文本去重,域名去重,IP去重,列表去重,去重复,在线工具,数据清洗,开发工具">
+    <meta name="author" content="蔚蓝工具导航站">
+    <meta name="robots" content="index, follow">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../assets/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon/favicon-16x16.png">
+
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="文本去重工具 - 蔚蓝工具导航站">
+    <meta property="og:description" content="一行一条数据快速去重，自动统计总数量、重复数量和去重后数量，结果可一键复制。">
+    <meta property="og:image" content="../tools.png">
+    <meta property="og:url" content="https://your-domain.com/pages/line_deduplicator.html">
+    <meta property="og:type" content="website">
+
+    <!-- Additional SEO Tags -->
+    <meta name="application-name" content="蔚蓝工具导航站">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="canonical" href="https://your-domain.com/pages/line_deduplicator.html">
+
+    <title>文本去重工具 - 蔚蓝工具导航站</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="../styles/common.css">
+    <link rel="stylesheet" href="../styles/sidebar.css">
+    <link rel="stylesheet" href="../styles/line_deduplicator.css">
+
+    <!-- Umami 统计脚本延迟加载器 -->
+    <script src="../scripts/umami-loader.js"></script>
+</head>
+
+<body>
+    <!-- 侧边栏由 sidebar.js 动态加载 -->
+
+    <main class="line-deduplicator">
+        <section class="dedupe-hero">
+            <div>
+                <p class="hero-eyebrow">
+                    <i class="fas fa-filter"></i>
+                    一行一条 · 本地去重
+                </p>
+                <h1>文本去重工具</h1>
+                <p class="hero-description">
+                    粘贴域名、IP、域名:IP 等多行数据，自动保留首次出现的记录，
+                    并展示总数量、重复数量和去重后数量。
+                </p>
+            </div>
+            <div class="hero-badge" aria-label="数据仅在本地浏览器处理">
+                <i class="fas fa-shield-halved"></i>
+                <span>本地处理，不上传</span>
+            </div>
+        </section>
+
+        <section class="dedupe-layout" aria-label="文本去重操作区">
+            <article class="dedupe-card input-card">
+                <div class="card-heading">
+                    <div>
+                        <h2>原始数据</h2>
+                        <p>每行一条，适合几千行列表批量处理。</p>
+                    </div>
+                    <span id="input-line-count" class="line-counter">0 行</span>
+                </div>
+
+                <label class="textarea-label" for="source-lines">待去重内容</label>
+                <textarea
+                    id="source-lines"
+                    spellcheck="false"
+                    placeholder="示例：
+example.com:1.1.1.1
+api.example.com:1.1.1.2
+example.com:1.1.1.1"></textarea>
+
+                <div class="option-panel" aria-label="去重选项">
+                    <label class="checkbox-item" for="trim-lines">
+                        <input type="checkbox" id="trim-lines" checked>
+                        <span>去除每行首尾空格</span>
+                    </label>
+                    <label class="checkbox-item" for="ignore-blank-lines">
+                        <input type="checkbox" id="ignore-blank-lines" checked>
+                        <span>忽略空行</span>
+                    </label>
+                    <label class="checkbox-item" for="ignore-case">
+                        <input type="checkbox" id="ignore-case">
+                        <span>忽略大小写</span>
+                    </label>
+                </div>
+
+                <div class="action-row">
+                    <button type="button" id="dedupe-btn" class="primary-btn">
+                        <i class="fas fa-wand-magic-sparkles"></i>
+                        开始去重
+                    </button>
+                    <button type="button" id="sample-btn" class="secondary-btn">
+                        <i class="fas fa-file-lines"></i>
+                        加载示例
+                    </button>
+                    <button type="button" id="clear-btn" class="ghost-btn">
+                        <i class="fas fa-trash-can"></i>
+                        清空
+                    </button>
+                </div>
+            </article>
+
+            <article class="dedupe-card result-card">
+                <div class="stats-grid" aria-label="去重统计">
+                    <div class="stat-item">
+                        <span class="stat-label">总数量</span>
+                        <strong id="total-count">0</strong>
+                    </div>
+                    <div class="stat-item duplicate-stat">
+                        <span class="stat-label">重复数量</span>
+                        <strong id="duplicate-count">0</strong>
+                    </div>
+                    <div class="stat-item success-stat">
+                        <span class="stat-label">去重后数量</span>
+                        <strong id="unique-count">0</strong>
+                    </div>
+                </div>
+
+                <div class="result-toolbar">
+                    <div>
+                        <h2>去重后结果</h2>
+                        <p>保持首次出现顺序，可直接复制使用。</p>
+                    </div>
+                    <button type="button" id="copy-result-btn" class="copy-btn" disabled>
+                        <i class="fas fa-copy"></i>
+                        复制结果
+                    </button>
+                </div>
+
+                <label class="textarea-label" for="result-lines">结果内容</label>
+                <textarea
+                    id="result-lines"
+                    spellcheck="false"
+                    readonly
+                    placeholder="去重后的结果会显示在这里"></textarea>
+
+                <div id="copy-status" class="copy-status" aria-live="polite"></div>
+            </article>
+        </section>
+    </main>
+
+    <script src="../scripts/sidebar.js"></script>
+    <script src="../scripts/index.js"></script>
+    <script src="../scripts/line_deduplicator.js"></script>
+</body>
+</html>

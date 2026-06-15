@@ -79,4 +79,12 @@
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
+    <!-- ?????? -->
+    <url>
+        <loc>https://your-domain.com/pages/line_deduplicator.html</loc>
+        <lastmod>2026-06-15</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
 </urlset> 

@@ -36,6 +36,11 @@
           "icon": "fa-exchange-alt"
         },
         {
+          "name": "文本去重",
+          "path": "line_deduplicator.html",
+          "icon": "fa-filter"
+        },
+        {
           "name": "时间戳转换",
           "path": "timestamp_converter.html",
           "icon": "fa-clock"

@@ -22,6 +22,7 @@
           { "name": "代码格式化", "path": "code_formatter.html", "icon": "fa-magic" },
           { "name": "加密解密", "path": "crypto_tool.html", "icon": "fa-lock" },
           { "name": "Base64 转换", "path": "base64convert.html", "icon": "fa-exchange-alt" },
+          { "name": "文本去重", "path": "line_deduplicator.html", "icon": "fa-filter" },
           { "name": "时间戳转换", "path": "timestamp_converter.html", "icon": "fa-clock" },
           { "name": "UUID 生成", "path": "uuid_generation.html", "icon": "fa-fingerprint" },
           { "name": "密码生成", "path": "password_generation.html", "icon": "fa-key" },
